@@ -1,5 +1,11 @@
-$color-bg: #fff;
+//Visit https://www.learnhowtoprogram.com/user-interfaces/building-layouts-preprocessors/7-1-sass-architecture
 
-body {
-    background-color: $color-bg;
-}
+@import './abstracts/variables';
+
+@import './base/typography';
+
+@import './components/buttons';
+
+@import './layout/header';
+
+@import './pages/home'
