@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const EslintPlugin = require('eslint-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isProduction = !isDevelopment;
@@ -69,7 +70,12 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: filename('css'),
     }),
-    new EslintPlugin({ extensions: 'ts' })
+    new EslintPlugin({ extensions: 'ts' }),
+    new CopyPlugin({
+      patterns: [
+        { from: "build-options", to: "./" },
+      ],
+    }),
   ],
   module: {
     rules: [
