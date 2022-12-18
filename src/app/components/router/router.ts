@@ -1,10 +1,10 @@
 import Navigo, { Match } from 'navigo';
-import { MainPage } from '../components/main';
-import { RouterPath } from '../../models/enums';
-import { Routes } from '../../models/interfaces';
-import { CartPage } from '../components/cart';
-import { ProductPage } from '../components/products';
-import { NotFoundPage } from '../components/404';
+import { MainPage } from '../pages/main';
+import { RouterPath } from '../../../models/enums';
+import { Routes } from '../../../models/interfaces';
+import { CartPage } from '../pages/cart';
+import { ProductPage } from '../pages/products';
+import { NotFoundPage } from '../pages/404';
 
 class MyNavigo extends Navigo {
   listenPageLoad(): void {

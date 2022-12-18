@@ -1,3 +1,3 @@
 import './sass/main.scss';
 
-import './app/router/router'
+import './app/components/router/router'

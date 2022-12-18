@@ -1,5 +1,5 @@
-import { AbstractPage } from '../view/page-view';
-import { PageComponents } from '../../models/interfaces';
+import { AbstractPage } from '../../view/page-view';
+import { PageComponents } from '../../../models/interfaces';
 
 export class NotFoundPage extends AbstractPage {
 
