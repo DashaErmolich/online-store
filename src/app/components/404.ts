@@ -3,12 +3,8 @@ import { PageComponents } from '../../models/interfaces';
 
 export class NotFoundPage extends AbstractPage {
 
-  constructor() {
-    super()
-    this.setPageTitle('404');
-  }
-
   getPageContent(): PageComponents['content'] {
+    this.setPageTitle('404');
     const content = `
     <h1>404</h1>
     `;

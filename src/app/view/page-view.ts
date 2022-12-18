@@ -2,7 +2,7 @@ import { PageComponents } from '../../models/interfaces';
 
 export abstract class AbstractPage {
 
-  setPageTitle(title: PageComponents['title']): void {
+  protected setPageTitle(title: PageComponents['title']): void {
     document.title = title;
   }
 

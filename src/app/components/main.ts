@@ -3,12 +3,8 @@ import { PageComponents } from '../../models/interfaces';
 
 export class MainPage extends AbstractPage {
 
-  constructor() {
-    super()
-    this.setPageTitle('Online Shop');
-  }
-
   getPageContent(): PageComponents['content'] {
+    this.setPageTitle('Online Shop');
     const content = `
     <h1>Online Shop</h1>
     `;
