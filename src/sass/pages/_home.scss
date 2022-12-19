@@ -1,0 +1,33 @@
+.main-content-wrapper {
+  display: flex;
+  gap: 10px;
+}
+.filters-wrapper {
+  background-color: rgba(34,34,34,.12);
+  flex-grow: 1;
+}
+.filters__category {
+  display: flex;
+  flex-direction: column;
+}
+.cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 2;
+  gap: 5px;
+}
+.card {
+  border: 1px solid black;
+  width: 23%;
+}
+.card__title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.card__btn {
+  width: 60px;
+  height: 20px;
+}
+.card__description-field p {
+  margin: 0;
+}
