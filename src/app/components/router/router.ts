@@ -2,9 +2,9 @@ import Navigo, { Match } from 'navigo';
 import { MainPage } from '../pages/main';
 import { RouterPath } from '../../../models/enums';
 import { Routes } from '../../../models/interfaces';
-import { CartPage } from '../pages/cart';
 import { ProductPage } from '../pages/products';
 import { NotFoundPage } from '../pages/404';
+import { cartPage } from '../app/app';
 
 class MyNavigo extends Navigo {
   listenPageLoad(): void {
@@ -28,7 +28,7 @@ appRouter.listenPageLoad();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: new MainPage() },
-  { path: RouterPath.Cart, page: new CartPage()},
+  { path: RouterPath.Cart, page: cartPage},
   { path: RouterPath.Products, page: new ProductPage()},
 ];
 
