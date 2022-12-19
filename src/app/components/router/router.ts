@@ -7,13 +7,6 @@ import { NotFoundPage } from '../pages/404';
 import { cartPage } from '../app/app';
 
 class MyNavigo extends Navigo {
-  listenPageLoad(): void {
-    window.addEventListener('load', (): void => {
-      const currentLocation: Match = this.getCurrentLocation();
-      const currentURL: string = currentLocation.url;
-      this.navigate(currentURL);
-    })
-  }
 
   handlePageContent(content: string) {
     const pageContent = document.getElementById('page-content');
@@ -24,7 +17,6 @@ class MyNavigo extends Navigo {
 }
 
 export const appRouter = new MyNavigo('/');
-appRouter.listenPageLoad();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: new MainPage() },
@@ -44,7 +36,7 @@ routes.forEach((route): void => {
       }
     }
     
-  })
+  }).resolve();
 })
 
 appRouter.notFound((): void => {
