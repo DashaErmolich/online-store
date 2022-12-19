@@ -1,5 +1,9 @@
 export enum RouterPath {
   Main = '/',
   Cart = '/cart',
-  Products = '/products'
+  Products = '/products',
+}
+
+export enum QueryString {
+  Page = 'page',
 }

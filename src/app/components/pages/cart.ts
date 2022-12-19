@@ -36,17 +36,21 @@ export class CartPage extends AbstractPage {
       <div class="cart-product"></div>
       <div class="cart-product"></div>
       <div class="cart-product"></div>
+      <div class="cart-product"></div>
+      <div class="cart-product"></div>
+      <div class="cart-product"></div>
+      <div class="cart-product"></div>
       <nav>
       <ul class="pagination justify-content-center" id="cart-pagination">
-        <li class="page-item disabled">
-          <a class="page-link" href="#">
+        <li class="page-item">
+          <a class="page-link" href="#" data-navigo>
             <span aria-hidden="true">&laquo;</span>
             <span class="sr-only"></span>
           </a>
         </li>
-        <li class="page-item active"><a class="page-link" href="${RouterPath.Cart}?page=${1}">1</a></li>
-        <li class="page-item disabled">
-          <a class="page-link" href="#">
+        <li class="page-item active"><a class="page-link" href="${RouterPath.Cart}?page=${1}" data-navigo>1</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" data-navigo>
             <span aria-hidden="true">&raquo;</span>
             <span class="sr-only"></span>
           </a>

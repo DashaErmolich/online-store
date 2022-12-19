@@ -23,7 +23,7 @@ class MyNavigo extends Navigo {
   }
 }
 
-const appRouter = new MyNavigo('/');
+export const appRouter = new MyNavigo('/');
 appRouter.listenPageLoad();
 
 const routes: Routes[] = [
@@ -33,13 +33,21 @@ const routes: Routes[] = [
 ];
 
 routes.forEach((route): void => {
-  appRouter.on(route.path, (): void => {
-    appRouter.handlePageContent(route.page.getPageContent())
+  appRouter.on(route.path, (routerObject: Match | undefined) => {
+    const data = appRouter.getCurrentLocation();
+    console.log(data)
+    if (routerObject) {
+      if (routerObject.queryString === '') {
+        appRouter.handlePageContent(route.page.getPageContent());
+      } else {
+        console.log(routerObject.queryString)
+      }
+    }
+    
   })
 })
 
 appRouter.notFound((): void => {
   const notFoundPage = new NotFoundPage();
-  appRouter.handlePageContent(notFoundPage.getPageContent())
+  appRouter.handlePageContent(notFoundPage.getPageContent());
 })
-
