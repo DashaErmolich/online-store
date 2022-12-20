@@ -2,8 +2,16 @@ import { AbstractPage } from '../../view/page-view';
 import { PageComponents } from '../../../models/interfaces';
 import { drawPagination } from '../../view/draw';
 import { RouterPath } from '../../../models/enums';
+import { CART_PAGINATION_DEFAULT } from '../../../models/constants';
 
 export class CartPage extends AbstractPage {
+
+  private cartPaginationValue: number;
+
+  constructor() {
+    super();
+    this.cartPaginationValue = CART_PAGINATION_DEFAULT;
+  }
 
   handleCartPagination(cardsPerPage: number): void {
     const cartProductsQty: number = document.getElementsByClassName('cart-product').length;
@@ -21,9 +29,14 @@ export class CartPage extends AbstractPage {
     document.addEventListener('change', (event: Event): void => {
       if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
         const cardsPerPage = Number(event.target.value);
-        this.handleCartPagination(cardsPerPage)
+        this.handleCartPagination(cardsPerPage);
+        this.cartPaginationValue = cardsPerPage;
       }
     })
+  }
+
+  getCartPaginationValue() {
+    return this.cartPaginationValue;
   }
 
   getPageContent(): PageComponents['content'] {
@@ -31,7 +44,10 @@ export class CartPage extends AbstractPage {
     
     const content = /*html*/`
       <h1>Cart</h1> 
-      <input type="number" id="cart-items-per-page">
+      <div class="form-outline d-flex flex-row justify-content-end align-items-center">
+        <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
+        <input value="5" type="number" id="cart-items-per-page" class="form-control w-auto" min="1" max="10" step="1">
+      </div>
       <div class="cart-product"></div>
       <div class="cart-product"></div>
       <div class="cart-product"></div>

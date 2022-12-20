@@ -1,0 +1,1 @@
+export const CART_PAGINATION_DEFAULT = 5;

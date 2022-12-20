@@ -1,10 +1,8 @@
-import Navigo, { Match } from 'navigo';
-import { MainPage } from '../pages/main';
+import Navigo from 'navigo';
 import { RouterPath } from '../../../models/enums';
 import { Routes } from '../../../models/interfaces';
-import { ProductPage } from '../pages/products';
 import { NotFoundPage } from '../pages/404';
-import { cartPage } from '../app/app';
+import { cartPage, mainPage, productPage } from '../app/app';
 
 class MyNavigo extends Navigo {
 
@@ -19,23 +17,14 @@ class MyNavigo extends Navigo {
 export const appRouter = new MyNavigo('/');
 
 const routes: Routes[] = [
-  { path: RouterPath.Main, page: new MainPage() },
+  { path: RouterPath.Main, page: mainPage },
   { path: RouterPath.Cart, page: cartPage},
-  { path: RouterPath.Products, page: new ProductPage()},
+  { path: RouterPath.Products, page: productPage},
 ];
 
 routes.forEach((route): void => {
-  appRouter.on(route.path, (routerObject: Match | undefined) => {
-    const data = appRouter.getCurrentLocation();
-    console.log(data)
-    if (routerObject) {
-      if (routerObject.queryString === '') {
-        appRouter.handlePageContent(route.page.getPageContent());
-      } else {
-        console.log(routerObject.queryString)
-      }
-    }
-    
+  appRouter.on(route.path, () => {
+    appRouter.handlePageContent(route.page.getPageContent());
   }).resolve();
 })
 

@@ -10,4 +10,5 @@ export abstract class AbstractPage {
     const content = ``;
     return content;
   }
+
 }
