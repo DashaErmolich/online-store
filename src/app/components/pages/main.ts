@@ -5,9 +5,11 @@ export class MainPage extends AbstractPage {
 
   getPageContent(): PageComponents['content'] {
     this.setPageTitle('Online Shop');
-    const content = `
-    <h1>Online Shop</h1>
-    `;
+    // const content = `
+    // <h1>Online Shop</h1>
+    // `;
+    // return content;
+    const content = document.createElement('div');
     return content;
   }
 }

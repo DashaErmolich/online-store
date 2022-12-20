@@ -6,10 +6,11 @@ import { cartPage, mainPage, productPage } from '../app/app';
 
 class MyNavigo extends Navigo {
 
-  handlePageContent(content: string) {
+  handlePageContent(content: HTMLElement) {
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      pageContent.innerHTML = content;
+      pageContent.innerHTML = '';
+      pageContent.append(content);
     }
   }
 }

@@ -7,7 +7,7 @@ export abstract class AbstractPage {
   }
 
   getPageContent(): PageComponents['content'] {
-    const content = ``;
+    const content = document.createElement('div');
     return content;
   }
 

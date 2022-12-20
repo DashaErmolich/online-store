@@ -2,31 +2,69 @@ import { RouterPath, QueryString } from '../../models/enums';
 import { appRouter } from '../components/router/router';
 import { getPageLinkPath } from '../utils/utils';
 
-export function drawPagination(pagesQty: number): void {
-  const nav = document.getElementById('cart-pagination');
-  const navNextBtn = document.getElementById('cart-pagination')?.lastElementChild;
+export function drawPagination(cartProductsQty: number, cartProductsPerPage: number): HTMLElement {
+  const pagesQty: number = getPagesQty(cartProductsQty, cartProductsPerPage);
 
-  if (nav && navNextBtn) {
-    let i = 2;
+  const paginationNav = document.createElement('nav');
+  paginationNav.id = 'page-navigation'
+  const paginationList = document.createElement('ul');
+  paginationList.className = 'pagination justify-content-center';
+  paginationList.id = 'cart-pagination';
 
-    while (i < pagesQty + 1) {
-      const li = document.createElement('li');
-      li.classList.add('page-item');
+  const paginationPrevItem = `
+  <li class="page-item">
+    <a class="page-link" href="#" data-navigo>
+      <span>&laquo;</span>
+    </a>
+  </li>`;
+  
+  paginationList.insertAdjacentHTML('beforeend', paginationPrevItem);
 
-      const a = document.createElement('a');
-      a.classList.add('page-link');
-      a.classList.add('new-page-link');
+  addPaginationPages(paginationList, pagesQty);
 
-      const queryStringValue = String(i)
-      a.href = getPageLinkPath(RouterPath.Cart, QueryString.Page, queryStringValue);
-      a.textContent = queryStringValue;
-      a.setAttribute('data-navigo', '');
-      
-      li.append(a);
-      nav.insertBefore(li, navNextBtn);
-      i++;
-    }
-    
-    appRouter.updatePageLinks();
+  const paginationNextItem = `
+  <li class="page-item">
+    <a class="page-link" href="#" data-navigo>
+      <span>&raquo;</span>
+    </a>
+  </li>`;
+  paginationList.insertAdjacentHTML('beforeend', paginationNextItem)
+
+  paginationNav.append(paginationList);
+  appRouter.updatePageLinks();
+
+  return paginationNav;
+}
+
+function getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
+  if (cartProductsQty % cartProductsPerPage === 0) {
+    return cartProductsQty / cartProductsPerPage;
+  } else {
+    return Math.floor(cartProductsQty / cartProductsPerPage) + 1;
   }
 }
+
+function addPaginationPages(paginationList: HTMLElement, pagesQty: number): HTMLElement {
+  let i = 1;
+
+  while (i < pagesQty + 1) {
+    const li = document.createElement('li');
+    li.classList.add('page-item');
+
+    const a = document.createElement('a');
+    a.classList.add('page-link');
+    a.classList.add('new-page-link');
+
+    const queryStringValue = String(i)
+    a.href = getPageLinkPath(RouterPath.Cart, QueryString.Page, queryStringValue);
+    a.textContent = queryStringValue;
+    a.setAttribute('data-navigo', '');
+      
+    li.append(a);
+    paginationList.append(li);
+    i++;
+  }
+
+  return paginationList;
+}
+

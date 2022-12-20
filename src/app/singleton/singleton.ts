@@ -26,6 +26,14 @@ export class Singleton {
     return this.state.cart.productsPerPage;
   }
 
+  public setProductsQty(value: number): void {
+    this.state.cart.productsQty = value;
+  }
+
+  public getProductsQty(): number {
+    return this.state.cart.productsQty;
+  }
+
   public getState() {
     const pageState = localStorage.getItem('page-state');
     if (pageState) {

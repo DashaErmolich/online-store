@@ -2,7 +2,7 @@ import { AbstractPage } from "../app/view/page-view";
 
 export interface PageComponents {
   title: string,
-  content: string,
+  content: HTMLElement,
 }
 
 export interface Routes {
@@ -11,6 +11,7 @@ export interface Routes {
 }
 
 interface CartPageState {
+  productsQty: number;
   productsPerPage: number,
 }
 
