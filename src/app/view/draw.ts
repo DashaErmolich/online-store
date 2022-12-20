@@ -31,9 +31,8 @@ export function drawPagination(parentElement: HTMLElement, cartProductsQty: numb
   paginationList.insertAdjacentHTML('beforeend', paginationNextItem)
 
   paginationNav.append(paginationList);
-  appRouter.updatePageLinks();
-
   parentElement.append(paginationNav);
+  appRouter.updatePageLinks();
 }
 
 function getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
