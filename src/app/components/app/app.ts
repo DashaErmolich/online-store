@@ -1,22 +1,19 @@
 import { CartPage } from '../pages/cart';
 import { MainPage } from '../pages/main';
 import { ProductPage } from '../pages/products';
-// import { Singleton } from '../../singleton/singleton';
+import { Singleton } from '../../singleton/singleton';
 
-// export const singleton = Singleton.getInstance();
+export const singleton = Singleton.getInstance();
+//any value now!!
+singleton.setProductsQty(8);
 
-// window.addEventListener('beforeunload', (): void => {
-//   localStorage.setItem('page-state', JSON.stringify(singleton.state))
-// });
+window.addEventListener('beforeunload', (): void => {
+  localStorage.setItem('page-state', JSON.stringify(singleton.state))
+});
 
-// window.addEventListener('load', () => {
-//   // eslint-disable-next-line no-debugger
-//   debugger
-//   const pageState = localStorage.getItem('page-state');
-//   if (pageState) {
-//     singleton.state = JSON.parse(pageState);
-//   }
-// });
+window.addEventListener('load', () => {
+  singleton.getState();
+});
 
 export const cartPage = new CartPage();
 cartPage.listenPaginationInput();

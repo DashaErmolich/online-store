@@ -42,13 +42,3 @@ export class Singleton {
   }
 }
 
-export const singleton = Singleton.getInstance();
-
-window.addEventListener('beforeunload', (): void => {
-  localStorage.setItem('page-state', JSON.stringify(singleton.state))
-});
-
-window.addEventListener('load', () => {
-  singleton.getState();
-});
-

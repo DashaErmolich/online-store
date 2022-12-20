@@ -2,7 +2,7 @@ import { RouterPath, QueryString } from '../../models/enums';
 import { appRouter } from '../components/router/router';
 import { getPageLinkPath } from '../utils/utils';
 
-export function drawPagination(cartProductsQty: number, cartProductsPerPage: number): HTMLElement {
+export function drawPagination(parentElement: HTMLElement, cartProductsQty: number, cartProductsPerPage: number): void {
   const pagesQty: number = getPagesQty(cartProductsQty, cartProductsPerPage);
 
   const paginationNav = document.createElement('nav');
@@ -20,7 +20,7 @@ export function drawPagination(cartProductsQty: number, cartProductsPerPage: num
   
   paginationList.insertAdjacentHTML('beforeend', paginationPrevItem);
 
-  addPaginationPages(paginationList, pagesQty);
+  drawPaginationPages(paginationList, pagesQty);
 
   const paginationNextItem = `
   <li class="page-item">
@@ -33,7 +33,7 @@ export function drawPagination(cartProductsQty: number, cartProductsPerPage: num
   paginationNav.append(paginationList);
   appRouter.updatePageLinks();
 
-  return paginationNav;
+  parentElement.append(paginationNav);
 }
 
 function getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
@@ -44,7 +44,7 @@ function getPagesQty(cartProductsQty: number, cartProductsPerPage: number): numb
   }
 }
 
-function addPaginationPages(paginationList: HTMLElement, pagesQty: number): HTMLElement {
+function drawPaginationPages(parentElement: HTMLElement, pagesQty: number): HTMLElement {
   let i = 1;
 
   while (i < pagesQty + 1) {
@@ -61,10 +61,36 @@ function addPaginationPages(paginationList: HTMLElement, pagesQty: number): HTML
     a.setAttribute('data-navigo', '');
       
     li.append(a);
-    paginationList.append(li);
+    parentElement.append(li);
     i++;
   }
 
-  return paginationList;
+  return parentElement;
 }
 
+export function drawPageTitle(parentElement: HTMLElement, title: string): void {
+  const pageTitle = document.createElement('h1');
+  pageTitle.innerText = title;
+  parentElement.append(pageTitle);
+}
+
+export function drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
+  const paginationInputWrapper = `
+  <div class="form-outline d-flex flex-row justify-content-end align-items-center">
+    <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
+    <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="1" max="10" step="1">
+  </div>`;
+
+  parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
+}
+
+export function drawCartProducts(parentElement: HTMLElement, cartProductsQty: number): void {
+  let i = cartProductsQty;
+
+  while (i) {
+    const product = document.createElement('div');
+    product.className = 'cart-product';
+    parentElement.append(product);
+    i--;
+  }
+}
