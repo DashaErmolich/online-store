@@ -2,12 +2,12 @@ import { PageState } from '../../models/interfaces';
 
 export class Singleton {
   private static instance: Singleton;
-  private state: PageState;
+  state: PageState;
 
   private constructor() {
     this.state = {} as PageState;
     this.state.cart = {} as PageState['cart'];
-    this.state.main = {} as PageState['main'];
+    this.getState();
   }
 
   public static getInstance(): Singleton {
@@ -18,21 +18,29 @@ export class Singleton {
     return Singleton.instance;
   }
 
-  public setToLocalStorage(): void {
-    localStorage.setItem('page-state', JSON.stringify(this.state))
-  }
-
-  public getFromLocalStorage(): PageState {
-    let currentState: string | null = localStorage.getItem('page-state');
-    if (!currentState) {
-      currentState = '';
-    }
-    return JSON.parse(currentState);
-  }
-
-  public setCartPagination(value: number) {
+  public setCartPagination(value: number): void {
     this.state.cart.productsPerPage = value;
+  }
+
+  public getCartPagination(): number {
+    return this.state.cart.productsPerPage;
+  }
+
+  public getState() {
+    const pageState = localStorage.getItem('page-state');
+    if (pageState) {
+      this.state = JSON.parse(pageState);
+    }
   }
 }
 
+export const singleton = Singleton.getInstance();
+
+window.addEventListener('beforeunload', (): void => {
+  localStorage.setItem('page-state', JSON.stringify(singleton.state))
+});
+
+window.addEventListener('load', () => {
+  singleton.getState();
+});
 
