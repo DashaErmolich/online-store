@@ -1,4 +1,4 @@
-import { AbstractPage } from "../app/view/page-view";
+import { AbstractPage } from '../abstracts/abstracts';
 
 export interface PageComponents {
   title: string,

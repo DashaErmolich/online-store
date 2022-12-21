@@ -1,8 +1,7 @@
-import { AbstractPage } from '../../view/page-view';
-import { drawPagination, drawPageTitle, drawCartProducts, drawPaginationInput } from '../../view/draw';
-import { singleton } from '../app/app';
-import { UrlParamKey } from '../../../models/enums';
-import { updateUrlParams, getPageLimitValue } from '../router/router';
+import { AbstractPage } from '../../abstracts/abstracts';
+import { UrlParamKey } from '../../enums/enums';
+import { appRouter } from '../router/router';
+import { singleton } from '../loader/loader';
 
 export class CartPage extends AbstractPage {
 
@@ -11,21 +10,12 @@ export class CartPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
   }
 
-  listenPaginationButtons() {
+  public listenPaginationButtons() {
     document.addEventListener('click', (event: Event): void => {
       if (event.target instanceof HTMLElement && event.target.classList.contains('new-page-link')) {
-        updateUrlParams(UrlParamKey.Page, event.target.id);
+        appRouter.updateUrlParams(UrlParamKey.Page, event.target.id);
       }
     })
-  }
-
-  private handleCartPagination(cartProductsPerPage: number): void {
-    const cartProductsQty: number = singleton.getProductsQty();
-    document.getElementById('page-navigation')?.remove();
-    const pageContent = document.getElementById('page-content');
-    if (pageContent) {
-      drawPagination(pageContent, cartProductsQty, cartProductsPerPage);
-    }
   }
 
   public listenPaginationInput(): void {
@@ -33,17 +23,114 @@ export class CartPage extends AbstractPage {
       if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
         const cartProductsPerPage = Number(event.target.value);
         this.handleCartPagination(cartProductsPerPage);
-        updateUrlParams(UrlParamKey.Limit, event.target.value);
+        appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
       }
     })
   }
 
-  getPageContent(): HTMLElement {
+  public getPageContent(): HTMLElement {
     const pageContentContainer = document.createElement('div');
-    drawPageTitle(pageContentContainer, 'Cart');
-    drawPaginationInput(pageContentContainer, getPageLimitValue());
-    drawCartProducts(pageContentContainer, singleton.getProductsQty());
-    drawPagination(pageContentContainer, singleton.getProductsQty(), singleton.getCartPagination());
+    const cartPageLimitValue: number = appRouter.getPageLimitValue();
+    this.drawPaginationInput(pageContentContainer, cartPageLimitValue);
+    this.drawCartProducts(pageContentContainer, singleton.getProductsQty());
+    this.drawPagination(pageContentContainer, singleton.getProductsQty(), cartPageLimitValue);
     return pageContentContainer;
+  }
+
+  private handleCartPagination(cartProductsPerPage: number): void {
+    const cartProductsQty: number = singleton.getProductsQty();
+    document.getElementById('page-navigation')?.remove();
+    const pageContent = document.getElementById('page-content');
+    if (pageContent) {
+      this.drawPagination(pageContent, cartProductsQty, cartProductsPerPage);
+    }
+  }
+
+  private drawPagination(parentElement: HTMLElement, cartProductsQty: number, cartProductsPerPage: number): void {
+    const pagesQty: number = this.getPagesQty(cartProductsQty, cartProductsPerPage);
+  
+    const paginationNav = document.createElement('nav');
+    paginationNav.id = 'page-navigation'
+    const paginationList = document.createElement('ul');
+    paginationList.className = 'pagination justify-content-center';
+    paginationList.id = 'cart-pagination';
+  
+    const paginationPrevItem = `
+    <li class="page-item">
+      <button class="page-link">
+        <span>&laquo;</span>
+      </button>
+    </li>`;
+    
+    paginationList.insertAdjacentHTML('beforeend', paginationPrevItem);
+  
+    let i = 1;
+
+    while (i < pagesQty + 1) {
+      const li = document.createElement('li');
+      li.classList.add('page-item');
+
+      const button = document.createElement('button');
+      button.classList.add('page-link');
+      button.classList.add('new-page-link');
+
+      button.textContent = String(i);
+      button.id = `${i}`
+        
+      li.append(button);
+      paginationList.append(li);
+      i++;
+    }
+
+    const paginationNextItem = `
+    <li class="page-item">
+      <button class="page-link">
+        <span>&raquo;</span>
+      </button>
+    </li>`;
+    paginationList.insertAdjacentHTML('beforeend', paginationNextItem)
+  
+    paginationNav.append(paginationList);
+    parentElement.append(paginationNav);
+  }
+  
+  private getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
+    if (cartProductsQty % cartProductsPerPage === 0) {
+      return cartProductsQty / cartProductsPerPage;
+    } else {
+      return Math.floor(cartProductsQty / cartProductsPerPage) + 1;
+    }
+  }
+
+  private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
+    const paginationInputWrapper = `
+    <div class="form-outline d-flex flex-row justify-content-end align-items-center">
+      <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
+      <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="1" max="10" step="1">
+    </div>`;
+  
+    parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
+  }
+  
+  private drawCartProducts(parentElement: HTMLElement, cartProductsQty: number): void {
+    let i = cartProductsQty;
+  
+    const cardDeck = document.createElement('div');
+    cardDeck.className = 'card-deck';
+  
+    while (i) {
+      const product = `
+      <div class="card">
+      <img class="card-img-top" src="" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        </div>
+      </div>`
+      cardDeck.insertAdjacentHTML('beforeend', product);
+      i--;
+    }
+    parentElement.append(cardDeck);
   }
 }

@@ -1,4 +1,4 @@
-import { PageComponents } from '../../models/interfaces';
+import { PageComponents } from '../models/interfaces';
 
 export abstract class AbstractPage {
 

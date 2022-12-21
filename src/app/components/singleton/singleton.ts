@@ -17,15 +17,7 @@ export class Singleton {
 
     return Singleton.instance;
   }
-
-  public setCartPagination(value: number): void {
-    this.state.cart.productsPerPage = value;
-  }
-
-  public getCartPagination(): number {
-    return this.state.cart.productsPerPage;
-  }
-
+  
   public setProductsQty(value: number): void {
     this.state.cart.productsQty = value;
   }
