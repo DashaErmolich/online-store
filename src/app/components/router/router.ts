@@ -2,8 +2,10 @@ import Navigo from 'navigo';
 import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
-import { cartPage, mainPage, productPage } from '../loader/loader';
 import { CART_LIMIT_DEFAULT } from '../../constants/constants';
+import { mainPage } from '../pages/main';
+import { cartPage } from '../pages/cart';
+import { productPage } from '../pages/products';
 
 class MyNavigo extends Navigo {
 
@@ -52,6 +54,7 @@ const routes: Routes[] = [
 
 routes.forEach((route): void => {
   appRouter.on(route.path, () => {
+    
     appRouter.handlePageContent(route.page.getPageContent());
   }).resolve();
 })

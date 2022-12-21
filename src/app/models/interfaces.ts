@@ -10,19 +10,8 @@ export interface Routes {
   page: AbstractPage,
 }
 
-interface CartPageState {
-  productsQty: number;
-  productsPerPage: number,
+export interface Cart {
   products: SimpleCard[];
-}
-
-interface MainPageState {
-  filter: string,
-}
-
-export interface PageState {
-  cart: CartPageState,
-  main: MainPageState,
 }
 
 export interface SimpleCard {
@@ -52,3 +41,9 @@ export interface MainUrlParams {
 }
 
 export interface UrlParams extends CartUrlParams, MainUrlParams {}
+
+export interface AppStorage {
+  getCartProducts(): SimpleCard[],
+  addProductToCart(product: SimpleCard): void,
+  getCartProductsQty(): number,
+}

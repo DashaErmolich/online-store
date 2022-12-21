@@ -11,4 +11,4 @@ export class MainPage extends AbstractPage {
   }
 }
 
-
+export const mainPage = new MainPage();

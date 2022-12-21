@@ -1,8 +1,7 @@
 import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
 import { appRouter } from '../router/router';
-import { singleton } from '../loader/loader';
-
+import { appStorage } from '../storage/app-storage';
 export class CartPage extends AbstractPage {
 
   constructor() {
@@ -32,13 +31,20 @@ export class CartPage extends AbstractPage {
     const pageContentContainer = document.createElement('div');
     const cartPageLimitValue: number = appRouter.getPageLimitValue();
     this.drawPaginationInput(pageContentContainer, cartPageLimitValue);
-    this.drawCartProducts(pageContentContainer, singleton.getProductsQty());
-    this.drawPagination(pageContentContainer, singleton.getProductsQty(), cartPageLimitValue);
+    const cartProductsQty: number = appStorage.getCartProductsQty();
+    if (cartProductsQty > 0) {
+      this.drawCartProducts(pageContentContainer, cartProductsQty);
+      this.drawPagination(pageContentContainer, cartProductsQty, cartPageLimitValue);
+    } else {
+      const message = document.createElement('span');
+      message.innerText = 'Cart is empty now';
+      pageContentContainer.append(message);
+    }
     return pageContentContainer;
   }
 
   private handleCartPagination(cartProductsPerPage: number): void {
-    const cartProductsQty: number = singleton.getProductsQty();
+    const cartProductsQty: number = appStorage.getCartProductsQty();
     document.getElementById('page-navigation')?.remove();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
@@ -134,3 +140,7 @@ export class CartPage extends AbstractPage {
     parentElement.append(cardDeck);
   }
 }
+
+export const cartPage = new CartPage();
+cartPage.listenPaginationInput();
+cartPage.listenPaginationButtons();

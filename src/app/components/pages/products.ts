@@ -10,3 +10,5 @@ export class ProductPage extends AbstractPage {
     return content;
   }
 }
+
+export const productPage = new ProductPage();
