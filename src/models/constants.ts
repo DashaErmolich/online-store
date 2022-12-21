@@ -1,1 +1,1 @@
-export const CART_PAGINATION_DEFAULT = 5;
+export const CART_LIMIT_DEFAULT = 5;

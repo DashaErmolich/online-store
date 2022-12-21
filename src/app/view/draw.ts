@@ -1,7 +1,3 @@
-import { RouterPath, QueryString } from '../../models/enums';
-import { appRouter } from '../components/router/router';
-import { getPageLinkPath } from '../utils/utils';
-
 export function drawPagination(parentElement: HTMLElement, cartProductsQty: number, cartProductsPerPage: number): void {
   const pagesQty: number = getPagesQty(cartProductsQty, cartProductsPerPage);
 
@@ -13,9 +9,9 @@ export function drawPagination(parentElement: HTMLElement, cartProductsQty: numb
 
   const paginationPrevItem = `
   <li class="page-item">
-    <a class="page-link" href="#" data-navigo>
+    <button class="page-link">
       <span>&laquo;</span>
-    </a>
+    </button>
   </li>`;
   
   paginationList.insertAdjacentHTML('beforeend', paginationPrevItem);
@@ -24,15 +20,14 @@ export function drawPagination(parentElement: HTMLElement, cartProductsQty: numb
 
   const paginationNextItem = `
   <li class="page-item">
-    <a class="page-link" href="#" data-navigo>
+    <button class="page-link">
       <span>&raquo;</span>
-    </a>
+    </button>
   </li>`;
   paginationList.insertAdjacentHTML('beforeend', paginationNextItem)
 
   paginationNav.append(paginationList);
   parentElement.append(paginationNav);
-  appRouter.updatePageLinks();
 }
 
 function getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
@@ -50,16 +45,14 @@ function drawPaginationPages(parentElement: HTMLElement, pagesQty: number): HTML
     const li = document.createElement('li');
     li.classList.add('page-item');
 
-    const a = document.createElement('a');
-    a.classList.add('page-link');
-    a.classList.add('new-page-link');
+    const button = document.createElement('button');
+    button.classList.add('page-link');
+    button.classList.add('new-page-link');
 
-    const queryStringValue = String(i)
-    a.href = getPageLinkPath(RouterPath.Cart, QueryString.Page, queryStringValue);
-    a.textContent = queryStringValue;
-    a.setAttribute('data-navigo', '');
+    button.textContent = String(i);
+    button.id = `${i}`
       
-    li.append(a);
+    li.append(button);
     parentElement.append(li);
     i++;
   }
@@ -86,10 +79,22 @@ export function drawPaginationInput(parentElement: HTMLElement, inputValue: numb
 export function drawCartProducts(parentElement: HTMLElement, cartProductsQty: number): void {
   let i = cartProductsQty;
 
+  const cardDeck = document.createElement('div');
+  cardDeck.className = 'card-deck';
+
   while (i) {
-    const product = document.createElement('div');
-    product.className = 'cart-product';
-    parentElement.append(product);
+    const product = `
+    <div class="card">
+    <img class="card-img-top" src="" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+      </div>
+    </div>`
+    cardDeck.insertAdjacentHTML('beforeend', product);
     i--;
   }
+  parentElement.append(cardDeck);
+
 }

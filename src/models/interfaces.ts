@@ -13,6 +13,7 @@ export interface Routes {
 interface CartPageState {
   productsQty: number;
   productsPerPage: number,
+  products: SimpleCard[];
 }
 
 interface MainPageState {
@@ -23,3 +24,31 @@ export interface PageState {
   cart: CartPageState,
   main: MainPageState,
 }
+
+export interface SimpleCard {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  brand: string;
+  category: string;
+  thumbnail: string;
+  images: Array<string>;
+}
+
+export interface CartUrlParams {
+  limit: string;
+  page: string;
+}
+
+export interface MainUrlParams {
+  category: string;
+  brand: string;
+  price: string;
+  stock: string;
+}
+
+export interface UrlParams extends CartUrlParams, MainUrlParams {}

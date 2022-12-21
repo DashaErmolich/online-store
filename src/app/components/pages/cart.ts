@@ -1,6 +1,8 @@
 import { AbstractPage } from '../../view/page-view';
-import { drawPagination, drawPageTitle, drawPaginationInput, drawCartProducts } from '../../view/draw';
+import { drawPagination, drawPageTitle, drawCartProducts, drawPaginationInput } from '../../view/draw';
 import { singleton } from '../app/app';
+import { UrlParamKey } from '../../../models/enums';
+import { updateUrlParams, getPageLimitValue } from '../router/router';
 
 export class CartPage extends AbstractPage {
 
@@ -9,22 +11,29 @@ export class CartPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
   }
 
+  listenPaginationButtons() {
+    document.addEventListener('click', (event: Event): void => {
+      if (event.target instanceof HTMLElement && event.target.classList.contains('new-page-link')) {
+        updateUrlParams(UrlParamKey.Page, event.target.id);
+      }
+    })
+  }
+
   private handleCartPagination(cartProductsPerPage: number): void {
-    const cartProductsQty: number = document.getElementsByClassName('cart-product').length;
+    const cartProductsQty: number = singleton.getProductsQty();
     document.getElementById('page-navigation')?.remove();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
       drawPagination(pageContent, cartProductsQty, cartProductsPerPage);
     }
-
   }
 
-  public listenPaginationInput() {
+  public listenPaginationInput(): void {
     document.addEventListener('change', (event: Event): void => {
       if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
         const cartProductsPerPage = Number(event.target.value);
         this.handleCartPagination(cartProductsPerPage);
-        singleton.setCartPagination(cartProductsPerPage);
+        updateUrlParams(UrlParamKey.Limit, event.target.value);
       }
     })
   }
@@ -32,7 +41,7 @@ export class CartPage extends AbstractPage {
   getPageContent(): HTMLElement {
     const pageContentContainer = document.createElement('div');
     drawPageTitle(pageContentContainer, 'Cart');
-    drawPaginationInput(pageContentContainer, singleton.getCartPagination());
+    drawPaginationInput(pageContentContainer, getPageLimitValue());
     drawCartProducts(pageContentContainer, singleton.getProductsQty());
     drawPagination(pageContentContainer, singleton.getProductsQty(), singleton.getCartPagination());
     return pageContentContainer;

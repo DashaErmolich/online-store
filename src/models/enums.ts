@@ -4,6 +4,11 @@ export enum RouterPath {
   Products = '/products',
 }
 
-export enum QueryString {
+export enum UrlParamKey {
   Page = 'page',
+  Limit = 'limit',
+  Category = 'category',
+  Brand = 'brand',
+  Price = 'price',
+  Stock = 'stock',
 }

@@ -1,4 +1,4 @@
-import { PageState } from '../../models/interfaces';
+import { PageState, SimpleCard } from '../../models/interfaces';
 
 export class Singleton {
   private static instance: Singleton;
@@ -40,5 +40,14 @@ export class Singleton {
       this.state = JSON.parse(pageState);
     }
   }
+
+  public addCartProduct(product: SimpleCard): void {
+    if (!this.state.cart.products) {
+      this.state.cart.products = []
+    }
+
+    this.state.cart.products.push(product);
+  }
+
 }
 
