@@ -199,16 +199,16 @@ export class CartPage extends AbstractPage {
 
       const product = `
       <div class="card d-flex flex-row align-items-center">
-      <img class="w-25 h-100" src="${card.thumbnail}" alt="${card.title}">
+        <img class="w-25 h-100" src="${card.thumbnail}" alt="${card.title}">
         <div class="card-body d-flex flex-column justify-content-between">
-          <h4 class="card-title d-flex justify-content-between">
-            ${card.title}
+          <h5 class="card-title d-flex justify-content-between">
+            ${i +1} - ${card.title}
             <button class="bi bi-trash3 page-link fs-4"></button>
-          </h4>
-          <h5 class="card-title">
+          </h5>
+          <h6 class="card-title">
             ${card.price}
             <i class="bi bi-currency-dollar"></i>
-          </h5>
+          </h6>
           <p class="card-text text-capitalize">${card.category} &bull; ${card.brand}</p>
           <p class="card-text">${card.description}</p>
           <p>Stock: ${card.stock}</p>
