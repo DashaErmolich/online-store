@@ -3,6 +3,7 @@ import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings } from '../../models/interfaces';
+import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP } from '../../constants/constants';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -15,7 +16,6 @@ export class CartPage extends AbstractPage {
       paginationLimit: appRouter.getPageLimitValue(),
       activePage: appRouter.getPageNumber(),
     };
-
   }
 
   public listenPaginationButtons(): void {
@@ -41,7 +41,6 @@ export class CartPage extends AbstractPage {
           appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
           this.cartSettings.paginationLimit =  Number(event.target.value);
           this.handleCartPagination();
-          this.setActivePage(pageContent);
         }
       })
     }
@@ -49,12 +48,14 @@ export class CartPage extends AbstractPage {
 
   public getPageContent(): HTMLElement {
     const pageContentContainer = document.createElement('div');
-    const pagesQty: number = this.getPagesQty(this.cartSettings.productsQty, this.cartSettings.paginationLimit);
+    const pagesQty: number = this.getPagesQty();
 
+    this.validatePaginationLimit();
     this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
 
     if (pagesQty > 0) {
       this.drawCartProducts(pageContentContainer);
+      this.validateActivePage(pagesQty);
       this.drawPagination(pageContentContainer, pagesQty);
       this.setActivePage(pageContentContainer);
     } else {
@@ -66,12 +67,27 @@ export class CartPage extends AbstractPage {
     return pageContentContainer;
   }
 
-  private handleCartPagination(): void {
-    const pagesQty: number = this.getPagesQty(this.cartSettings.productsQty, this.cartSettings.paginationLimit);
+  private validateActivePage(pagesQty: number) {
+    if (this.cartSettings.activePage > pagesQty) {
+      this.cartSettings.activePage = pagesQty;
+      appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
+    }
+  }
 
+  private validatePaginationLimit() {
+    if (this.cartSettings.paginationLimit > PAGINATION_LIMIT_MAX) {
+      this.cartSettings.paginationLimit = PAGINATION_LIMIT_MAX;
+      appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+    }
+  }
+
+  private handleCartPagination(): void {
     document.getElementById('page-navigation')?.remove();
     const pageContent = document.getElementById('page-content');
+    const pagesQty: number = this.getPagesQty();
+
     if (pageContent) {
+      this.validateActivePage(pagesQty);
       this.drawPagination(pageContent, pagesQty);
       this.setActivePage(pageContent);
     }
@@ -115,9 +131,11 @@ export class CartPage extends AbstractPage {
 
       const button = document.createElement('button');
       button.classList.add('page-link');
+
       if (i === this.cartSettings.activePage) {
         button.classList.add('active');
       }
+
       button.classList.add('new-page-link');
 
       button.textContent = String(i);
@@ -140,15 +158,15 @@ export class CartPage extends AbstractPage {
     parentElement.append(paginationNav);
   }
   
-  private getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
-    return Math.ceil(cartProductsQty / cartProductsPerPage);
+  private getPagesQty(): number {
+    return Math.ceil(this.cartSettings.productsQty / this.cartSettings.paginationLimit);
   }
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
     const paginationInputWrapper = `
     <div class="form-outline d-flex flex-row justify-content-end align-items-center">
       <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
-      <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="1" max="10" step="1">
+      <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="${PAGINATION_LIMIT_MIN}" max="${PAGINATION_LIMIT_MAX}" step="${PAGINATION_LIMIT_STEP}">
     </div>`;
   
     parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
