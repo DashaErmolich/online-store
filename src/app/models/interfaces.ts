@@ -47,3 +47,9 @@ export interface AppStorage {
   addProductToCart(product: SimpleCard): void,
   getCartProductsQty(): number,
 }
+
+export interface CartPageSettings {
+  productsQty : number,
+  paginationLimit: number,
+  activePage: number,
+}

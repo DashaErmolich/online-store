@@ -1,60 +1,97 @@
 import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
-import { appRouter } from '../router/router';
 import { appStorage } from '../storage/app-storage';
+import { appRouter } from '../router/router';
+import { CartPageSettings } from '../../models/interfaces';
+
 export class CartPage extends AbstractPage {
+  cartSettings: CartPageSettings;
 
   constructor() {
     super();
     this.setPageTitle('Shop Cart');
+    this.cartSettings = {
+      productsQty: appStorage.getCartProductsQty(),
+      paginationLimit: appRouter.getPageLimitValue(),
+      activePage: appRouter.getPageNumber(),
+    };
+
   }
 
-  public listenPaginationButtons() {
-    document.addEventListener('click', (event: Event): void => {
-      if (event.target instanceof HTMLElement && event.target.classList.contains('new-page-link')) {
-        appRouter.updateUrlParams(UrlParamKey.Page, event.target.id);
-      }
-    })
+  public listenPaginationButtons(): void {
+    const pageContent = document.getElementById('page-content');
+    if (pageContent) {
+      pageContent.addEventListener('click', (event: Event): void => {
+        if (event.target instanceof HTMLElement && event.target.classList.contains('new-page-link')) {
+          appRouter.updateUrlParams(UrlParamKey.Page, event.target.id);
+          this.cartSettings.activePage = Number(event.target.id)
+          this.handleActivePaginationButton();
+          this.setActivePage(pageContent);
+        }
+      })
+    }
+    
   }
 
   public listenPaginationInput(): void {
-    document.addEventListener('change', (event: Event): void => {
-      if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
-        const cartProductsPerPage = Number(event.target.value);
-        this.handleCartPagination(cartProductsPerPage);
-        appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
-      }
-    })
+    const pageContent = document.getElementById('page-content');
+    if (pageContent) {
+      pageContent.addEventListener('change', (event: Event): void => {
+        if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
+          appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
+          this.cartSettings.paginationLimit =  Number(event.target.value);
+          this.handleCartPagination();
+          this.setActivePage(pageContent);
+        }
+      })
+    }
   }
 
   public getPageContent(): HTMLElement {
     const pageContentContainer = document.createElement('div');
-    const cartPageLimitValue: number = appRouter.getPageLimitValue();
-    this.drawPaginationInput(pageContentContainer, cartPageLimitValue);
-    const cartProductsQty: number = appStorage.getCartProductsQty();
-    if (cartProductsQty > 0) {
-      this.drawCartProducts(pageContentContainer, cartProductsQty);
-      this.drawPagination(pageContentContainer, cartProductsQty, cartPageLimitValue);
+    const pagesQty: number = this.getPagesQty(this.cartSettings.productsQty, this.cartSettings.paginationLimit);
+
+    this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
+
+    if (pagesQty > 0) {
+      this.drawCartProducts(pageContentContainer);
+      this.drawPagination(pageContentContainer, pagesQty);
+      this.setActivePage(pageContentContainer);
     } else {
       const message = document.createElement('span');
       message.innerText = 'Cart is empty now';
       pageContentContainer.append(message);
     }
+
     return pageContentContainer;
   }
 
-  private handleCartPagination(cartProductsPerPage: number): void {
-    const cartProductsQty: number = appStorage.getCartProductsQty();
+  private handleCartPagination(): void {
+    const pagesQty: number = this.getPagesQty(this.cartSettings.productsQty, this.cartSettings.paginationLimit);
+
     document.getElementById('page-navigation')?.remove();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      this.drawPagination(pageContent, cartProductsQty, cartProductsPerPage);
+      this.drawPagination(pageContent, pagesQty);
+      this.setActivePage(pageContent);
     }
   }
 
-  private drawPagination(parentElement: HTMLElement, cartProductsQty: number, cartProductsPerPage: number): void {
-    const pagesQty: number = this.getPagesQty(cartProductsQty, cartProductsPerPage);
-  
+  private setActivePage(parentElement: HTMLElement): void {
+    const prevRange: number = (this.cartSettings.activePage - 1) * this.cartSettings.paginationLimit;
+    const currentRange: number = this.cartSettings.activePage * this.cartSettings.paginationLimit;
+
+    const cartProductsCards = parentElement.querySelectorAll('.card');
+
+    cartProductsCards.forEach((card, index) => {
+      card.classList.add('d-none');
+      if (index >= prevRange && index < currentRange) {
+        card.classList.remove('d-none');
+      }
+    })
+  }
+
+  private drawPagination(parentElement: HTMLElement, pagesQty: number): void {
     const paginationNav = document.createElement('nav');
     paginationNav.id = 'page-navigation'
     const paginationList = document.createElement('ul');
@@ -78,6 +115,9 @@ export class CartPage extends AbstractPage {
 
       const button = document.createElement('button');
       button.classList.add('page-link');
+      if (i === this.cartSettings.activePage) {
+        button.classList.add('active');
+      }
       button.classList.add('new-page-link');
 
       button.textContent = String(i);
@@ -101,11 +141,7 @@ export class CartPage extends AbstractPage {
   }
   
   private getPagesQty(cartProductsQty: number, cartProductsPerPage: number): number {
-    if (cartProductsQty % cartProductsPerPage === 0) {
-      return cartProductsQty / cartProductsPerPage;
-    } else {
-      return Math.floor(cartProductsQty / cartProductsPerPage) + 1;
-    }
+    return Math.ceil(cartProductsQty / cartProductsPerPage);
   }
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
@@ -118,8 +154,8 @@ export class CartPage extends AbstractPage {
     parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
   }
   
-  private drawCartProducts(parentElement: HTMLElement, cartProductsQty: number): void {
-    let i = cartProductsQty;
+  private drawCartProducts(parentElement: HTMLElement): void {
+    let i = this.cartSettings.productsQty;
   
     const cardDeck = document.createElement('div');
     cardDeck.className = 'card-deck';
@@ -139,8 +175,15 @@ export class CartPage extends AbstractPage {
     }
     parentElement.append(cardDeck);
   }
-}
 
-export const cartPage = new CartPage();
-cartPage.listenPaginationInput();
-cartPage.listenPaginationButtons();
+  private handleActivePaginationButton() {
+    const pageButtons = document.querySelectorAll('.page-link');
+    pageButtons.forEach((button) => {
+      button.classList.remove('active');
+      const pageIndex = Number(button.id);
+      if (pageIndex === this.cartSettings.activePage) {
+        button.classList.add('active');
+      }
+    })
+  }
+}

@@ -2,9 +2,9 @@ import Navigo from 'navigo';
 import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
-import { CART_LIMIT_DEFAULT } from '../../constants/constants';
+import { CART_LIMIT_DEFAULT, CURRENT_PAGE_DEFAULT } from '../../constants/constants';
 import { mainPage } from '../pages/main';
-import { cartPage } from '../pages/cart';
+import { CartPage } from '../pages/cart';
 import { productPage } from '../pages/products';
 
 class MyNavigo extends Navigo {
@@ -42,9 +42,22 @@ class MyNavigo extends Navigo {
       return CART_LIMIT_DEFAULT;
     }
   }
+
+  getPageNumber(): number {
+    const params = appRouter.getUrlParams();
+    if (params.has(UrlParamKey.Page)) {
+      const value = params.get(UrlParamKey.Page);
+      return Number(value);
+    } else {
+      return CURRENT_PAGE_DEFAULT;
+    }
+  }
 }
 
 export const appRouter = new MyNavigo('/');
+const cartPage = new CartPage();
+cartPage.listenPaginationInput();
+cartPage.listenPaginationButtons();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: mainPage },
