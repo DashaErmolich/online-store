@@ -20,17 +20,32 @@ export class CartPage extends AbstractPage {
 
   public listenPaginationButtons(): void {
     const pageContent = document.getElementById('page-content');
+
     if (pageContent) {
       pageContent.addEventListener('click', (event: Event): void => {
-        if (event.target instanceof HTMLElement && event.target.classList.contains('new-page-link')) {
-          appRouter.updateUrlParams(UrlParamKey.Page, event.target.id);
-          this.cartSettings.activePage = Number(event.target.id)
-          this.handleActivePaginationButton();
-          this.setActivePage(pageContent);
+
+        let activePage: number = this.cartSettings.activePage;
+        if (event.target instanceof HTMLElement) {
+
+          if (event.target.classList.contains('new-page-link')) {
+            activePage = Number(event.target.id);
+          }
+
+          if (event.target.classList.contains('prev-page-link')) {
+            activePage = this.cartSettings.activePage - 1;
+          }
+
+          if (event.target.classList.contains('next-page-link')) {
+            activePage = this.cartSettings.activePage + 1;
+          }
         }
+
+        appRouter.updateUrlParams(UrlParamKey.Page, String(activePage));
+        this.cartSettings.activePage = activePage;
+        this.handleActiveButton();
+        this.setActivePage(pageContent);
       })
     }
-    
   }
 
   public listenPaginationInput(): void {
@@ -40,7 +55,9 @@ export class CartPage extends AbstractPage {
         if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
           appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
           this.cartSettings.paginationLimit =  Number(event.target.value);
-          this.handleCartPagination();
+          const pagesQty: number = this.getPagesQty();
+          this.handlePagination(pageContent, pagesQty);
+          this.setActivePage(pageContent);
         }
       })
     }
@@ -50,13 +67,13 @@ export class CartPage extends AbstractPage {
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
 
-    this.validatePaginationLimit();
-    this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-
     if (pagesQty > 0) {
+      this.handlePagination(pageContentContainer, pagesQty);
+      
+      this.validatePaginationLimit();
+      this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
+
       this.drawCartProducts(pageContentContainer);
-      this.validateActivePage(pagesQty);
-      this.drawPagination(pageContentContainer, pagesQty);
       this.setActivePage(pageContentContainer);
     } else {
       const message = document.createElement('span');
@@ -81,16 +98,11 @@ export class CartPage extends AbstractPage {
     }
   }
 
-  private handleCartPagination(): void {
+  private handlePagination(parentElement: HTMLElement, pagesQty: number): void {
     document.getElementById('page-navigation')?.remove();
-    const pageContent = document.getElementById('page-content');
-    const pagesQty: number = this.getPagesQty();
 
-    if (pageContent) {
-      this.validateActivePage(pagesQty);
-      this.drawPagination(pageContent, pagesQty);
-      this.setActivePage(pageContent);
-    }
+    this.validateActivePage(pagesQty);
+    this.drawPagination(parentElement, pagesQty);
   }
 
   private setActivePage(parentElement: HTMLElement): void {
@@ -114,18 +126,10 @@ export class CartPage extends AbstractPage {
     paginationList.className = 'pagination justify-content-center';
     paginationList.id = 'cart-pagination';
   
-    const paginationPrevItem = `
-    <li class="page-item">
-      <button class="page-link">
-        <span>&laquo;</span>
-      </button>
-    </li>`;
-    
-    paginationList.insertAdjacentHTML('beforeend', paginationPrevItem);
-  
-    let i = 1;
+    let i = 0;
+    const buttonsQty = pagesQty + 2;
 
-    while (i < pagesQty + 1) {
+    while (i < buttonsQty) {
       const li = document.createElement('li');
       li.classList.add('page-item');
 
@@ -136,26 +140,37 @@ export class CartPage extends AbstractPage {
         button.classList.add('active');
       }
 
-      button.classList.add('new-page-link');
+      if (i === 0) {
+        button.classList.add('prev-page-link');
 
-      button.textContent = String(i);
-      button.id = `${i}`
-        
+        if (this.cartSettings.activePage === 1) {
+          button.classList.add('disabled');
+        }
+
+        button.innerHTML = '&laquo;';
+
+      } else if (i === buttonsQty - 1) {
+        button.classList.add('next-page-link');
+
+        if (this.cartSettings.activePage === pagesQty) {
+          button.classList.add('disabled');
+        }
+
+        button.innerHTML = '&raquo;';
+
+      } else {
+        button.classList.add('new-page-link');
+        button.innerHTML = String(i);
+        button.id = `${i}`
+      }
+
       li.append(button);
       paginationList.append(li);
       i++;
     }
-
-    const paginationNextItem = `
-    <li class="page-item">
-      <button class="page-link">
-        <span>&raquo;</span>
-      </button>
-    </li>`;
-    paginationList.insertAdjacentHTML('beforeend', paginationNextItem)
   
     paginationNav.append(paginationList);
-    parentElement.append(paginationNav);
+    parentElement.prepend(paginationNav);
   }
   
   private getPagesQty(): number {
@@ -164,7 +179,7 @@ export class CartPage extends AbstractPage {
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
     const paginationInputWrapper = `
-    <div class="form-outline d-flex flex-row justify-content-end align-items-center">
+    <div class="form-outline d-flex flex-row justify-content-end align-items-center mb-3">
       <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
       <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="${PAGINATION_LIMIT_MIN}" max="${PAGINATION_LIMIT_MAX}" step="${PAGINATION_LIMIT_STEP}">
     </div>`;
@@ -194,13 +209,26 @@ export class CartPage extends AbstractPage {
     parentElement.append(cardDeck);
   }
 
-  private handleActivePaginationButton() {
+  private handleActiveButton() {
     const pageButtons = document.querySelectorAll('.page-link');
+    const pagesQty: number = this.getPagesQty();
+
     pageButtons.forEach((button) => {
+
       button.classList.remove('active');
+      button.classList.remove('disabled');
       const pageIndex = Number(button.id);
+
       if (pageIndex === this.cartSettings.activePage) {
         button.classList.add('active');
+      }
+      
+      if (button.classList.contains('prev-page-link') && this.cartSettings.activePage === 1) {
+        button.classList.add('disabled');
+      }
+
+      if (button.classList.contains('next-page-link') && this.cartSettings.activePage === pagesQty) {
+        button.classList.add('disabled');
       }
     })
   }
