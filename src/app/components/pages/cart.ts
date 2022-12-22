@@ -2,7 +2,7 @@ import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
-import { CartPageSettings } from '../../models/interfaces';
+import { CartPageSettings, SimpleCard } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP } from '../../constants/constants';
 
 export class CartPage extends AbstractPage {
@@ -188,23 +188,46 @@ export class CartPage extends AbstractPage {
   }
   
   private drawCartProducts(parentElement: HTMLElement): void {
-    let i = this.cartSettings.productsQty;
-  
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts()
     const cardDeck = document.createElement('div');
-    cardDeck.className = 'card-deck';
-  
-    while (i) {
+    cardDeck.className = 'card-columns';
+
+    let i = 0;
+
+    while (i < this.cartSettings.productsQty) {
+      const card: SimpleCard = cartProducts[i];
+
       const product = `
-      <div class="card">
-      <img class="card-img-top" src="" alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+      <div class="card d-flex flex-row align-items-center">
+      <img class="w-25 h-100" src="${card.thumbnail}" alt="${card.title}">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h4 class="card-title d-flex justify-content-between">
+            ${card.title}
+            <button class="bi bi-trash3 page-link fs-4"></button>
+          </h4>
+          <h5 class="card-title">
+            ${card.price}
+            <i class="bi bi-currency-dollar"></i>
+          </h5>
+          <p class="card-text text-capitalize">${card.category} &bull; ${card.brand}</p>
+          <p class="card-text">${card.description}</p>
+          <p>Stock: ${card.stock}</p>
+          <div class="d-flex justify-content-between">
+            <div class="card-text">
+              <i class="bi bi-star"></i>
+              <span class="text-muted">${card.rating} &bull; </span>
+              <span class="text-muted">Discount: ${card.discountPercentage}%</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="bi bi-dash-circle page-link fs-4"></button>
+              <span class="d-block m-3 fs-5">1</span>
+              <button class="bi bi-plus-circle page-link fs-4"></button>
+            </div>
+          </div>
         </div>
       </div>`
       cardDeck.insertAdjacentHTML('beforeend', product);
-      i--;
+      i++;
     }
     parentElement.append(cardDeck);
   }
