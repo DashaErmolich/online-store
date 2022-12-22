@@ -1,15 +1,14 @@
-import { AbstractPage } from '../../view/page-view';
-import { PageComponents } from '../../../models/interfaces';
+import { AbstractPage } from '../../abstracts/abstracts';
+import { PageComponents } from '../../models/interfaces';
 
 export class MainPage extends AbstractPage {
 
   getPageContent(): PageComponents['content'] {
     this.setPageTitle('Online Shop');
-    const content = `
-    <h1>Online Shop</h1>
-    `;
+    const content = document.createElement('div');
+    content.innerHTML = 'main'
     return content;
   }
 }
 
-
+export const mainPage = new MainPage();

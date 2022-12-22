@@ -1,45 +1,65 @@
-import Navigo, { Match } from 'navigo';
-import { MainPage } from '../pages/main';
-import { RouterPath } from '../../../models/enums';
-import { Routes } from '../../../models/interfaces';
-import { CartPage } from '../pages/cart';
-import { ProductPage } from '../pages/products';
+import Navigo from 'navigo';
+import { RouterPath, UrlParamKey } from '../../enums/enums';
+import { Routes } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
+import { CART_LIMIT_DEFAULT } from '../../constants/constants';
+import { mainPage } from '../pages/main';
+import { cartPage } from '../pages/cart';
+import { productPage } from '../pages/products';
 
 class MyNavigo extends Navigo {
-  listenPageLoad(): void {
-    window.addEventListener('load', (): void => {
-      const currentLocation: Match = this.getCurrentLocation();
-      const currentURL: string = currentLocation.url;
-      this.navigate(currentURL);
-    })
-  }
 
-  handlePageContent(content: string) {
+  handlePageContent(content: HTMLElement) {
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      pageContent.innerHTML = content;
+      pageContent.innerHTML = '';
+      pageContent.append(content);
+    }
+  }
+
+  getUrlParams(): URLSearchParams {
+    const url: Location = window.location;
+    const params: URLSearchParams = new URLSearchParams(url.search.slice(1));
+    return params;
+  }
+
+  updateUrlParams(key: UrlParamKey, value: string): void {
+    const params = appRouter.getUrlParams();
+    if (params.has(key)) {
+      params.set(key, value);
+    } else {
+      params.append(key, value);
+    }
+    window.history.replaceState({}, '', `${window.location.pathname}?` + params);
+  }
+
+  getPageLimitValue(): number {
+    const params = appRouter.getUrlParams();
+    if (params.has(UrlParamKey.Limit)) {
+      const value = params.get(UrlParamKey.Limit);
+      return Number(value);
+    } else {
+      return CART_LIMIT_DEFAULT;
     }
   }
 }
 
-const appRouter = new MyNavigo('/');
-appRouter.listenPageLoad();
+export const appRouter = new MyNavigo('/');
 
 const routes: Routes[] = [
-  { path: RouterPath.Main, page: new MainPage() },
-  { path: RouterPath.Cart, page: new CartPage()},
-  { path: RouterPath.Products, page: new ProductPage()},
+  { path: RouterPath.Main, page: mainPage },
+  { path: RouterPath.Cart, page: cartPage},
+  { path: RouterPath.Products, page: productPage},
 ];
 
 routes.forEach((route): void => {
-  appRouter.on(route.path, (): void => {
-    appRouter.handlePageContent(route.page.getPageContent())
-  })
+  appRouter.on(route.path, () => {
+    
+    appRouter.handlePageContent(route.page.getPageContent());
+  }).resolve();
 })
 
 appRouter.notFound((): void => {
   const notFoundPage = new NotFoundPage();
-  appRouter.handlePageContent(notFoundPage.getPageContent())
-})
-
+  appRouter.handlePageContent(notFoundPage.getPageContent());
+}).resolve();
