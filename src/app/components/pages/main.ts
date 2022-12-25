@@ -1,12 +1,12 @@
-import { AbstractPage } from '../../view/page-view';
-import { PageComponents, SimpleCard } from '../../../models/interfaces';
-import { possibleCards } from '../../../assets/samples/cards';
+import { AbstractPage } from '../../abstracts/abstracts';
+import { PageComponents } from '../../models/interfaces';
 
 export class MainPage extends AbstractPage {
 
   getPageContent(): PageComponents['content'] {
     this.setPageTitle('Online Shop');
-    const content = `
+    const content = document.createElement('div');
+    content.innerHTML = `
     <h1>Online Shop</h1>
       <div class="main-content-wrapper">
       <div class="filters-wrapper">
@@ -82,4 +82,4 @@ export class MainPage extends AbstractPage {
   }
 }
 
-
+export const mainPage = new MainPage();

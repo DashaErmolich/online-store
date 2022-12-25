@@ -1,0 +1,1 @@
+export const CART_LIMIT_DEFAULT = 5;

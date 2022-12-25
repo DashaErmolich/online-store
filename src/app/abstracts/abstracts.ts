@@ -1,4 +1,4 @@
-import { PageComponents } from '../../models/interfaces';
+import { PageComponents } from '../models/interfaces';
 
 export abstract class AbstractPage {
 
@@ -7,7 +7,8 @@ export abstract class AbstractPage {
   }
 
   getPageContent(): PageComponents['content'] {
-    const content = ``;
+    const content = document.createElement('div');
     return content;
   }
+
 }
