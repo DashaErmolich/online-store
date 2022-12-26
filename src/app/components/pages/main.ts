@@ -1,4 +1,4 @@
-import { possibleCards } from '../../../assets/samples/cards';
+import { possibleCards } from '../../../assets/samples/possible-cards';
 import { AbstractPage } from '../../abstracts/abstracts';
 import { SimpleCard } from '../../models/interfaces';
 
@@ -125,8 +125,17 @@ export class MainPage extends AbstractPage {
 
     const toCardBtn = document.createElement ('button');
     toCardBtn.classList.add('card__btn');
+    toCardBtn.classList.add('card__to-cart-btn'); 
     toCardBtn.textContent = 'Add to cart';
-    toCardBtn.classList.add('card__to-cart-btn'); // TODO: think about 2nd button
+    toCardBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const target = e.target as HTMLElement;
+      if (target) {
+        console.log(target.parentNode?.parentNode);
+      }
+    })
+
+    // TODO: think about 2nd button
     // const detailsBtn = document.createElement ('button');
     // detailsBtn.classList.add('card__btn');
     // detailsBtn.classList.add('card__details-btn');
