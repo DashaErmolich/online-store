@@ -4,7 +4,9 @@
 }
 .filters-wrapper {
   background-color: rgba(34,34,34,.12);
+  min-width: 20%; 
   flex-grow: 1;
+  flex-shrink: 1;
 }
 .filters__category {
   display: flex;
@@ -14,6 +16,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-grow: 2;
+  flex-shrink: 2;
   gap: 5px;
 }
 .card {
@@ -24,9 +27,23 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.card__title h3 {
+  background-color: rgba(34, 34, 34, 0.12);
+  text-align: center;
+}
+.card__buttons-field {
+  align-items: center;
+  text-align: center;
+  padding-top: 5px;
+}
 .card__btn {
-  width: 60px;
-  height: 20px;
+  width: 80px;
+  height: 30px;
+  border-radius: 10%;
+  font-size: 12px;
+}
+.card__description-field {
+  text-align: center;
 }
 .card__description-field p {
   margin: 0;
