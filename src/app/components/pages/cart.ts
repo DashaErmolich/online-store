@@ -13,7 +13,7 @@ export class CartPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
     this.cartSettings = {
       productsQty: appStorage.getCartProductsQty(),
-      paginationLimit: appRouter.getPageLimitValue(),
+      paginationLimit: appRouter.getPaginationLimitValue(),
       activePage: appRouter.getPageNumber(),
     };
   }
