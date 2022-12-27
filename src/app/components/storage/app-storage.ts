@@ -16,11 +16,25 @@ export const appStorage: AppStorage = {
     const cartProducts: SimpleCard[] = this.getCartProducts();
     cartProducts.push(product);
     localStorage.setItem('cart-products', JSON.stringify(cartProducts));
+    this.setCartIconProductCounter();
   },
   
   getCartProductsQty(): number {
     const cartProducts: SimpleCard[] = this.getCartProducts();
     return cartProducts.length;
   },
+
+  setCartIconProductCounter(): void {
+    const cartIconQty = document.getElementById('cart-total-items');
+    if (cartIconQty) {
+      const value = this.getCartProductsQty();
+      if (value) {
+        cartIconQty.innerText = String(value);
+      } else {
+        cartIconQty.innerText = '0';
+      }
+    }
+  },
+  
 }
 

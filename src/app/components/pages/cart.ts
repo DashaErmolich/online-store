@@ -2,8 +2,9 @@ import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
-import { CartPageSettings, SimpleCard } from '../../models/interfaces';
+import { CartPageSettings, SimpleCard, PaginationCardIdxRange } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP } from '../../constants/constants';
+import { ProductCard } from './product';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -43,7 +44,7 @@ export class CartPage extends AbstractPage {
         appRouter.updateUrlParams(UrlParamKey.Page, String(activePage));
         this.cartSettings.activePage = activePage;
         this.handleActiveButton();
-        this.setActivePage(pageContent);
+        this.drawPaginationPage(pageContent)
       })
     }
   }
@@ -57,7 +58,7 @@ export class CartPage extends AbstractPage {
           this.cartSettings.paginationLimit =  Number(event.target.value);
           const pagesQty: number = this.getPagesQty();
           this.handlePagination(pageContent, pagesQty);
-          this.setActivePage(pageContent);
+          this.drawPaginationPage(pageContent)
         }
       })
     }
@@ -69,12 +70,9 @@ export class CartPage extends AbstractPage {
 
     if (pagesQty > 0) {
       this.handlePagination(pageContentContainer, pagesQty);
-      
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-
-      this.drawCartProducts(pageContentContainer);
-      this.setActivePage(pageContentContainer);
+      this.drawPaginationPage(pageContentContainer)
     } else {
       const message = document.createElement('span');
       message.innerText = 'Cart is empty now';
@@ -105,18 +103,11 @@ export class CartPage extends AbstractPage {
     this.drawPagination(parentElement, pagesQty);
   }
 
-  private setActivePage(parentElement: HTMLElement): void {
-    const prevRange: number = (this.cartSettings.activePage - 1) * this.cartSettings.paginationLimit;
-    const currentRange: number = this.cartSettings.activePage * this.cartSettings.paginationLimit;
-
-    const cartProductsCards = parentElement.querySelectorAll('.card');
-
-    cartProductsCards.forEach((card, index) => {
-      card.classList.add('d-none');
-      if (index >= prevRange && index < currentRange) {
-        card.classList.remove('d-none');
-      }
-    })
+  private getActivePageRange(): PaginationCardIdxRange {
+    return {
+      start: (this.cartSettings.activePage - 1) * this.cartSettings.paginationLimit,
+      end: this.cartSettings.activePage * this.cartSettings.paginationLimit,
+    }
   }
 
   private drawPagination(parentElement: HTMLElement, pagesQty: number): void {
@@ -186,47 +177,23 @@ export class CartPage extends AbstractPage {
   
     parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
   }
-  
-  private drawCartProducts(parentElement: HTMLElement): void {
+
+  private drawPaginationPage(parentElement: HTMLElement): void {
+    document.querySelector('.card-columns')?.remove();
+
+    const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
     const cartProducts: SimpleCard[] = appStorage.getCartProducts()
     const cardDeck = document.createElement('div');
     cardDeck.className = 'card-columns';
 
-    let i = 0;
+    let i = paginationActivePageRange.start;
 
-    while (i < this.cartSettings.productsQty) {
+    while (i < paginationActivePageRange.end) {
       const card: SimpleCard = cartProducts[i];
-
-      const product = `
-      <div class="card d-flex flex-row align-items-center">
-        <img class="w-25 h-100" src="${card.thumbnail}" alt="${card.title}">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title d-flex justify-content-between">
-            ${i +1} - ${card.title}
-            <button class="bi bi-trash3 page-link fs-4"></button>
-          </h5>
-          <h6 class="card-title">
-            ${card.price}
-            <i class="bi bi-currency-dollar"></i>
-          </h6>
-          <p class="card-text text-capitalize">${card.category} &bull; ${card.brand}</p>
-          <p class="card-text">${card.description}</p>
-          <p>Stock: ${card.stock}</p>
-          <div class="d-flex justify-content-between">
-            <div class="card-text">
-              <i class="bi bi-star"></i>
-              <span class="text-muted">${card.rating} &bull; </span>
-              <span class="text-muted">Discount: ${card.discountPercentage}%</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <button class="bi bi-dash-circle page-link fs-4"></button>
-              <span class="d-block m-3 fs-5">1</span>
-              <button class="bi bi-plus-circle page-link fs-4"></button>
-            </div>
-          </div>
-        </div>
-      </div>`
-      cardDeck.insertAdjacentHTML('beforeend', product);
+      if (card) {
+        const cartProduct = new ProductCard(card, i + 1);
+        cardDeck.insertAdjacentHTML('beforeend', cartProduct.getCartCardContent());
+      }
       i++;
     }
     parentElement.append(cardDeck);

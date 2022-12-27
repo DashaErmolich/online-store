@@ -46,10 +46,16 @@ export interface AppStorage {
   getCartProducts(): SimpleCard[],
   addProductToCart(product: SimpleCard): void,
   getCartProductsQty(): number,
+  setCartIconProductCounter(): void,
 }
 
 export interface CartPageSettings {
   productsQty : number,
   paginationLimit: number,
   activePage: number,
+}
+
+export interface PaginationCardIdxRange {
+  start: number, 
+  end: number
 }
