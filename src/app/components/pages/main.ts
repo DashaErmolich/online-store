@@ -1,6 +1,7 @@
 import { possibleCards } from '../../../assets/samples/possible-cards';
 import { AbstractPage } from '../../abstracts/abstracts';
 import { SimpleCard } from '../../models/interfaces';
+import { appStorage } from '../storage/app-storage';
 
 export class MainPage extends AbstractPage {
   constructor() {
@@ -57,6 +58,7 @@ export class MainPage extends AbstractPage {
     mainWrapper.append(filtersWrapper);
     mainWrapper.append(cardsWrapper);
     content.append(mainWrapper);
+
     return content;
   }
   filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { // TODO: useless now, destroy or use for filters
@@ -131,7 +133,7 @@ export class MainPage extends AbstractPage {
       e.stopPropagation();
       const target = e.target as HTMLElement;
       if (target) {
-        console.log(target.parentNode?.parentNode);
+        appStorage.addProductToCart(elem);
       }
     })
 
