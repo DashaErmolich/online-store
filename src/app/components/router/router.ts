@@ -2,9 +2,9 @@ import Navigo from 'navigo';
 import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
-import { CART_LIMIT_DEFAULT } from '../../constants/constants';
+import { PAGINATION_LIMIT_DEFAULT, ACTIVE_PAGE_DEFAULT } from '../../constants/constants';
 import { mainPage } from '../pages/main';
-import { cartPage } from '../pages/cart';
+import { CartPage } from '../pages/cart';
 import { productPage } from '../pages/products';
 
 class MyNavigo extends Navigo {
@@ -24,7 +24,7 @@ class MyNavigo extends Navigo {
   }
 
   updateUrlParams(key: UrlParamKey, value: string): void {
-    const params = appRouter.getUrlParams();
+    const params = this.getUrlParams();
     if (params.has(key)) {
       params.set(key, value);
     } else {
@@ -34,17 +34,40 @@ class MyNavigo extends Navigo {
   }
 
   getPageLimitValue(): number {
-    const params = appRouter.getUrlParams();
+    const params = this.getUrlParams();
+    let paginationLimit: number = PAGINATION_LIMIT_DEFAULT;
+
     if (params.has(UrlParamKey.Limit)) {
-      const value = params.get(UrlParamKey.Limit);
-      return Number(value);
-    } else {
-      return CART_LIMIT_DEFAULT;
+      const value = Number(params.get(UrlParamKey.Limit));
+      if (value) {
+        paginationLimit = value;
+      } else {
+        this.updateUrlParams(UrlParamKey.Limit, String(paginationLimit))
+      }
     }
+    return paginationLimit;
+  }
+
+  getPageNumber(): number {
+    const params = this.getUrlParams();
+    let activePage: number = ACTIVE_PAGE_DEFAULT;
+    
+    if (params.has(UrlParamKey.Page)) {
+      const value = Number(params.get(UrlParamKey.Page));
+      if (value) {
+        activePage = value;
+      } else {
+        this.updateUrlParams(UrlParamKey.Page, String(activePage))
+      }
+    }
+    return activePage;
   }
 }
 
 export const appRouter = new MyNavigo('/');
+const cartPage = new CartPage();
+cartPage.listenPaginationInput();
+cartPage.listenPaginationButtons();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: mainPage },
