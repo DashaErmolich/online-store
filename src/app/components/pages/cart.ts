@@ -24,7 +24,6 @@ export class CartPage extends AbstractPage {
 
     if (pageContent) {
       pageContent.addEventListener('click', (event: Event): void => {
-
         let activePage: number = this.cartSettings.activePage;
         if (event.target instanceof HTMLElement) {
 
@@ -40,11 +39,13 @@ export class CartPage extends AbstractPage {
             activePage = this.cartSettings.activePage + 1;
           }
         }
-
         appRouter.updateUrlParams(UrlParamKey.Page, String(activePage));
         this.cartSettings.activePage = activePage;
         this.handleActiveButton();
-        this.drawPaginationPage(pageContent)
+        const paginationContainer = document.getElementById('pagination-container');
+        if (paginationContainer) {
+          this.drawPaginationPage(paginationContainer)
+        }
       })
     }
   }
@@ -58,7 +59,6 @@ export class CartPage extends AbstractPage {
           this.cartSettings.paginationLimit =  Number(event.target.value);
           const pagesQty: number = this.getPagesQty();
           this.handlePagination(pageContent, pagesQty);
-          this.drawPaginationPage(pageContent)
         }
       })
     }
@@ -73,7 +73,8 @@ export class CartPage extends AbstractPage {
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
       const rowContainer = document.createElement('div');
-      rowContainer.className = 'row'
+      rowContainer.className = 'row';
+      rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
       pageContentContainer.append(rowContainer);
@@ -200,7 +201,7 @@ export class CartPage extends AbstractPage {
       }
       i++;
     }
-    parentElement.append(cardDeck);
+    parentElement.prepend(cardDeck);
   }
 
   private handleActiveButton() {
@@ -231,23 +232,43 @@ export class CartPage extends AbstractPage {
     const cartSummaryContainer = document.createElement('aside');
     cartSummaryContainer.className = 'col-3';
 
-    const totalSumContainer = document.createElement('div');
+    const cartSummaryTitle = document.createElement('h5');
+    cartSummaryTitle.innerHTML = 'Order Summary'
 
+    const totalProductsQtyContainer = document.createElement('div');
+    const totalProductsQtyTitle = document.createElement('span');
+    totalProductsQtyTitle.innerHTML = 'Products: ';
+    const totalProductsQty = document.createElement('span');
+    totalProductsQty.innerHTML = String(this.getCartTotalProductQty());
+    totalProductsQtyContainer.append(totalProductsQtyTitle, totalProductsQty);
+
+    const totalSumContainer = document.createElement('div');
     const totalSumTitle = document.createElement('span');
     totalSumTitle.innerHTML = 'Total: ';
     const totalSum = document.createElement('span');
     totalSum.innerHTML = String(this.getCartTotalSum());
     const currencyIcon = document.createElement('i');
     currencyIcon.className = CURRENCY_ICON_CLASS_NAME;
+    totalSumContainer.append(totalSumTitle, totalSum, currencyIcon);
 
-    totalSumContainer.append(totalSumTitle, totalSum, currencyIcon)
-    cartSummaryContainer.append(totalSumContainer);
+    const promoCodeInput = document.createElement('input');
+    promoCodeInput.type = 'text';
+    promoCodeInput.className = 'form-control'
+    promoCodeInput.placeholder = 'Enter Promo Code';
+
+    cartSummaryContainer.append(cartSummaryTitle, totalProductsQtyContainer, totalSumContainer, promoCodeInput);
     parentElement.append(cartSummaryContainer);
   }
 
   private getCartTotalSum(): number {
-    const cartProducts = appStorage.getCartProducts();
-    const totalSum = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || 1), 0);
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const totalSum: number = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || 1), 0);
     return totalSum;
+  }
+
+  private getCartTotalProductQty(): number {
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const totalProductQty: number = cartProducts.reduce((acc, product) => acc + (product.qty || 1), 0);
+    return totalProductQty;
   }
 }
