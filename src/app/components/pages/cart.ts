@@ -35,6 +35,10 @@ export class CartPage extends AbstractPage {
     if (pageContent) {
       this.handlePagination(pageContent, pagesQty);
     }
+    const paginationContainer = document.getElementById('pagination-container');
+    if (paginationContainer) {
+      this.drawPaginationPage(paginationContainer)
+    }
   }
 
   public getPageContent(): HTMLElement {
