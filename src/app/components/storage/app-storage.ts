@@ -16,7 +16,13 @@ export const appStorage: AppStorage = {
     const cartProducts: SimpleCard[] = this.getCartProducts();
     cartProducts.push(product);
     localStorage.setItem('cart-products', JSON.stringify(cartProducts));
-    this.setCartIconProductCounter();
+  },
+
+  removeProductFromCart(product: SimpleCard): void {
+    const cartProducts: SimpleCard[] = this.getCartProducts();
+    const productIndex = this.getProductIndex(cartProducts, product);
+    cartProducts.splice(productIndex, 1);
+    localStorage.setItem('cart-products', JSON.stringify(cartProducts));
   },
   
   getCartProductsQty(): number {
@@ -24,17 +30,17 @@ export const appStorage: AppStorage = {
     return cartProducts.length;
   },
 
-  setCartIconProductCounter(): void {
-    const cartIconQty = document.getElementById('cart-total-items');
-    if (cartIconQty) {
-      const value = this.getCartProductsQty();
-      if (value) {
-        cartIconQty.innerText = String(value);
-      } else {
-        cartIconQty.innerText = '0';
-      }
-    }
+  setCartProductQty(product: SimpleCard, qty: number): void {
+    const cartProducts: SimpleCard[] = this.getCartProducts();
+    const productIndex = this.getProductIndex(cartProducts, product);
+    cartProducts[productIndex].qty = qty;
+    localStorage.setItem('cart-products', JSON.stringify(cartProducts));
   },
+
+  getProductIndex(cartProducts: SimpleCard[], product: SimpleCard): number {
+    const productIndex = cartProducts.findIndex((cartProduct => cartProduct.id === product.id));
+    return productIndex;
+  }
   
 }
 

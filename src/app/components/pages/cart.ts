@@ -3,7 +3,7 @@ import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange } from '../../models/interfaces';
-import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
+import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, CURRENCY_ICON_CLASS_NAME, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { ProductCard } from './product-card';
 
 export class CartPage extends AbstractPage {
@@ -22,10 +22,7 @@ export class CartPage extends AbstractPage {
   private listenPaginationButtons(): void {
     appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
     this.handleActiveButton();
-    const paginationContainer = document.getElementById('pagination-container');
-    if (paginationContainer) {
-      this.drawPaginationPage(paginationContainer)
-    }
+    this.drawPaginationPage();
   }
 
   private listenPaginationInput(): void {
@@ -35,10 +32,7 @@ export class CartPage extends AbstractPage {
     if (pageContent) {
       this.handlePagination(pageContent, pagesQty);
     }
-    const paginationContainer = document.getElementById('pagination-container');
-    if (paginationContainer) {
-      this.drawPaginationPage(paginationContainer)
-    }
+    this.drawPaginationPage();
   }
 
   public getPageContent(): HTMLElement {
@@ -54,6 +48,7 @@ export class CartPage extends AbstractPage {
       rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
+      this.setCartIcon(this.getCartTotalProductQty())
       pageContentContainer.append(rowContainer);
     } else {
       const message = document.createElement('span');
@@ -188,7 +183,8 @@ export class CartPage extends AbstractPage {
     parentElement.append(paginationInputContainer);
   }
 
-  private drawPaginationPage(parentElement: HTMLElement): void {
+  public drawPaginationPage(parentElement?: HTMLElement): void {
+    const paginationContainer = document.getElementById('pagination-container');
     document.querySelector('.card-columns')?.remove();
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
@@ -202,11 +198,18 @@ export class CartPage extends AbstractPage {
       const card: SimpleCard = cartProducts[i];
       if (card) {
         const cartProduct = new ProductCard(card, i + 1);
-        cardDeck.insertAdjacentHTML('beforeend', cartProduct.getCartCardContent());
+        cardDeck.append(cartProduct.getCartCardContent())
+
       }
       i++;
     }
-    parentElement.prepend(cardDeck);
+    if (paginationContainer && !parentElement) {
+      paginationContainer.prepend(cardDeck);
+    }
+    
+    if (parentElement) {
+      parentElement.prepend(cardDeck);
+    }
   }
 
   private handleActiveButton() {
@@ -244,14 +247,16 @@ export class CartPage extends AbstractPage {
     const totalProductsQtyTitle = document.createElement('span');
     totalProductsQtyTitle.innerHTML = 'Products: ';
     const totalProductsQty = document.createElement('span');
-    totalProductsQty.innerHTML = String(this.getCartTotalProductQty());
+    totalProductsQty.id = 'cart-summary-products-qty';
+    totalProductsQty.innerHTML = `${this.getCartTotalProductQty()}`;
     totalProductsQtyContainer.append(totalProductsQtyTitle, totalProductsQty);
 
     const totalSumContainer = document.createElement('div');
     const totalSumTitle = document.createElement('span');
     totalSumTitle.innerHTML = 'Total: ';
     const totalSum = document.createElement('span');
-    totalSum.innerHTML = String(this.getCartTotalSum());
+    totalSum.id = 'cart-summary-products-sum';
+    totalSum.innerHTML = `${this.getCartTotalSum()}`;
     const currencyIcon = document.createElement('i');
     currencyIcon.className = CURRENCY_ICON_CLASS_NAME;
     totalSumContainer.append(totalSumTitle, totalSum, currencyIcon);
@@ -265,15 +270,39 @@ export class CartPage extends AbstractPage {
     parentElement.append(cartSummaryContainer);
   }
 
+  public setCartSummary(cartProductsQty: number): void {
+    const productsQty = document.getElementById('cart-summary-products-qty');
+    if (productsQty) {
+      productsQty.innerHTML = `${cartProductsQty}`;
+    }
+    const productsSum = document.getElementById('cart-summary-products-sum');
+    if (productsSum) {
+      productsSum.innerHTML = `${this.getCartTotalSum()}`;
+    }
+  }
   private getCartTotalSum(): number {
     const cartProducts: SimpleCard[] = appStorage.getCartProducts();
-    const totalSum: number = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || 1), 0);
+    const totalSum: number = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || PRODUCT_CART_QTY_DEFAULT), 0);
     return totalSum;
   }
 
   private getCartTotalProductQty(): number {
     const cartProducts: SimpleCard[] = appStorage.getCartProducts();
-    const totalProductQty: number = cartProducts.reduce((acc, product) => acc + (product.qty || 1), 0);
+    const totalProductQty: number = cartProducts.reduce((acc, product) => acc + (product.qty || PRODUCT_CART_QTY_DEFAULT), 0);
     return totalProductQty;
+  }
+
+  public updatePageStats(): void {
+    this.drawPaginationPage();
+    const cartProductsQty = this.getCartTotalProductQty()
+    this.setCartSummary(cartProductsQty);
+    this.setCartIcon(cartProductsQty);
+  }
+
+  private setCartIcon(cartProductsQty: number): void {
+    const cartIconQty = document.getElementById('cart-total-items');
+    if (cartIconQty) {
+      cartIconQty.innerHTML = `${cartProductsQty}`;
+    }
   }
 }

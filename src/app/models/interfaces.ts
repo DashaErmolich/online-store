@@ -47,7 +47,9 @@ export interface AppStorage {
   getCartProducts(): SimpleCard[],
   addProductToCart(product: SimpleCard): void,
   getCartProductsQty(): number,
-  setCartIconProductCounter(): void,
+  setCartProductQty(product: SimpleCard, qty: number): void,
+  getProductIndex(cartProducts: SimpleCard[], product: SimpleCard): number,
+  removeProductFromCart(product: SimpleCard): void,
 }
 
 export interface CartPageSettings {

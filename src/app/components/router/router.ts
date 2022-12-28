@@ -65,7 +65,7 @@ class MyNavigo extends Navigo {
 }
 
 export const appRouter = new MyNavigo('/');
-const cartPage = new CartPage();
+export const cartPage = new CartPage();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: mainPage },

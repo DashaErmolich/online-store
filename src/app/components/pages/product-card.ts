@@ -1,5 +1,7 @@
-import { CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
+import { CURRENCY_ICON_CLASS_NAME, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { SimpleCard } from '../../models/interfaces';
+import { appStorage } from '../storage/app-storage';
+import { cartPage } from '../router/router';
 
 export class ProductCard {
 
@@ -10,35 +12,106 @@ export class ProductCard {
     this.card = card;
     this.index = index;
   }
-  public getCartCardContent(): string {
-    return `
-      <article class="card d-flex flex-row align-items-center">
-        <img class="w-25 h-100" src="${this.card.thumbnail}" alt="${this.card.title}">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title d-flex justify-content-between">
-            ${this.index} - ${this.card.title}
-            <button class="bi bi-trash3 page-link fs-4"></button>
-          </h5>
-          <h6 class="card-title">
-            ${this.card.price}
-            <i class="${CURRENCY_ICON_CLASS_NAME}"></i>
-          </h6>
-          <p class="card-text text-capitalize">${this.card.category} &bull; ${this.card.brand}</p>
-          <p class="card-text">${this.card.description}</p>
-          <p>Stock: ${this.card.stock}</p>
-          <div class="d-flex justify-content-between">
-            <div class="card-text">
-              <i class="bi bi-star"></i>
-              <span class="text-muted">${this.card.rating} &bull; </span>
-              <span class="text-muted">Discount: ${this.card.discountPercentage}%</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <button class="bi bi-dash-circle page-link fs-4 cart-remove-product-button"></button>
-              <span class="d-block m-3 fs-5">${this.card.qty || 1}</span>
-              <button class="bi bi-plus-circle page-link fs-4 cart-add-product-button"></button>
-            </div>
-          </div>
-        </div>
-      </article>`
+  public getCartCardContent(): HTMLElement {
+    const cardContainer = document.createElement('article');
+    cardContainer.className = 'card d-flex flex-row align-items-center';
+
+    const cardImg = document.createElement('img');
+    cardImg.className = 'w-25 h-100';
+    cardImg.src = this.card.thumbnail;
+    cardImg.alt = this.card.title;
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body d-flex flex-column justify-content-between';
+
+    const cardHeader = document.createElement('div');
+    cardHeader.className = 'card-title d-flex justify-content-between';
+    const cardTitle = document.createElement('h5');
+    cardTitle.innerHTML = `${this.index} - ${this.card.title}`;
+    const cardTrashButton = document.createElement('button');
+    cardTrashButton.className = 'bi bi-trash3 page-link fs-4';
+    cardHeader.append(cardTitle, cardTrashButton);
+
+    const cardPrice = document.createElement('h6');
+    cardPrice.className = 'card-title';
+    cardPrice.innerHTML = `${this.card.price}`;
+    const priceCurrency = document.createElement('i');
+    priceCurrency.className = CURRENCY_ICON_CLASS_NAME;
+    cardPrice.append(priceCurrency);
+
+    const cardCategoryAndBrand = document.createElement('p');
+    cardCategoryAndBrand.className = 'card-text text-capitalize';
+    cardCategoryAndBrand.innerHTML = `${this.card.category} &bull; ${this.card.brand}`;
+
+    const cardDescription = document.createElement('p');
+    cardDescription.className = 'card-text';
+    cardDescription.innerHTML = this.card.description;
+
+    const cardStockQty = document.createElement('p');
+    cardStockQty.innerHTML = `Stock: ${this.card.stock}`;
+
+    const cardInfo = document.createElement('div');
+    cardInfo.className = 'd-flex justify-content-between';
+
+    const cardRatingAndDiscount = document.createElement('div');
+    cardRatingAndDiscount.className = 'card-text';
+    const cardRatingIcon = document.createElement('i');
+    cardRatingIcon.className = 'bi bi-star';
+    const cardRating = document.createElement('span');
+    cardRating.className = 'text-muted';
+    cardRating.innerHTML = `${this.card.rating} &bull;`;
+    const cardDiscount = document.createElement('span');
+    cardDiscount.className = 'text-muted';
+    cardDiscount.innerHTML = `Discount: ${this.card.discountPercentage}%`;
+    cardRatingAndDiscount.append(cardRatingIcon, cardRating, cardDiscount);
+
+    const cardQtyAndButtons = document.createElement('div');
+    cardQtyAndButtons.className = 'd-flex justify-content-between align-items-center';
+    const cardRemoveItemButton = document.createElement('button');
+    cardRemoveItemButton.className = 'bi bi-dash-circle page-link fs-4 cart-remove-product-button';
+    cardRemoveItemButton.addEventListener('click', () => {
+      this.listenRemoveProductButton();
+    })
+    const cardItemQty = document.createElement('span');
+    cardItemQty.className = 'd-block m-3 fs-5';
+    cardItemQty.innerHTML = `${this.card.qty || PRODUCT_CART_QTY_DEFAULT}`
+    const cardAddItemButton = document.createElement('button');
+    cardAddItemButton.className = 'bi bi-plus-circle page-link fs-4 cart-add-product-button';
+    cardAddItemButton.addEventListener('click', () => {
+      this.listenAddProductButton();
+    })
+    cardQtyAndButtons.append(cardRemoveItemButton, cardItemQty, cardAddItemButton);
+
+    cardInfo.append(cardRatingAndDiscount, cardQtyAndButtons);
+    cardBody.append(cardHeader, cardPrice, cardCategoryAndBrand, cardDescription, cardStockQty, cardInfo);
+    cardContainer.append(cardImg, cardBody);
+
+    return cardContainer;
   }
+
+  listenAddProductButton() {
+    if (!this.card.qty) {
+      this.card.qty = 1;
+    }
+    const stockQty = this.card.stock;
+    if (this.card.qty < stockQty) {
+      this.card.qty++;
+      appStorage.setCartProductQty(this.card, this.card.qty);
+    }
+    cartPage.updatePageStats();
+  }
+
+  listenRemoveProductButton() {
+    if (!this.card.qty || this.card.qty === 1) {
+      this.card.qty = 1;
+      appStorage.removeProductFromCart(this.card);
+    }
+    if (this.card.qty >= 2) {
+      this.card.qty--;
+      appStorage.setCartProductQty(this.card, this.card.qty);
+    }
+    cartPage.updatePageStats();
+  }
+
+
 }
