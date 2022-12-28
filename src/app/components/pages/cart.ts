@@ -19,48 +19,21 @@ export class CartPage extends AbstractPage {
     };
   }
 
-  public listenPaginationButtons(): void {
-    const pageContent = document.getElementById('page-content');
-
-    if (pageContent) {
-      pageContent.addEventListener('click', (event: Event): void => {
-        let activePage: number = this.cartSettings.activePage;
-        if (event.target instanceof HTMLElement) {
-
-          if (event.target.classList.contains('new-page-link')) {
-            activePage = Number(event.target.id);
-          }
-
-          if (event.target.classList.contains('prev-page-link')) {
-            activePage = this.cartSettings.activePage - 1;
-          }
-
-          if (event.target.classList.contains('next-page-link')) {
-            activePage = this.cartSettings.activePage + 1;
-          }
-        }
-        appRouter.updateUrlParams(UrlParamKey.Page, String(activePage));
-        this.cartSettings.activePage = activePage;
-        this.handleActiveButton();
-        const paginationContainer = document.getElementById('pagination-container');
-        if (paginationContainer) {
-          this.drawPaginationPage(paginationContainer)
-        }
-      })
+  private listenPaginationButtons(): void {
+    appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
+    this.handleActiveButton();
+    const paginationContainer = document.getElementById('pagination-container');
+    if (paginationContainer) {
+      this.drawPaginationPage(paginationContainer)
     }
   }
 
-  public listenPaginationInput(): void {
+  private listenPaginationInput(): void {
+    appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+    const pagesQty: number = this.getPagesQty();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      pageContent.addEventListener('change', (event: Event): void => {
-        if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
-          appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
-          this.cartSettings.paginationLimit =  Number(event.target.value);
-          const pagesQty: number = this.getPagesQty();
-          this.handlePagination(pageContent, pagesQty);
-        }
-      })
+      this.handlePagination(pageContent, pagesQty);
     }
   }
 
@@ -138,6 +111,10 @@ export class CartPage extends AbstractPage {
 
       if (i === 0) {
         button.classList.add('prev-page-link');
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage--;
+          this.listenPaginationButtons();
+        });
 
         if (this.cartSettings.activePage === 1) {
           button.classList.add('disabled');
@@ -147,6 +124,10 @@ export class CartPage extends AbstractPage {
 
       } else if (i === buttonsQty - 1) {
         button.classList.add('next-page-link');
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage++;
+          this.listenPaginationButtons();
+        });
 
         if (this.cartSettings.activePage === pagesQty) {
           button.classList.add('disabled');
@@ -157,7 +138,11 @@ export class CartPage extends AbstractPage {
       } else {
         button.classList.add('new-page-link');
         button.innerHTML = String(i);
-        button.id = `${i}`
+        button.id = `${i}`;
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage = Number(button.id);
+          this.listenPaginationButtons();
+        })
       }
 
       li.append(button);
@@ -174,13 +159,29 @@ export class CartPage extends AbstractPage {
   }
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
-    const paginationInputWrapper = `
-    <section class="form-outline d-flex flex-row justify-content-end align-items-center mb-3">
-      <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
-      <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="${PAGINATION_LIMIT_MIN}" max="${PAGINATION_LIMIT_MAX}" step="${PAGINATION_LIMIT_STEP}">
-    </section>`;
-  
-    parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
+    const paginationInputContainer = document.createElement('section');
+    paginationInputContainer.className = 'form-outline d-flex flex-row justify-content-end align-items-center mb-3';
+    
+    const paginationInputLabel = document.createElement('label');
+    paginationInputLabel.htmlFor = 'cart-items-per-page';
+    paginationInputLabel.innerHTML = 'Products per page:&nbsp';
+    
+    const paginationInput = document.createElement('input');
+    paginationInput.type = 'number';
+    paginationInput.value = String(inputValue);
+    paginationInput.id = 'cart-items-per-page';
+    paginationInput.className = 'form-control w-auto';
+    paginationInput.min = String(PAGINATION_LIMIT_MIN);
+    paginationInput.max = String(PAGINATION_LIMIT_MAX);
+    paginationInput.step = String(PAGINATION_LIMIT_STEP);
+    paginationInput.addEventListener('change', () => {
+      this.cartSettings.paginationLimit = Number(paginationInput.value);
+      this.listenPaginationInput();
+    })
+
+    paginationInputContainer.append(paginationInputLabel, paginationInput)
+
+    parentElement.append(paginationInputContainer);
   }
 
   private drawPaginationPage(parentElement: HTMLElement): void {
