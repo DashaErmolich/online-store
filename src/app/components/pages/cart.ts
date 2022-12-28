@@ -3,8 +3,8 @@ import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange } from '../../models/interfaces';
-import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP } from '../../constants/constants';
-import { ProductCard } from './product';
+import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
+import { ProductCard } from './product-card';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -72,7 +72,11 @@ export class CartPage extends AbstractPage {
       this.handlePagination(pageContentContainer, pagesQty);
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-      this.drawPaginationPage(pageContentContainer)
+      const rowContainer = document.createElement('div');
+      rowContainer.className = 'row'
+      this.drawPaginationPage(rowContainer);
+      this.drawCartSummary(rowContainer);
+      pageContentContainer.append(rowContainer);
     } else {
       const message = document.createElement('span');
       message.innerText = 'Cart is empty now';
@@ -170,10 +174,10 @@ export class CartPage extends AbstractPage {
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
     const paginationInputWrapper = `
-    <div class="form-outline d-flex flex-row justify-content-end align-items-center mb-3">
+    <section class="form-outline d-flex flex-row justify-content-end align-items-center mb-3">
       <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
       <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="${PAGINATION_LIMIT_MIN}" max="${PAGINATION_LIMIT_MAX}" step="${PAGINATION_LIMIT_STEP}">
-    </div>`;
+    </section>`;
   
     parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
   }
@@ -183,8 +187,8 @@ export class CartPage extends AbstractPage {
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
     const cartProducts: SimpleCard[] = appStorage.getCartProducts()
-    const cardDeck = document.createElement('div');
-    cardDeck.className = 'card-columns';
+    const cardDeck = document.createElement('section');
+    cardDeck.className = 'card-columns col-9';
 
     let i = paginationActivePageRange.start;
 
@@ -221,5 +225,29 @@ export class CartPage extends AbstractPage {
         button.classList.add('disabled');
       }
     })
+  }
+
+  private drawCartSummary(parentElement: HTMLElement): void {
+    const cartSummaryContainer = document.createElement('aside');
+    cartSummaryContainer.className = 'col-3';
+
+    const totalSumContainer = document.createElement('div');
+
+    const totalSumTitle = document.createElement('span');
+    totalSumTitle.innerHTML = 'Total: ';
+    const totalSum = document.createElement('span');
+    totalSum.innerHTML = String(this.getCartTotalSum());
+    const currencyIcon = document.createElement('i');
+    currencyIcon.className = CURRENCY_ICON_CLASS_NAME;
+
+    totalSumContainer.append(totalSumTitle, totalSum, currencyIcon)
+    cartSummaryContainer.append(totalSumContainer);
+    parentElement.append(cartSummaryContainer);
+  }
+
+  private getCartTotalSum(): number {
+    const cartProducts = appStorage.getCartProducts();
+    const totalSum = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || 1), 0);
+    return totalSum;
   }
 }

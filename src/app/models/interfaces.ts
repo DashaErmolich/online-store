@@ -26,6 +26,7 @@ export interface SimpleCard {
   category: string;
   thumbnail: string;
   images: Array<string>;
+  qty?: number;
 }
 
 export interface CartUrlParams {

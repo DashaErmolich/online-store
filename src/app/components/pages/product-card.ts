@@ -1,3 +1,4 @@
+import { CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
 import { SimpleCard } from '../../models/interfaces';
 
 export class ProductCard {
@@ -11,7 +12,7 @@ export class ProductCard {
   }
   public getCartCardContent(): string {
     return `
-      <div class="card d-flex flex-row align-items-center">
+      <article class="card d-flex flex-row align-items-center">
         <img class="w-25 h-100" src="${this.card.thumbnail}" alt="${this.card.title}">
         <div class="card-body d-flex flex-column justify-content-between">
           <h5 class="card-title d-flex justify-content-between">
@@ -20,7 +21,7 @@ export class ProductCard {
           </h5>
           <h6 class="card-title">
             ${this.card.price}
-            <i class="bi bi-currency-dollar"></i>
+            <i class="${CURRENCY_ICON_CLASS_NAME}"></i>
           </h6>
           <p class="card-text text-capitalize">${this.card.category} &bull; ${this.card.brand}</p>
           <p class="card-text">${this.card.description}</p>
@@ -33,11 +34,11 @@ export class ProductCard {
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <button class="bi bi-dash-circle page-link fs-4 cart-remove-product-button"></button>
-              <span class="d-block m-3 fs-5">1</span>
+              <span class="d-block m-3 fs-5">${this.card.qty || 1}</span>
               <button class="bi bi-plus-circle page-link fs-4 cart-add-product-button"></button>
             </div>
           </div>
         </div>
-      </div>`
+      </article>`
   }
 }
