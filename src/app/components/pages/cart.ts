@@ -27,12 +27,16 @@ export class CartPage extends AbstractPage {
 
   private listenPaginationInput(): void {
     appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+    this.updatePagination();
+    this.drawPaginationPage();
+  }
+
+  private updatePagination(): void {
     const pagesQty: number = this.getPagesQty();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
       this.handlePagination(pageContent, pagesQty);
     }
-    this.drawPaginationPage();
   }
 
   public getPageContent(): HTMLElement {
@@ -75,7 +79,6 @@ export class CartPage extends AbstractPage {
 
   private handlePagination(parentElement: HTMLElement, pagesQty: number): void {
     document.getElementById('page-navigation')?.remove();
-
     this.validateActivePage(pagesQty);
     this.drawPagination(parentElement, pagesQty);
   }
@@ -292,7 +295,9 @@ export class CartPage extends AbstractPage {
     return totalProductQty;
   }
 
-  public updatePageStats(): void {
+  public updatePage(): void {
+    this.cartSettings.productsQty = appStorage.getCartProductsQty();
+    this.updatePagination();
     this.drawPaginationPage();
     const cartProductsQty = this.getCartTotalProductQty()
     this.setCartSummary(cartProductsQty);

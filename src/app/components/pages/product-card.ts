@@ -98,7 +98,7 @@ export class ProductCard {
       this.card.qty++;
       appStorage.setCartProductQty(this.card, this.card.qty);
     }
-    cartPage.updatePageStats();
+    cartPage.updatePage();
   }
 
   listenRemoveProductButton() {
@@ -110,7 +110,7 @@ export class ProductCard {
       this.card.qty--;
       appStorage.setCartProductQty(this.card, this.card.qty);
     }
-    cartPage.updatePageStats();
+    cartPage.updatePage();
   }
 
 
