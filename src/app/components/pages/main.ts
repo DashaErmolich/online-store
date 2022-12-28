@@ -18,7 +18,7 @@ export class MainPage extends AbstractPage {
     const mainWrapper = document.createElement('div');
     mainWrapper.classList.add('main-content-wrapper');
     const filtersWrapper = document.createElement('div');
-    filtersWrapper.classList.add('filters-wrapper'); // TODO: function for generate
+    filtersWrapper.classList.add('filters-wrapper'); 
     filtersWrapper.innerHTML = `
     <div class="filters__category">
     <h3 class="filters__category-title">Category</h3>
@@ -51,6 +51,22 @@ export class MainPage extends AbstractPage {
     </div>
   </div>
     `
+    // !temporary! this is a button for delete all cards from local storage
+    const resetCardBtn = document.createElement('button');
+    resetCardBtn.classList.add('card__btn');
+    resetCardBtn.textContent = 'remove cards from cart';
+    resetCardBtn.style.height = '100px';
+    resetCardBtn.addEventListener('click', e => {
+      const target = e.target as HTMLElement;
+      if (target.parentElement?.classList.contains('filters-wrapper')) {
+        console.log('local storage is clear now \n deleted cards:')
+        console.log(localStorage.getItem('cart-products'));
+        localStorage.setItem('cart-products', '');
+      }
+
+    })
+    filtersWrapper.append(resetCardBtn);
+
     const cardsWrapper = document.createElement('div');
     cardsWrapper.classList.add('cards-wrapper');
     this.generateCards(cardsWrapper);
@@ -61,7 +77,7 @@ export class MainPage extends AbstractPage {
 
     return content;
   }
-  filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { // TODO: useless now, destroy or use for filters
+  filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { 
     if (!brand && !category) {
       const fragment = document.createDocumentFragment();
       const wrapper = document.querySelector('.cards-wrapper') as HTMLDivElement;
@@ -78,7 +94,7 @@ export class MainPage extends AbstractPage {
     const cards = possibleCards.products;
     cards.forEach(e => this.createCard(wrapper, e));
   }
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  //TODO: smash it into small segments
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
     const card = document.createElement('div');
     card.classList.add('card');
 
@@ -137,13 +153,7 @@ export class MainPage extends AbstractPage {
       }
     })
 
-    // TODO: think about 2nd button
-    // const detailsBtn = document.createElement ('button');
-    // detailsBtn.classList.add('card__btn');
-    // detailsBtn.classList.add('card__details-btn');
-
     cardBtnField.append(toCardBtn);
-    // cardBtnField.append(detailsBtn);
     card.append(cardBtnField);
 
     wrapper.append(card);
@@ -151,58 +161,3 @@ export class MainPage extends AbstractPage {
 }
 
 export const mainPage = new MainPage();
-
-// current HTML State: 
-/*
-              <h1>Online Shop</h1>
-                <div class="main-content-wrapper">
-                <div class="filters-wrapper">
-                  <div class="filters__category">
-                    <h3 class="filters__category-title">Category</h3>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="categories">
-                      <label for="categories">Smartphones</label>
-                    </div>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="categories">
-                      <label for="categories">Laptops</label>
-                    </div>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="categories">
-                      <label for="categories">Fragrances</label>
-                    </div>
-                  </div>
-                  <div class="filters__brand">
-                    <h3 class="filters__category-title">Brand</h3>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="brands">
-                      <label for="brands">Apple</label>
-                    </div>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="brands">
-                      <label for="brands">Samsung</label>
-                    </div>
-                    <div class="filters__category-line">
-                      <input type="checkbox" name="brands">
-                      <label for="brands">OPPO</label>
-                    </div>
-                  </div>
-                </div>
-                <div class="cards-wrapper">
-                  <div class="card" id = "card-temp">
-                    <h3 class="card__title">Tovar</h3>
-                    <div class="card__description-field">
-                      <p class="card__category">category</p>
-                      <p class="card__brand">brand</p>
-                      <p class="card__price">price</p>
-                      <p class="card__discount">discount</p>
-                      <p class="card__rating">rating</p>
-                      <p class="card__stock">stock</p>
-                    </div>
-                    <div class="card__buttons-field">
-                      <button class="card__btn card__to-cart-btn"></button>
-                    </div>
-                  </div>
-                </div>
-                </div>
-*/
