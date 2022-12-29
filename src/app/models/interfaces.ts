@@ -60,6 +60,7 @@ export interface CartPageSettings {
   productsQty : number,
   paginationLimit: number,
   activePage: number,
+  promoCodes: PromoCode[],
 }
 
 export interface PaginationCardIdxRange {
