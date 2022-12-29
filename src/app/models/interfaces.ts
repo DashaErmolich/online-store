@@ -53,3 +53,8 @@ export interface CartPageSettings {
   paginationLimit: number,
   activePage: number,
 }
+
+export interface NumberRange {
+  min: number,
+  max: number,
+}
