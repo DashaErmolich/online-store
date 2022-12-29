@@ -46,10 +46,14 @@ export interface UrlParams extends CartUrlParams, MainUrlParams {}
 export interface AppStorage {
   getCartProducts(): SimpleCard[],
   addProductToCart(product: SimpleCard): void,
-  getCartProductsQty(): number,
+  getCartProductsCardsQty(): number,
   setCartProductQty(product: SimpleCard, qty: number): void,
   getProductIndex(cartProducts: SimpleCard[], product: SimpleCard): number,
   removeProductFromCart(product: SimpleCard): void,
+  getCartPromoCodes(): PromoCode[],
+  addCartPromoCode(promoCode: PromoCode): void,
+  getPromoCodeIndex(promoCodes: PromoCode[], promoCode: PromoCode): number,
+  removeCartPromoCode(promoCode: PromoCode): void
 }
 
 export interface CartPageSettings {
@@ -61,4 +65,11 @@ export interface CartPageSettings {
 export interface PaginationCardIdxRange {
   start: number, 
   end: number
+}
+
+export interface PromoCode {
+  id: number,
+  name: string,
+  discountPercent: number,
+  description: string
 }

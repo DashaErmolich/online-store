@@ -30,6 +30,9 @@ export class ProductCard {
     cardTitle.innerHTML = `${this.index} - ${this.card.title}`;
     const cardTrashButton = document.createElement('button');
     cardTrashButton.className = 'bi bi-trash3 page-link fs-4';
+    cardTrashButton.addEventListener('click', () => {
+      this.listenDeleteProductButton();
+    })
     cardHeader.append(cardTitle, cardTrashButton);
 
     const cardPrice = document.createElement('h6');
@@ -110,6 +113,11 @@ export class ProductCard {
       this.card.qty--;
       appStorage.setCartProductQty(this.card, this.card.qty);
     }
+    cartPage.updatePage();
+  }
+
+  listenDeleteProductButton() {
+    appStorage.removeProductFromCart(this.card);
     cartPage.updatePage();
   }
 

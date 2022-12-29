@@ -5,6 +5,7 @@ import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, CURRENCY_ICON_CLASS_NAME, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { ProductCard } from './product-card';
+import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -13,7 +14,7 @@ export class CartPage extends AbstractPage {
     super();
     this.setPageTitle('Shop Cart');
     this.cartSettings = {
-      productsQty: appStorage.getCartProductsQty(),
+      productsQty: appStorage.getCartProductsCardsQty(),
       paginationLimit: appRouter.getPageLimitValue(),
       activePage: appRouter.getPageNumber(),
     };
@@ -268,25 +269,96 @@ export class CartPage extends AbstractPage {
     promoCodeInput.type = 'text';
     promoCodeInput.className = 'form-control'
     promoCodeInput.placeholder = 'Enter Promo Code';
+    const promoCode = document.createElement('div');
+    promoCodeInput.addEventListener('change', () => {
+      this.listenPromoCodeInput(promoCode, promoCodeInput.value);
+    });
+    const promoCodesInfo = document.createElement('span');
+    const promoCodesNames = promoCodes.map((promoCode) => promoCode.name.toUpperCase());
+    promoCodesInfo.innerHTML = `Promo for test: ${promoCodesNames.join(', ')}`;
 
-    cartSummaryContainer.append(cartSummaryTitle, totalProductsQtyContainer, totalSumContainer, promoCodeInput);
+    cartSummaryContainer.append(cartSummaryTitle, totalProductsQtyContainer, totalSumContainer, promoCodeInput,promoCode, promoCodesInfo);
     parentElement.append(cartSummaryContainer);
   }
 
-  public setCartSummary(cartProductsQty: number): void {
-    const productsQty = document.getElementById('cart-summary-products-qty');
-    if (productsQty) {
-      productsQty.innerHTML = `${cartProductsQty}`;
+  private listenPromoCodeInput(parentElement: HTMLElement, value: number | string): void {
+    parentElement.innerHTML = '';
+    console.log(value);
+    const validatedValue = String(value).trim().toLowerCase();
+    const promoCodeIndex = this.getPromoCodeIndex(validatedValue);
+
+    if (promoCodeIndex >= 0) {
+      const promoCodeContainer = document.createElement('div');
+      const promoCodeName = document.createElement('span');
+      promoCodeName.innerHTML = `${promoCodes[promoCodeIndex].description} - ${promoCodes[promoCodeIndex].discountPercent}%`;
+      
+      const promoCodeAddButton = document.createElement('button');
+      promoCodeAddButton.innerHTML = 'Add';
+      promoCodeAddButton.className = 'btn btn-dark';
+      promoCodeAddButton.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLElement) {
+          target.classList.add('d-none');
+          promoCodeRemoveButton.classList.remove('d-none');
+          appStorage.addCartPromoCode(promoCodes[promoCodeIndex])
+          this.setCartSummarySum();
+        }
+      })
+      
+      const promoCodeRemoveButton = document.createElement('button');
+      promoCodeRemoveButton.innerHTML = 'Remove';
+      promoCodeRemoveButton.className = 'btn btn-dark d-none';
+      
+      promoCodeRemoveButton.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLElement) {
+          target.classList.add('d-none');
+          promoCodeAddButton.classList.remove('d-none');
+          appStorage.removeCartPromoCode(promoCodes[promoCodeIndex])
+          this.setCartSummarySum();
+        }
+      })
+      promoCodeContainer.append(promoCodeName, promoCodeAddButton, promoCodeRemoveButton);
+      parentElement.append(promoCodeContainer);
     }
+  }
+
+  private getPromoCodeIndex(validatedValue: string): number {
+    const promoCodeIndex = promoCodes.findIndex((promoCode => validatedValue === promoCode.name));
+    return promoCodeIndex;
+  }
+
+  public setCartSummary(cartProductsQty: number): void {
+    this.setCartSummaryQty(cartProductsQty)
+    this.setCartSummarySum();
+  }
+
+  private setCartSummarySum(): void {
     const productsSum = document.getElementById('cart-summary-products-sum');
     if (productsSum) {
       productsSum.innerHTML = `${this.getCartTotalSum()}`;
     }
   }
+
+  private setCartSummaryQty(cartProductsQty: number): void {
+    const productsQty = document.getElementById('cart-summary-products-qty');
+    if (productsQty) {
+      productsQty.innerHTML = `${cartProductsQty}`;
+    }
+  }
+
   private getCartTotalSum(): number {
     const cartProducts: SimpleCard[] = appStorage.getCartProducts();
     const totalSum: number = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || PRODUCT_CART_QTY_DEFAULT), 0);
-    return totalSum;
+    const promoCodes = appStorage.getCartPromoCodes();
+    let discount = 0;
+
+    if (promoCodes.length) {
+      const discounts = promoCodes.map((promoCode) => promoCode.discountPercent);
+      discount = discounts.reduce((acc, discount) => acc + discount, 0);
+    }
+    
+    return totalSum * (100 - discount) / 100;
   }
 
   private getCartTotalProductQty(): number {
@@ -296,10 +368,10 @@ export class CartPage extends AbstractPage {
   }
 
   public updatePage(): void {
-    this.cartSettings.productsQty = appStorage.getCartProductsQty();
+    this.cartSettings.productsQty = appStorage.getCartProductsCardsQty();
     this.updatePagination();
     this.drawPaginationPage();
-    const cartProductsQty = this.getCartTotalProductQty()
+    const cartProductsQty = this.getCartTotalProductQty();
     this.setCartSummary(cartProductsQty);
     this.setCartIcon(cartProductsQty);
   }

@@ -12,8 +12,3 @@ export enum UrlParamKey {
   Price = 'price',
   Stock = 'stock',
 }
-
-export enum PromoCodes {
-  RS = 'RS',
-  EMP = 'EMP',
-}

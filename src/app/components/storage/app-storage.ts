@@ -1,4 +1,4 @@
-import { SimpleCard, AppStorage } from '../../models/interfaces';
+import { SimpleCard, AppStorage, PromoCode } from '../../models/interfaces';
 
 export const appStorage: AppStorage = {
   getCartProducts(): SimpleCard[] {
@@ -25,7 +25,7 @@ export const appStorage: AppStorage = {
     localStorage.setItem('cart-products', JSON.stringify(cartProducts));
   },
   
-  getCartProductsQty(): number {
+  getCartProductsCardsQty(): number {
     const cartProducts: SimpleCard[] = this.getCartProducts();
     return cartProducts.length;
   },
@@ -38,9 +38,38 @@ export const appStorage: AppStorage = {
   },
 
   getProductIndex(cartProducts: SimpleCard[], product: SimpleCard): number {
-    const productIndex = cartProducts.findIndex((cartProduct => cartProduct.id === product.id));
+    const productIndex = cartProducts.findIndex((item => item.id === product.id));
     return productIndex;
-  }
+  },
+
+  getCartPromoCodes(): PromoCode[] {
+    const data = localStorage.getItem('promo-codes');
+    let promoCodes: PromoCode[];
+    if (data) {
+      promoCodes = JSON.parse(data);
+    } else {
+      promoCodes = [];
+    }
+    return promoCodes;
+  },
+
+  addCartPromoCode(promoCode: PromoCode): void {
+    const promoCodes: PromoCode[] = this.getCartPromoCodes();
+    promoCodes.push(promoCode);
+    localStorage.setItem('promo-codes', JSON.stringify(promoCodes));
+  },
+
+  getPromoCodeIndex(promoCodes: PromoCode[], promoCode: PromoCode): number {
+    const promoCodeIndex = promoCodes.findIndex((item => item.id === promoCode.id));
+    return promoCodeIndex;
+  },
+
+  removeCartPromoCode(promoCode: PromoCode): void {
+    const promoCodes: PromoCode[] = this.getCartPromoCodes();
+    const promoCodeIndex = this.getPromoCodeIndex(promoCodes, promoCode);
+    promoCodes.splice(promoCodeIndex, 1);
+    localStorage.setItem('promo-codes', JSON.stringify(promoCodes));
+  },
   
 }
 
