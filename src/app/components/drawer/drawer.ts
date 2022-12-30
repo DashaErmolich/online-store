@@ -133,6 +133,7 @@ class Drawer {
     telInput.required = true;
     telInput.id = 'person-phone';
     telInput.type = 'tel';
+    telInput.pattern = '[+][0-9]{9,}';
     telInput.placeholder = 'Enter phone number';
     container.append(telLabel, telInput);
     return container;
