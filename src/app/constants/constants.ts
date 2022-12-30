@@ -1,3 +1,5 @@
+import { productsFilter } from '../components/filter/filter';
+import { UrlParamKey } from '../enums/enums';
 export const PAGINATION_LIMIT_DEFAULT = 5;
 export const PAGINATION_LIMIT_MIN = 1;
 export const PAGINATION_LIMIT_MAX = 10;
@@ -5,3 +7,6 @@ export const PAGINATION_LIMIT_STEP = 1;
 export const ACTIVE_PAGE_DEFAULT = 1;
 export const CURRENCY_ICON_CLASS_NAME = 'bi bi-currency-dollar';
 export const PRODUCT_CART_QTY_DEFAULT = 1;
+export const FILTERS_VALUES_SEPARATOR = '↕';
+export const PRICE_RANGE_DEFAULT = productsFilter.getFilterRange(UrlParamKey.Price);
+export const STOCK_RANGE_DEFAULT = productsFilter.getFilterRange(UrlParamKey.Stock);
