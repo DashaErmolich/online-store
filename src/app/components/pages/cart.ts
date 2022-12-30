@@ -4,10 +4,10 @@ import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
-import { ProductCard } from './product-card';
+import { ProductCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
-import { CartSummaryPromoCode } from './promo-code';
+import { CartSummaryPromoCode } from '../promo-code/promo-code';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
