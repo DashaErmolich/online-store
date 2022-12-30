@@ -148,6 +148,7 @@ class Drawer {
     addressInput.required = true;
     addressInput.id = 'person-address';
     addressInput.type = 'text';
+    addressInput.pattern = '^\\W*(?:\\w{5,}\\b\\W*){3,}$';
     addressInput.placeholder = 'Enter delivery address';
     container.append(addressLabel, addressInput);
     return container;
