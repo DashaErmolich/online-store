@@ -102,6 +102,69 @@ class Drawer {
     orderButton.className = 'btn btn-primary';
     return orderButton;
   }
+
+  getPurchaseModalFormGroupContainer(): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'form-group';
+    return container;
+  }
+
+  getPurchaseModalFormGroupPersonName(): HTMLElement {
+    const container = this.getPurchaseModalFormGroupContainer();
+    const nameLabel = document.createElement('label');
+    nameLabel.innerHTML = 'Name and surname'
+    nameLabel.htmlFor = 'person-name';
+    const nameInput = document.createElement('input');
+    nameInput.required = true;
+    nameInput.id = 'person-name';
+    nameInput.type = 'text';
+    nameInput.pattern = '^\\W*(?:\\w{3,}\\b\\W*){2,}$';
+    nameInput.placeholder = 'Enter name and surname';
+    container.append(nameLabel, nameInput);
+    return container;
+  }
+
+  getPurchaseModalFormGroupPersonTel(): HTMLElement {
+    const container = this.getPurchaseModalFormGroupContainer();
+    const telLabel = document.createElement('label');
+    telLabel.innerHTML = 'Phone number'
+    telLabel.htmlFor = 'person-phone';
+    const telInput = document.createElement('input');
+    telInput.required = true;
+    telInput.id = 'person-phone';
+    telInput.type = 'tel';
+    telInput.placeholder = 'Enter phone number';
+    container.append(telLabel, telInput);
+    return container;
+  }
+
+  getPurchaseModalFormGroupPersonAddress(): HTMLElement {
+    const container = this.getPurchaseModalFormGroupContainer();
+    const addressLabel = document.createElement('label');
+    addressLabel.innerHTML = 'Delivery address'
+    addressLabel.htmlFor = 'person-address';
+    const addressInput = document.createElement('input');
+    addressInput.required = true;
+    addressInput.id = 'person-address';
+    addressInput.type = 'text';
+    addressInput.placeholder = 'Enter delivery address';
+    container.append(addressLabel, addressInput);
+    return container;
+  }
+
+  getPurchaseModalFormGroupPersonEmail(): HTMLElement {
+    const container = this.getPurchaseModalFormGroupContainer();
+    const emailLabel = document.createElement('label');
+    emailLabel.innerHTML = 'E-mail'
+    emailLabel.htmlFor = 'person-email';
+    const emailInput = document.createElement('input');
+    emailInput.required = true;
+    emailInput.id = 'person-email';
+    emailInput.type = 'email';
+    emailInput.placeholder = 'Enter e-mail';
+    container.append(emailLabel, emailInput);
+    return container;
+  }
 }
 
 export const appDrawer = new Drawer();

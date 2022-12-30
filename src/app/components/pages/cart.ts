@@ -8,6 +8,7 @@ import { ProductCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
 import { CartSummaryPromoCode } from '../promo-code/promo-code';
+import { PurchaseModal } from '../purchase-modal/purcase-modal';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -261,23 +262,25 @@ export class CartPage extends AbstractPage {
 
     const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
     cartSummaryPromoCodeInput.addEventListener('input', () => {
-      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryOrderCheckoutButton, cartSummaryPromoCodeInput.value);
+      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPurchaseButton, cartSummaryPromoCodeInput.value);
     });
 
     const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
-    const cartSummaryOrderCheckoutButton = appDrawer.getOrderCheckoutButton();
-    cartSummaryOrderCheckoutButton.addEventListener('click', () => {
-      this.showOrderCheckoutModalWindow();
+    const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
+    cartSummaryPurchaseButton.addEventListener('click', () => {
+      this.showPurchaseModal(cartSummaryContainer);
     })
-    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryOrderCheckoutButton);
+    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryPurchaseButton);
     this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
   }
 
-  private showOrderCheckoutModalWindow() {
+  private showPurchaseModal(cartSummaryContainer:HTMLElement) {
     console.log('ORDER CHECKOUT');
+    const modal = new PurchaseModal();
+    cartSummaryContainer.append(modal.getPurchaseModalContent());
   }
 
   private getAllPromoCodesNames(): string {
