@@ -2,11 +2,12 @@ import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
-import { CartPageSettings, SimpleCard, PaginationCardIdxRange } from '../../models/interfaces';
+import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { ProductCard } from './product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
+import { CartSummaryPromoCode } from './promo-code';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -18,7 +19,6 @@ export class CartPage extends AbstractPage {
       productsQty: appStorage.getCartProductsCardsQty(),
       paginationLimit: appRouter.getPageLimitValue(),
       activePage: appRouter.getPageNumber(),
-      promoCodes: appStorage.getCartPromoCodes(),
     };
   }
 
@@ -247,15 +247,27 @@ export class CartPage extends AbstractPage {
     const cartSummaryTitle: HTMLElement = appDrawer.getCartSummaryTitle();
     const cartSummaryTotalProductsQty: HTMLElement = appDrawer.getCartSummaryProductsQty(this.getCartTotalProductQty());
     const cartSummaryTotalSum: HTMLElement = appDrawer.getCartSummaryTotalSum(this.getCartTotalSum());
-    const cartSummaryTotalSumDiscount: HTMLElement = appDrawer.getCartSummaryTotalSumDiscount(this.getCartTotalSumDiscount());
+    cartSummaryContainer.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+
+    let appliedPromoCodesContainer: HTMLElement;
+
+    if (this.isAppliedPromoCodes()) {
+      cartSummaryTotalSum.classList.add('text-decoration-line-through');
+      const cartSummaryTotalSumDiscount: HTMLElement = appDrawer.getCartSummaryTotalSumDiscount(this.getCartTotalSumDiscount());
+      appliedPromoCodesContainer = appDrawer.getAppliedPromoCodesContainer();
+      this.drawAppliedPromoCodes(appliedPromoCodesContainer);
+      cartSummaryContainer.append(cartSummaryTotalSumDiscount, appliedPromoCodesContainer);
+    }
+
     const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
-    cartSummaryPromoCodeInput.addEventListener('change', () => {
-      this.listenPromoCodeInput(cartSummaryPromoCodeInput.value);
+    cartSummaryPromoCodeInput.addEventListener('input', () => {
+      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPromoCodeInput.value);
     });
+
     const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
-    cartSummaryContainer.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum, cartSummaryTotalSumDiscount, cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
+    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
     parentElement.append(cartSummaryContainer);
   }
 
@@ -263,53 +275,87 @@ export class CartPage extends AbstractPage {
     return promoCodes.map((promoCode) => promoCode.name.toUpperCase()).join(', ');
   }
 
-  private listenPromoCodeInput(value: number | string): void {
-    // parentElement.innerHTML = '';
-    console.log(value);
-    const validatedValue = String(value).trim().toLowerCase();
-    const promoCodeIndex = this.getPromoCodeIndex(validatedValue);
-
-    if (promoCodeIndex >= 0) {
-      const promoCodeContainer = document.createElement('div');
-      const promoCodeName = document.createElement('span');
-      promoCodeName.innerHTML = `${promoCodes[promoCodeIndex].description} - ${promoCodes[promoCodeIndex].discountPercent}%`;
-      
-      const promoCodeAddButton = document.createElement('button');
-      promoCodeAddButton.innerHTML = 'Add';
-      promoCodeAddButton.className = 'btn btn-dark';
-      promoCodeAddButton.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target instanceof HTMLElement) {
-          target.classList.add('d-none');
-          promoCodeRemoveButton.classList.remove('d-none');
-          appStorage.addCartPromoCode(promoCodes[promoCodeIndex])
-          this.setCartSummarySum();
-          document.getElementById('cart-summary-products-sum')?.closest('div')?.classList.add('text-decoration-line-through');
-          document.getElementById('cart-summary-products-sum-discount')?.closest('div')?.classList.remove('d-none');
-        }
-      })
-      
-      const promoCodeRemoveButton = document.createElement('button');
-      promoCodeRemoveButton.innerHTML = 'Remove';
-      promoCodeRemoveButton.className = 'btn btn-dark d-none';
-      
-      promoCodeRemoveButton.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target instanceof HTMLElement) {
-          target.classList.add('d-none');
-          promoCodeAddButton.classList.remove('d-none');
-          appStorage.removeCartPromoCode(promoCodes[promoCodeIndex])
-          this.setCartSummarySum();
-          document.getElementById('cart-summary-products-sum')?.closest('div')?.classList.remove('text-decoration-line-through');
-          document.getElementById('cart-summary-products-sum-discount')?.closest('div')?.classList.add('d-none');
-        }
-      })
-      promoCodeContainer.append(promoCodeName, promoCodeAddButton, promoCodeRemoveButton);
-      // parentElement.append(promoCodeContainer);
+  private removeMatchPromoCodeCartSummaryContainer() {
+    const matchPromoCodeCartSummaryContainer = document.getElementById('match-promo-code');
+    if (matchPromoCodeCartSummaryContainer) {
+      matchPromoCodeCartSummaryContainer.remove();
     }
   }
 
-  private getPromoCodeIndex(validatedValue: string): number {
+  private listenPromoCodeInput(cartSummaryContainer: HTMLElement, value: string): void {
+    const validatedValue = String(value).trim().toLowerCase();
+    const promoCodeIndex = this.getPromoCodeIndex(promoCodes, validatedValue);
+
+    this.removeMatchPromoCodeCartSummaryContainer();
+    const matchPromoCodeCartSummaryContainer = appDrawer.getMatchPromoCodeCartSummaryContainer();
+
+    if (promoCodeIndex >= 0) {
+      const promoCode = new CartSummaryPromoCode(promoCodes[promoCodeIndex]);
+
+      if (this.isPromoCodeApplied(promoCodes[promoCodeIndex])) {
+        matchPromoCodeCartSummaryContainer.append(promoCode.getPromoCodeName());
+      } else {
+        matchPromoCodeCartSummaryContainer.append(promoCode.getNewPromoCodeContent());
+      }
+      cartSummaryContainer.append(matchPromoCodeCartSummaryContainer);
+    }
+  }
+
+  private drawAppliedPromoCodes(parentElement: HTMLElement): void {
+    const appliedPromoCodes = appStorage.getCartPromoCodes();
+
+    if (appliedPromoCodes.length) {
+
+      let i = 0;
+      while(i < appliedPromoCodes.length) {
+        const promoCode = new CartSummaryPromoCode(appliedPromoCodes[i]);
+        parentElement.append(promoCode.getAppliedPromoCodeContent());
+        i++
+      }
+    }
+  }
+
+  public isPromoCodeApplied(promoCode: PromoCode): boolean {
+    const appliedPromoCodes = appStorage.getCartPromoCodes();
+    const appliedPromoCodeIndex = this.getPromoCodeIndex(appliedPromoCodes, promoCode.name);
+    if (appliedPromoCodeIndex >= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private isAppliedPromoCodes(): boolean {
+    const appliedPromoCodesEmpty = appStorage.getCartPromoCodes();
+    if (appliedPromoCodesEmpty.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private updateCartSummary() {
+    const cartSummary = document.getElementById('cart-summary-container');
+    if (cartSummary) {
+      const cartSummaryParent = cartSummary.parentElement;
+      if (cartSummaryParent) {
+        cartSummary.remove()
+        this.drawCartSummary(cartSummaryParent);
+      }
+    }
+  }
+
+  public applyPromoCodeToCartSummary(promoCode: PromoCode) {
+    appStorage.addCartPromoCode(promoCode);
+    this.updateCartSummary();
+  }
+
+  public removePromoCodeFromCartSummary(promoCode: PromoCode) {
+    appStorage.removeCartPromoCode(promoCode);
+    this.updateCartSummary();
+  }
+
+  private getPromoCodeIndex(promoCodes: PromoCode[], validatedValue: string): number {
     const promoCodeIndex = promoCodes.findIndex((promoCode => validatedValue === promoCode.name));
     return promoCodeIndex;
   }
@@ -346,7 +392,7 @@ export class CartPage extends AbstractPage {
 
   private getCartTotalSumDiscount(): number {
     const totalSum: number = this.getCartTotalSum();
-    const promoCodes = this.cartSettings.promoCodes;
+    const promoCodes = appStorage.getCartPromoCodes();
     let discount = 0;
 
     if (promoCodes.length) {

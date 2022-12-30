@@ -24,48 +24,77 @@ class Drawer {
   }
 
   getCartSummaryTotalSum(cartTotalSum: number): HTMLElement {
-    const container = document.createElement('div');
-    const title = document.createElement('span');
-    title.innerHTML = 'Total: ';
-    const item = document.createElement('span');
-    item.id = 'cart-summary-products-sum';
-    item.innerHTML = `${cartTotalSum}`;
+    const cartSummaryTotalSumContainer = document.createElement('div');
+    const cartSummaryTotalSumTitle = document.createElement('span');
+    cartSummaryTotalSumTitle.innerHTML = 'Total: ';
+    const cartSummaryTotalSum = document.createElement('span');
+    cartSummaryTotalSum.id = 'cart-summary-products-sum';
+    cartSummaryTotalSum.innerHTML = `${cartTotalSum}`;
     const icon = this.getCurrencyIcon();
-    container.append(title, item, icon);
-    return container;
+    cartSummaryTotalSumContainer.append(cartSummaryTotalSumTitle, cartSummaryTotalSum, icon);
+    return cartSummaryTotalSumContainer;
   }
 
   getCartSummaryTotalSumDiscount(cartTotalSumDiscount: number): HTMLElement {
-    const container = document.createElement('div');
-    const title = document.createElement('span');
-    title.innerHTML = 'Total with discount: ';
-    const item = document.createElement('span');
-    item.id = 'cart-summary-products-sum-discount';
-    item.innerHTML = `${cartTotalSumDiscount}`;
+    const cartSummaryTotalSumDiscountContainer = document.createElement('div');
+    const cartSummaryTotalSumDiscountTitle = document.createElement('span');
+    cartSummaryTotalSumDiscountTitle.innerHTML = 'Total with discount: ';
+    const cartSummaryTotalSumDiscount = document.createElement('span');
+    cartSummaryTotalSumDiscount.id = 'cart-summary-products-sum-discount';
+    cartSummaryTotalSumDiscount.innerHTML = `${cartTotalSumDiscount}`;
     const icon = this.getCurrencyIcon();
-    container.append(title, item, icon);
-    return container;
+    cartSummaryTotalSumDiscountContainer.append(cartSummaryTotalSumDiscountTitle, cartSummaryTotalSumDiscount, icon);
+    return cartSummaryTotalSumDiscountContainer;
   } 
 
   getCartSummaryPromoCodeInput(): HTMLInputElement {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'form-control'
-    input.placeholder = 'Enter Promo Code';
-    return input;
+    const cartSummaryPromoCodeInput = document.createElement('input');
+    cartSummaryPromoCodeInput.id = 'promo-code-input'
+    cartSummaryPromoCodeInput.type = 'text';
+    cartSummaryPromoCodeInput.className = 'form-control'
+    cartSummaryPromoCodeInput.placeholder = 'Enter Promo Code';
+    return cartSummaryPromoCodeInput;
   }
 
   getCartSummaryPromoCodeInfo(promoCodesNames: string): HTMLElement {
-    const info = document.createElement('span');
-    info.innerHTML = `Promo for test: ${promoCodesNames}`;
-    return info;
+    const cartSummaryPromoCodeInfo = document.createElement('span');
+    cartSummaryPromoCodeInfo.innerHTML = `Promo for test: ${promoCodesNames}`;
+    cartSummaryPromoCodeInfo.className = 'text-muted';
+    return cartSummaryPromoCodeInfo;
   }
 
   getCartSummaryContainer(): HTMLElement {
-    const container = document.createElement('aside');
-    container.className = 'col-3';
-    return container;
-  } 
+    const cartSummaryContainer = document.createElement('aside');
+    cartSummaryContainer.id = 'cart-summary-container';
+    cartSummaryContainer.className = 'col-3';
+    return cartSummaryContainer;
+  }
+
+  getPromoCodeButton(value: string): HTMLElement {
+    const promoCodeButton = document.createElement('button');
+    promoCodeButton.innerHTML = value;
+    promoCodeButton.className = 'btn btn-dark';
+    return promoCodeButton;
+  }
+
+  getPromoCodeTitle(promoCodeDescription: string, promoCodeDiscount: number): HTMLElement {
+    const promoCodeName = document.createElement('h6');
+    promoCodeName.innerHTML = `${promoCodeDescription} - ${promoCodeDiscount}%`;
+    return promoCodeName;
+  }
+
+  getMatchPromoCodeCartSummaryContainer(): HTMLElement {
+    const possiblePromoCodeContainer = document.createElement('div');
+    possiblePromoCodeContainer.id = 'match-promo-code';
+    return possiblePromoCodeContainer;
+  }
+
+  getAppliedPromoCodesContainer(): HTMLElement {
+    const appliedPromoCodesContainer = document.createElement('div');
+    appliedPromoCodesContainer.innerHTML = 'Applied promo codes:'
+    appliedPromoCodesContainer.id = 'applied-promo-codes';
+    return appliedPromoCodesContainer;
+  }
 }
 
 export const appDrawer = new Drawer();
