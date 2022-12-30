@@ -268,6 +268,7 @@ export class CartPage extends AbstractPage {
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
     cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
+    this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
   }
 
@@ -416,12 +417,20 @@ export class CartPage extends AbstractPage {
     const cartProductsQty = this.getCartTotalProductQty();
     this.setCartSummary(cartProductsQty);
     this.setCartIcon(cartProductsQty);
+    this.setHeaderCartTotalSum();
   }
 
   private setCartIcon(cartProductsQty: number): void {
     const cartIconQty = document.getElementById('cart-total-items');
     if (cartIconQty) {
       cartIconQty.innerHTML = `${cartProductsQty}`;
+    }
+  }
+
+  private setHeaderCartTotalSum(): void {
+    const headerCartTotalSum = document.getElementById('cart-total-money');
+    if (headerCartTotalSum) {
+      headerCartTotalSum.innerHTML = `${this.getCartTotalSumDiscount()}`;
     }
   }
 }
