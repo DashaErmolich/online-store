@@ -72,7 +72,7 @@ export interface PromoCode {
   name: string,
   discountPercent: number,
   description: string,
-
+}
 export interface NumberRange {
   min: number,
   max: number,

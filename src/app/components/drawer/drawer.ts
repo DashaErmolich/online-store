@@ -57,7 +57,7 @@ class Drawer {
   }
 
   getCartSummaryPromoCodeInfo(promoCodesNames: string): HTMLElement {
-    const cartSummaryPromoCodeInfo = document.createElement('span');
+    const cartSummaryPromoCodeInfo = document.createElement('div');
     cartSummaryPromoCodeInfo.innerHTML = `Promo for test: ${promoCodesNames}`;
     cartSummaryPromoCodeInfo.className = 'text-muted';
     return cartSummaryPromoCodeInfo;
