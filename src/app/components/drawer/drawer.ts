@@ -95,6 +95,13 @@ class Drawer {
     appliedPromoCodesContainer.id = 'applied-promo-codes';
     return appliedPromoCodesContainer;
   }
+
+  getOrderCheckoutButton(): HTMLElement {
+    const orderButton = document.createElement('button');
+    orderButton.innerHTML = 'BUY NOW';
+    orderButton.className = 'btn btn-primary';
+    return orderButton;
+  }
 }
 
 export const appDrawer = new Drawer();

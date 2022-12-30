@@ -261,15 +261,23 @@ export class CartPage extends AbstractPage {
 
     const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
     cartSummaryPromoCodeInput.addEventListener('input', () => {
-      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPromoCodeInput.value);
+      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryOrderCheckoutButton, cartSummaryPromoCodeInput.value);
     });
 
     const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
-    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
+    const cartSummaryOrderCheckoutButton = appDrawer.getOrderCheckoutButton();
+    cartSummaryOrderCheckoutButton.addEventListener('click', () => {
+      this.showOrderCheckoutModalWindow();
+    })
+    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryOrderCheckoutButton);
     this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
+  }
+
+  private showOrderCheckoutModalWindow() {
+    console.log('ORDER CHECKOUT');
   }
 
   private getAllPromoCodesNames(): string {
@@ -283,7 +291,7 @@ export class CartPage extends AbstractPage {
     }
   }
 
-  private listenPromoCodeInput(cartSummaryContainer: HTMLElement, value: string): void {
+  private listenPromoCodeInput(cartSummaryContainer: HTMLElement, cartSummaryOrderCheckoutButton: HTMLElement, value: string): void {
     const validatedValue = String(value).trim().toLowerCase();
     const promoCodeIndex = this.getPromoCodeIndex(promoCodes, validatedValue);
 
@@ -298,7 +306,7 @@ export class CartPage extends AbstractPage {
       } else {
         matchPromoCodeCartSummaryContainer.append(promoCode.getNewPromoCodeContent());
       }
-      cartSummaryContainer.append(matchPromoCodeCartSummaryContainer);
+      cartSummaryContainer.insertBefore(matchPromoCodeCartSummaryContainer, cartSummaryOrderCheckoutButton);
     }
   }
 
