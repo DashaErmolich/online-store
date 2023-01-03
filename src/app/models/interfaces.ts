@@ -78,3 +78,16 @@ export interface NumberRange {
   min: number,
   max: number,
 }
+
+export interface FormInput {
+  id: string,
+  placeholder: string,
+  inputType: 'tel' | 'text' | 'email',
+  validation: Partial<FormInputValidation>,
+}
+
+export interface FormInputValidation {
+  pattern: string,
+  minLength: number,
+  maxLength: number,
+}

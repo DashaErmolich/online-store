@@ -3,7 +3,7 @@
 #user-address:invalid,
 #user-email:invalid,
 #credit-card-number:invalid,
-#credit-card-expired:invalid,
+#credit-card-expiration:invalid,
 #credit-card-cvv:invalid {
   color: $color-invalid-form-text;
 }
@@ -13,7 +13,7 @@
 #user-address:valid,
 #user-email:valid,
 #credit-card-number:valid,
-#credit-card-expired:valid,
+#credit-card-expiration:valid,
 #credit-card-cvv:valid   {
   color: $color-valid-form-text;
 }

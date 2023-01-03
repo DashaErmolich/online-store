@@ -1,89 +1,91 @@
 import { appDrawer } from '../drawer/drawer';
-import { CREDIT_CARD_NUMBER_LENGTH, CREDIT_CARD_EXPIRED_LENGTH, CREDIT_CARD_CVV_LENGTH, CREDIT_CARD_NUMBER_STARTING_VISA, CREDIT_CARD_NUMBER_STARTING_MASTERCARD, CREDIT_CARD_NUMBER_STARTING_JCB, USER_NAME_ICON, USER_TEL_ICON, USER_ADDRESS_ICON, USER_EMAIL_ICON, CREDIT_CARD_NUMBER_DEFAULT_ICON, CREDIT_CARD_NUMBER_VISA_ICON, CREDIT_CARD_NUMBER_MASTERCARD_ICON, CREDIT_CARD_NUMBER_JCB_ICON, USER_NAME_MAX_LENGTH, USER_ADDRESS_MAX_LENGTH, USER_EMAIL_MAX_LENGTH, USER_TEL_MAX_LENGTH, USER_TEL_MIN_LENGTH, CREDIT_CARD_EXPIRED_ICON, CREDIT_CARD_CVV_ICON } from '../../constants/constants';
+import { CREDIT_CARD_EXPIRED_ICON, CREDIT_CARD_CVV_ICON, CREDIT_CARD_NUMBER_STARTING_VISA, CREDIT_CARD_NUMBER_VISA_ICON, CREDIT_CARD_NUMBER_STARTING_MASTERCARD, CREDIT_CARD_NUMBER_STARTING_JCB, CREDIT_CARD_NUMBER_MASTERCARD_ICON, CREDIT_CARD_NUMBER_JCB_ICON, CREDIT_CARD_NUMBER_DEFAULT_ICON, USER_NAME_ICON, USER_TEL_ICON, USER_ADDRESS_ICON, USER_EMAIL_ICON, formUserNameModel, formUserTelModel, formUserAddressModel, formUserEmailModel, formCardNumberModel, formCardExpirationModel, formCardCVVModel } from '../../constants/constants';
 import { appRouter, cartPage } from '../router/router';
 import { RouterPath } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 
 export class PurchaseModal {
-  userNamePattern = '^\\W*(?:\\w{3,}\\b\\W*){2,}$';
-  userTelPattern = '^[+][0-9]{9,}';
-  userAddressPattern = '^\\W*(?:\\w{5,}\\b\\W*){3,}$';
-  userEmailPattern = '^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$';
-  creditCardExpiredPattern = '^(0[1-9]|1[0-2])\\/?([0-9]{2}|[0-9]{2})$';
-
-  creditCardNumberVisaPattern = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-  creditCardNumberMasterCardPattern = /^(?:5[1-5][0-9]{14})$/;
-  creditCardNumberJCBPattern = /^(?:(?:2131|1800|35\d{3})\d{11})$/;
 
   public getPurchaseModalContent(): HTMLElement {
     const form = document.createElement('form');
     const validationInputsStates: HTMLInputElement[] = [];
 
+    const billingAddressContainer = document.createElement('div');
+    const billingAddressTitle = appDrawer.getPurchaseModalFormTitle('Billing address');
+
     const userNameInput = this.getPurchaseModalFormGroupPersonName();
     validationInputsStates.push(userNameInput);
+    const userNameInputLabel = appDrawer.getPurchaseModalInputLabel('Name and surname:', userNameInput.id);
     const userNameInputContainer = appDrawer.getPurchaseModalInputWrapper(userNameInput, USER_NAME_ICON);
 
     const userTelInput = this.getPurchaseModalFormGroupPersonTel();
     validationInputsStates.push(userTelInput);
+    const userTelInputLabel = appDrawer.getPurchaseModalInputLabel('Telephone:', userTelInput.id);
     const userTelInputContainer = appDrawer.getPurchaseModalInputWrapper(userTelInput, USER_TEL_ICON);
 
     const userAddressInput = this.getPurchaseModalFormGroupPersonAddress();
     validationInputsStates.push(userAddressInput);
+    const userAddressInputLabel = appDrawer.getPurchaseModalInputLabel('Delivery address:', userAddressInput.id);
     const userAddressInputContainer = appDrawer.getPurchaseModalInputWrapper(userAddressInput, USER_ADDRESS_ICON);
 
     const userEmailInput = this.getPurchaseModalFormGroupPersonEmail();
     validationInputsStates.push(userEmailInput);
+    const userEmailInputLabel = appDrawer.getPurchaseModalInputLabel('E-mail address:', userEmailInput.id);
     const userEmailInputContainer = appDrawer.getPurchaseModalInputWrapper(userEmailInput, USER_EMAIL_ICON);
 
-    const creditCardContainer = document.createElement('article');
+    billingAddressContainer.append(billingAddressTitle, userNameInputLabel, userNameInputContainer, userTelInputLabel, userTelInputContainer, userAddressInputLabel, userAddressInputContainer, userEmailInputLabel, userEmailInputContainer,)
 
-    const creditCardNumberInput = this.getPurchaseModalCreditCardNumber();
+    const creditCardContainer = document.createElement('div');
+
+    const creditCardContainerTitle = appDrawer.getPurchaseModalFormTitle('Payment');
+    creditCardContainer.append(creditCardContainerTitle);
+
+    const creditCardNumberInput = this.getValidatedCardNumberInput();
     validationInputsStates.push(creditCardNumberInput);
+    const creditCardNumberInputLabel = appDrawer.getPurchaseModalInputLabel('Credit card number:', creditCardNumberInput.id);
     const creditCardNumberInputWrapper = appDrawer.getPurchaseModalInputWrapper(creditCardNumberInput, CREDIT_CARD_NUMBER_DEFAULT_ICON);
 
-    const creditCardExpiredInput = this.getPurchaseModalCreditCardExpired();
+    const creditCardExpiredInput = this.getValidatedCardExpirationInput();
     validationInputsStates.push(creditCardExpiredInput);
+    const creditCardExpiredInputLabel = appDrawer.getPurchaseModalInputLabel('Expiration:', creditCardExpiredInput.id);
     const creditCardExpiredInputWrapper = appDrawer.getPurchaseModalInputWrapper(creditCardExpiredInput, CREDIT_CARD_EXPIRED_ICON);
 
-    const creditCardCVVInput = this.getPurchaseModalCreditCardCVV();
+    const creditCardCVVInput = this.getValidatedCardCvvInput();
     validationInputsStates.push(creditCardCVVInput);
+    const creditCardCVVInputLabel = appDrawer.getPurchaseModalInputLabel('CVV:', creditCardCVVInput.id);
     const creditCardCVVInputWrapper = appDrawer.getPurchaseModalInputWrapper(creditCardCVVInput, CREDIT_CARD_CVV_ICON);
 
-    creditCardContainer.append(creditCardNumberInputWrapper, creditCardExpiredInputWrapper, creditCardCVVInputWrapper)
+    const creditCardExpiredAndCVVWrapper = document.createElement('div');
+    creditCardExpiredAndCVVWrapper.className = 'row';
+    const creditCardExpiredWrapper = document.createElement('div');
+    creditCardExpiredWrapper.className = 'col';
+    creditCardExpiredWrapper.append(creditCardExpiredInputLabel, creditCardExpiredInputWrapper);
+    const creditCardCVVWrapper = document.createElement('div');
+    creditCardCVVWrapper.className = 'col';
+    creditCardCVVWrapper.append(creditCardCVVInputLabel, creditCardCVVInputWrapper);
+    creditCardExpiredAndCVVWrapper.append(creditCardExpiredWrapper, creditCardCVVWrapper);
 
-    const submitButton = this.getPurchaseModalSubmitButton();
+    creditCardContainer.append(creditCardNumberInputLabel, creditCardNumberInputWrapper, creditCardExpiredAndCVVWrapper)
+
+    const submitButton = this.getFormSubmitButton();
 
     submitButton.addEventListener('click', () => {
       this.validateForm(form, validationInputsStates);
     })
 
-    form.append(userNameInputContainer, userTelInputContainer, userAddressInputContainer, userEmailInputContainer, creditCardContainer, submitButton);
+    form.append(billingAddressContainer, creditCardContainer);
 
-    return form;
+    const modal = appDrawer.getPurchaseModal(form, submitButton);
+    return modal;
   }
 
   private getPurchaseModalFormGroupPersonName(): HTMLInputElement {
-    const userNameInputId = 'user-name';
-    const userNameInputPlaceholder = 'Name Surname';
-    const userNameInputType = 'text';
-    
-    const userNameInput = appDrawer.getPurchaseModalInput(userNameInputType, userNameInputPlaceholder, userNameInputId, this.userNamePattern);
-    
-    userNameInput.maxLength = USER_NAME_MAX_LENGTH;
-    
+    const userNameInput = appDrawer.getPurchaseModalInput(formUserNameModel);
     return userNameInput;
   }
 
   private getPurchaseModalFormGroupPersonTel(): HTMLInputElement {
-    const userTelInputId = 'user-tel';
-    const userTelInputPlaceholder = '+123456789';
-    const userTelInputType = 'tel';
-    
-    const userTelInput = appDrawer.getPurchaseModalInput(userTelInputType, userTelInputPlaceholder, userTelInputId, this.userTelPattern);
-    
-    userTelInput.minLength = USER_TEL_MIN_LENGTH + 1;
-    userTelInput.maxLength = USER_TEL_MAX_LENGTH;
-
+    const userTelInput = appDrawer.getPurchaseModalInput(formUserTelModel);
     userTelInput.addEventListener('input', () => {
 
       if (userTelInput.value.length === 1) {
@@ -99,75 +101,48 @@ export class PurchaseModal {
   }
 
   private getPurchaseModalFormGroupPersonAddress(): HTMLInputElement {
-    const userAddressInputId = 'user-address';
-    const userAddressInputPlaceholder = 'Delivery address';
-    const userAddressInputType = 'text';
-    
-    const userAddressInput = appDrawer.getPurchaseModalInput(userAddressInputType, userAddressInputPlaceholder, userAddressInputId, this.userAddressPattern);
-    
-    userAddressInput.maxLength = USER_ADDRESS_MAX_LENGTH;
-    
+    const userAddressInput = appDrawer.getPurchaseModalInput(formUserAddressModel);
     return userAddressInput;
   }
 
   private getPurchaseModalFormGroupPersonEmail(): HTMLInputElement {
-    const userEmailInputId = 'user-email';
-    const userEmailInputPlaceholder = 'username@example.com';
-    const userEmailInputType = 'email';
-    
-    const userEmailInput = appDrawer.getPurchaseModalInput(userEmailInputType, userEmailInputPlaceholder, userEmailInputId, this.userEmailPattern);
-    
-    userEmailInput.maxLength = USER_EMAIL_MAX_LENGTH;
-    
+    const userEmailInput = appDrawer.getPurchaseModalInput(formUserEmailModel);
     return userEmailInput;
   }
 
-  private getPurchaseModalCreditCardNumber(): HTMLInputElement {
-    const creditCardNumberInputId = 'credit-card-number';
-    const creditCardNumberInputPlaceholder = 'Card number (16 digits)';
-    const creditCardNumberInputType = 'text';
-
-    const creditCardNumberInput = appDrawer.getPurchaseModalInput(creditCardNumberInputType, creditCardNumberInputPlaceholder, creditCardNumberInputId);
+  private getValidatedCardNumberInput(): HTMLInputElement {
+    const creditCardNumberInput = appDrawer.getPurchaseModalInput(formCardNumberModel);
     
-    creditCardNumberInput.minLength = CREDIT_CARD_NUMBER_LENGTH;
-    creditCardNumberInput.maxLength = CREDIT_CARD_NUMBER_LENGTH;
-
     creditCardNumberInput.addEventListener('input', () => {
       this.listenOnlyNumberInput(creditCardNumberInput);
-      this.listenCreditCardNumber(creditCardNumberInput);
+      this.setCardIcon(creditCardNumberInput);
     })
     
     return creditCardNumberInput;
   }
 
-  private getPurchaseModalCreditCardExpired(): HTMLInputElement {
+  private getValidatedCardExpirationInput(): HTMLInputElement {
+    const creditCardExpirationInput = appDrawer.getPurchaseModalInput(formCardExpirationModel);
     
-    const creditCardExpiredInput = appDrawer.getPurchaseModalInput('text', 'MM/YY', 'credit-card-expired', this.creditCardExpiredPattern);
-    
-    creditCardExpiredInput.minLength = CREDIT_CARD_EXPIRED_LENGTH + 1;
-    creditCardExpiredInput.maxLength = creditCardExpiredInput.minLength;
-    
-    creditCardExpiredInput.addEventListener('input', () => {
-      this.listenOnlyNumberInput(creditCardExpiredInput);
-      this.listenCreditCardExpiredInput(creditCardExpiredInput);
+    creditCardExpirationInput.addEventListener('input', () => {
+      this.listenOnlyNumberInput(creditCardExpirationInput);
+      this.listenCreditCardExpiredInput(creditCardExpirationInput);
     })
     
-    return creditCardExpiredInput;
+    return creditCardExpirationInput;
   }
 
-  private getPurchaseModalCreditCardCVV(): HTMLInputElement {
-    const creditCardCVVInput = appDrawer.getPurchaseModalInput('text', 'CVV', 'credit-card-cvv');
-    
-    creditCardCVVInput.minLength = CREDIT_CARD_CVV_LENGTH;
-    creditCardCVVInput.maxLength = CREDIT_CARD_CVV_LENGTH;
+  private getValidatedCardCvvInput(): HTMLInputElement {
+    const creditCardCVVInput = appDrawer.getPurchaseModalInput(formCardCVVModel);
     
     creditCardCVVInput.addEventListener('input', () => {
       this.listenOnlyNumberInput(creditCardCVVInput);
     })
+
     return creditCardCVVInput;
   }
 
-  private getPurchaseModalSubmitButton(): HTMLInputElement {
+  private getFormSubmitButton(): HTMLInputElement {
     const submitButton = appDrawer.getPurchaseModalSubmitButton();
     
     submitButton.addEventListener('click', (event: Event) => {
@@ -180,33 +155,35 @@ export class PurchaseModal {
   private listenOnlyNumberInput(input: HTMLInputElement): void {
     if (input.value.length) {
       const numberPattern = new RegExp(/^[0-9]*$/);
+
       if (!input.value[input.value.length - 1].match(numberPattern)) {
         input.value = input.value.slice(0, -1);
       }
     }
   }
 
-  private listenCreditCardNumber(input: HTMLInputElement): void {
-    switch (input.value[0]) {
+  private setCardIcon(input: HTMLInputElement): void {
+    const cardFirstDigit = input.value[0];
+    switch (cardFirstDigit) {
 
       case String(CREDIT_CARD_NUMBER_STARTING_VISA):
         this.setCreditCardIcon(input, CREDIT_CARD_NUMBER_VISA_ICON);
         break;
 
       case String(CREDIT_CARD_NUMBER_STARTING_MASTERCARD):
-        this.setCreditCardIcon(input, CREDIT_CARD_NUMBER_MASTERCARD_ICON);
+        this.setCreditCardIcon(input, String(CREDIT_CARD_NUMBER_MASTERCARD_ICON));
         break;
 
       case String(CREDIT_CARD_NUMBER_STARTING_JCB):
-        this.setCreditCardIcon(input, CREDIT_CARD_NUMBER_JCB_ICON);
+        this.setCreditCardIcon(input, String(CREDIT_CARD_NUMBER_JCB_ICON));
         break;
 
       case undefined:
-        this.setCreditCardIcon(input, CREDIT_CARD_NUMBER_DEFAULT_ICON);
+        this.setCreditCardIcon(input, String(CREDIT_CARD_NUMBER_DEFAULT_ICON));
         break;
 
       default:
-        this.setCreditCardIcon(input, CREDIT_CARD_NUMBER_DEFAULT_ICON);
+        this.setCreditCardIcon(input, String(CREDIT_CARD_NUMBER_DEFAULT_ICON));
         break;
     }
   }

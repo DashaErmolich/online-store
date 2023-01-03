@@ -269,17 +269,16 @@ export class CartPage extends AbstractPage {
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
     const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
-    cartSummaryPurchaseButton.addEventListener('click', () => {
-      this.showPurchaseModal(cartSummaryContainer);
-    })
+
+    cartSummaryPurchaseButton.setAttribute('data-bs-toggle', 'modal');
+    cartSummaryPurchaseButton.setAttribute('data-bs-target', '#purchase-modal');
+
+    const modal = new PurchaseModal();
+    cartSummaryContainer.append(modal.getPurchaseModalContent());
+    
     cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryPurchaseButton);
     this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
-  }
-
-  private showPurchaseModal(cartSummaryContainer:HTMLElement) {
-    const modal = new PurchaseModal();
-    cartSummaryContainer.append(modal.getPurchaseModalContent());
   }
 
   private getAllPromoCodesNames(): string {

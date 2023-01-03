@@ -1,4 +1,5 @@
 import { CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
+import { FormInput } from '../../models/interfaces';
 class Drawer {
   getCartSummaryTitle(): HTMLElement {
     const cartSummaryTitle = document.createElement('h5');
@@ -105,7 +106,7 @@ class Drawer {
 
   getPurchaseModalFormGroupContainer(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'input-group';
+    container.className = 'input-group mb-4';
     return container;
   }
 
@@ -175,16 +176,26 @@ class Drawer {
     return purchaseModalInputIcon;
   }
 
-  getPurchaseModalInput(type: string, placeholder: string, id: string, pattern?: string): HTMLInputElement {
+  getPurchaseModalInput(inputModel: FormInput): HTMLInputElement {
     const purchaseModalInput = document.createElement('input');
     purchaseModalInput.className = 'form-control';
-    purchaseModalInput.type = type;
+    purchaseModalInput.type = inputModel.inputType;
     purchaseModalInput.required = true;
-    purchaseModalInput.placeholder = placeholder;
-    purchaseModalInput.id = id;
-    if (pattern) {
-      purchaseModalInput.pattern = pattern;
+    purchaseModalInput.placeholder = inputModel.placeholder;
+    purchaseModalInput.id = inputModel.id;
+
+    if (inputModel.validation.pattern) {
+      purchaseModalInput.pattern = inputModel.validation['pattern'];
     }
+
+    if (inputModel.validation.minLength) {
+      purchaseModalInput.minLength = inputModel.validation['minLength'];
+    }
+
+    if (inputModel.validation.maxLength) {
+      purchaseModalInput.maxLength = inputModel.validation['maxLength'];
+    }
+    
     return purchaseModalInput;
   }
 
@@ -192,8 +203,16 @@ class Drawer {
     const submitButton = document.createElement('input');
     submitButton.type = 'submit';
     submitButton.value = 'Submit';
-    submitButton.className = 'd-block'
+    submitButton.className = 'btn btn-success'
     return submitButton;
+  }
+
+  getPurchaseModalInputLabel(text: string, id: string): HTMLElement {
+    const inputLabel = document.createElement('label');
+    inputLabel.className = 'form-label';
+    inputLabel.innerHTML = text;
+    inputLabel.htmlFor = id;
+    return inputLabel;
   }
 
   getPurchaseModalInputError(): HTMLElement {
@@ -210,10 +229,68 @@ class Drawer {
     container.append(icon, input, error);
     return container;
   }
+
   getPurchaseModalOrderMessage(text: string): HTMLElement {
     const message = document.createElement('span');
     message.innerHTML = text;
     return message;
+  }
+
+  getPurchaseModal(form: HTMLElement, submitButton: HTMLElement): HTMLElement {
+    const modal = document.createElement('section');
+    modal.id = 'purchase-modal'
+    modal.className = 'modal fade';
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('aria-labelladby', 'modal-title');
+    modal.setAttribute('aria-hidden', 'true');
+  
+    const modalDialog = document.createElement('article');
+    modalDialog.className = 'modal-dialog';
+  
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const modalHeader = document.createElement('div');
+    modalHeader.className = 'modal-header';
+
+    const modalTitle = document.createElement('h5');
+    modalTitle.className = 'modal-title';
+    modalTitle.id = 'modal-title';
+
+    const modalCloseButton = document.createElement('button');
+    modalCloseButton.className = 'btn-close';
+    modalCloseButton.type = 'button';
+    modalCloseButton.setAttribute('data-bs-dismiss', 'modal');
+    modalCloseButton.setAttribute('aria-label', 'Close');
+
+    const modalBody = document.createElement('div');
+    modalBody.className = 'modal-body';
+
+    const modalFooter = document.createElement('div');
+    modalFooter.className = 'modal-footer';
+
+    modalHeader.append(modalTitle);
+    modalHeader.append(modalCloseButton);
+
+    modalBody.append(form);
+
+    modalFooter.append(submitButton);
+
+    modalContent.append(modalHeader);
+    modalContent.append(modalBody);
+    modalContent.append(modalFooter);
+
+    modalDialog.append(modalContent);
+
+    modal.append(modalDialog);
+    return modal;
+  }
+
+  getPurchaseModalFormTitle(text: string): HTMLElement {
+    const formBillingAddressTitle = document.createElement('h5');
+    formBillingAddressTitle.className = 'mb-3'
+    formBillingAddressTitle.innerHTML = text;
+    return formBillingAddressTitle;
   }
 }
 
