@@ -278,7 +278,6 @@ export class CartPage extends AbstractPage {
   }
 
   private showPurchaseModal(cartSummaryContainer:HTMLElement) {
-    console.log('ORDER CHECKOUT');
     const modal = new PurchaseModal();
     cartSummaryContainer.append(modal.getPurchaseModalContent());
   }

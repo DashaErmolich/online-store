@@ -105,7 +105,7 @@ class Drawer {
 
   getPurchaseModalFormGroupContainer(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'form-group';
+    container.className = 'input-group';
     return container;
   }
 
@@ -165,6 +165,41 @@ class Drawer {
     emailInput.type = 'email';
     emailInput.placeholder = 'Enter e-mail';
     container.append(emailLabel, emailInput);
+    return container;
+  }
+
+  getPurchaseModalInputIcon(iconPath: string): HTMLImageElement {
+    const purchaseModalInputIcon = document.createElement('img');
+    purchaseModalInputIcon.src = iconPath;
+    purchaseModalInputIcon.className = 'form-input-icon input-group-text';
+    return purchaseModalInputIcon;
+  }
+
+  getPurchaseModalInput(type: string, placeholder: string, id: string, pattern?: string): HTMLInputElement {
+    const purchaseModalInput = document.createElement('input');
+    purchaseModalInput.className = 'form-control';
+    purchaseModalInput.type = type;
+    purchaseModalInput.required = true;
+    purchaseModalInput.placeholder = placeholder;
+    purchaseModalInput.id = id;
+    if (pattern) {
+      purchaseModalInput.pattern = pattern;
+    }
+    return purchaseModalInput;
+  }
+
+  getPurchaseModalSubmitButton(): HTMLInputElement {
+    const submitButton = document.createElement('input');
+    submitButton.type = 'submit';
+    submitButton.value = 'Submit';
+    submitButton.className = 'd-block'
+    return submitButton;
+  }
+
+  getPurchaseModalInputWrapper(input: HTMLInputElement, iconSrc: string): HTMLElement {
+    const container = this.getPurchaseModalFormGroupContainer();
+    const icon = this.getPurchaseModalInputIcon(iconSrc);
+    container.append(icon, input);
     return container;
   }
 }
