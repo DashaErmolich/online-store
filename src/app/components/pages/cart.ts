@@ -433,7 +433,7 @@ export class CartPage extends AbstractPage {
   private setCartIcon(cartProductsQty: number): void {
     const cartIconQty = document.getElementById('cart-total-items');
     if (cartIconQty) {
-      cartIconQty.innerHTML = `${cartProductsQty}`;
+      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '';
     }
   }
 
@@ -442,5 +442,17 @@ export class CartPage extends AbstractPage {
     if (headerCartTotalSum) {
       headerCartTotalSum.innerHTML = `${this.getCartTotalSumDiscount()}`;
     }
+  }
+
+  private setCartSettings(): void {
+    this.cartSettings.productsQty = appStorage.getCartProductsCardsQty();
+    this.cartSettings.paginationLimit = appRouter.getPaginationLimitValue();
+    this.cartSettings.activePage = appRouter.getPageNumber();
+  }
+
+  public setCartState(): void {
+    this.setCartSettings();
+    this.setCartIcon(this.getCartTotalProductQty());
+    this.setHeaderCartTotalSum();
   }
 }

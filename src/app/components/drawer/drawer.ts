@@ -196,11 +196,24 @@ class Drawer {
     return submitButton;
   }
 
+  getPurchaseModalInputError(): HTMLElement {
+    const errorMessage = document.createElement('span');
+    errorMessage.setAttribute('aria-live', 'polite');
+    errorMessage.className = 'form-input-error';
+    return errorMessage;
+  }
+
   getPurchaseModalInputWrapper(input: HTMLInputElement, iconSrc: string): HTMLElement {
     const container = this.getPurchaseModalFormGroupContainer();
     const icon = this.getPurchaseModalInputIcon(iconSrc);
-    container.append(icon, input);
+    const error = this.getPurchaseModalInputError();
+    container.append(icon, input, error);
     return container;
+  }
+  getPurchaseModalOrderMessage(text: string): HTMLElement {
+    const message = document.createElement('span');
+    message.innerHTML = text;
+    return message;
   }
 }
 

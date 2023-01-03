@@ -70,6 +70,11 @@ export const appStorage: AppStorage = {
     promoCodes.splice(promoCodeIndex, 1);
     localStorage.setItem('promo-codes', JSON.stringify(promoCodes));
   },
+
+  emptyCart(): void {
+    localStorage.removeItem('cart-products');
+    localStorage.removeItem('promo-codes');
+  },
   
 }
 

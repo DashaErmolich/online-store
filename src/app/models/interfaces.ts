@@ -53,7 +53,8 @@ export interface AppStorage {
   getCartPromoCodes(): PromoCode[],
   addCartPromoCode(promoCode: PromoCode): void,
   getPromoCodeIndex(promoCodes: PromoCode[], promoCode: PromoCode): number,
-  removeCartPromoCode(promoCode: PromoCode): void
+  removeCartPromoCode(promoCode: PromoCode): void;
+  emptyCart(): void,
 }
 
 export interface CartPageSettings {

@@ -18,7 +18,8 @@ export const CREDIT_CARD_NUMBER_STARTING_VISA = 4;
 export const CREDIT_CARD_NUMBER_STARTING_MASTERCARD = 5;
 export const CREDIT_CARD_NUMBER_STARTING_JCB = 3;
 export const USER_NAME_MAX_LENGTH = 100;
-export const USER_TEL_LENGTH = 10;
+export const USER_TEL_MIN_LENGTH = 9;
+export const USER_TEL_MAX_LENGTH = 20;
 export const USER_ADDRESS_MAX_LENGTH = 100;
 export const USER_EMAIL_MAX_LENGTH = 50;
 
@@ -30,6 +31,8 @@ import USER_EMAIL_ICON from '../../assets/icons/envelope-at.svg';
 import USER_ADDRESS_ICON from '../../assets/icons/house-door.svg';
 import USER_TEL_ICON from '../../assets/icons/telephone.svg';
 import USER_NAME_ICON from '../../assets/icons/person.svg';
+import CREDIT_CARD_EXPIRED_ICON from '../../assets/icons/calendar-check.svg';
+import CREDIT_CARD_CVV_ICON from '../../assets/icons/icons8-card-verification-value-32.png';
 
 export { 
   CREDIT_CARD_NUMBER_DEFAULT_ICON, 
@@ -40,4 +43,6 @@ export {
   USER_ADDRESS_ICON,
   USER_TEL_ICON,
   USER_NAME_ICON,
+  CREDIT_CARD_EXPIRED_ICON,
+  CREDIT_CARD_CVV_ICON,
 }
