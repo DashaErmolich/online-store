@@ -51,7 +51,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
-    extensions: ['.js', 'json', '.tsx', '.ts', '.jsx', '.js', '...'],
+    extensions: ['.js', 'json', '.tsx', '.ts', '.jsx', '.js', '.svg', '...'],
   },
   optimization: optimization(),
   devServer: {
