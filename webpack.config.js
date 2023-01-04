@@ -53,7 +53,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', 'json', '.tsx', '.ts', '.jsx', '.js', '...'],
     alias: {
-      assets: path.resolve(__dirname, 'src/assets/'),
+      '@icons': path.resolve(__dirname, 'src/assets/icons'),
     }
   },
   optimization: optimization(),
