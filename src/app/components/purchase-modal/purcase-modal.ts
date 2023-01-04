@@ -116,6 +116,7 @@ export class PurchaseModal {
     creditCardNumberInput.addEventListener('input', () => {
       this.listenOnlyNumberInput(creditCardNumberInput);
       this.setCardIcon(creditCardNumberInput);
+      this.listenCreditCardNumberInput(creditCardNumberInput);
     })
     
     return creditCardNumberInput;
@@ -212,8 +213,13 @@ export class PurchaseModal {
   }
 
   private listenCreditCardNumberInput(input: HTMLInputElement): void {
-    if (input.value.length === 3) {
-      input.value = `${input.value[0]}${input.value[1]}/${input.value[2]}`;
+    const separateDigitGroupLength = 4;
+    
+    if (input.value.length % (separateDigitGroupLength + 1) === 0) {
+      const separateDigitGroupLastDigitIndex = input.value.length - 1;
+      const newInputValue: string[] = input.value.split('');
+      newInputValue.splice(separateDigitGroupLastDigitIndex, 0, ' ');
+      input.value = newInputValue.join('');
     }
   }
   

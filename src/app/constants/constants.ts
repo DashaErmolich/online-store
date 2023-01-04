@@ -86,8 +86,8 @@ export const formCardNumberModel: FormInput = {
   placeholder: '1234 1234 1234 1234',
   inputType: 'text',
   validation: {
-    minLength: 16,
-    maxLength: 16,
+    minLength: 19,
+    maxLength: 19,
   }
 }
 
