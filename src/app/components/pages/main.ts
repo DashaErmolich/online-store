@@ -51,6 +51,22 @@ export class MainPage extends AbstractPage {
     </div>
   </div>
     `
+    // !temporary! this is a button for delete all cards from local storage
+    const resetCardBtn = document.createElement('button');
+    resetCardBtn.classList.add('card__btn');
+    resetCardBtn.textContent = 'remove cards from cart';
+    resetCardBtn.style.height = '100px';
+    resetCardBtn.addEventListener('click', e => {
+      const target = e.target as HTMLElement;
+      if (target.parentElement?.classList.contains('filters-wrapper')) {
+        console.log('local storage is clear now \n deleted cards:')
+        console.log(localStorage.getItem('cart-products'));
+        localStorage.setItem('cart-products', '');
+      }
+
+    })
+    
+    filtersWrapper.append(resetCardBtn);
     const cardsWrapper = document.createElement('div');
     cardsWrapper.classList.add('cards-wrapper');
     this.generateCards(cardsWrapper);
@@ -61,19 +77,7 @@ export class MainPage extends AbstractPage {
 
     return content;
   }
-  filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { // TODO: useless now, destroy or use for filters
-    if (!brand && !category) {
-      const fragment = document.createDocumentFragment();
-      const wrapper = document.querySelector('.cards-wrapper') as HTMLDivElement;
-      const card = document.querySelector('#card-temp') as HTMLTemplateElement;
-      console.log(card)
-      const clone = card.content.cloneNode(true) as HTMLTemplateElement;
-      (clone.querySelector('.card__title') as HTMLDivElement).textContent = elem.title;
-      (clone.querySelector('.card__category') as HTMLParagraphElement).textContent = elem.category;
-      fragment.append(clone);
-      wrapper.appendChild(fragment);
-    }
-  }
+
   generateCards (wrapper: HTMLDivElement):void {
     const cards = possibleCards.products;
     cards.forEach(e => this.createCard(wrapper, e));
