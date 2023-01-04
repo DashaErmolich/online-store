@@ -29,7 +29,7 @@ export class PurchaseModal {
 
     const submitButton = appDrawer.getPurchaseModalSubmitButton();
     submitButton.addEventListener('click', (event) => {
-      this.validateForm(event, form);
+      this.validateForm(event, form, modal);
     })
 
     form.append(billingAddressContainer, creditCardContainer);
@@ -167,12 +167,12 @@ export class PurchaseModal {
     }
   }
 
-  private validateForm(event: Event, form: HTMLFormElement): void {
+  private validateForm(event: Event, form: HTMLFormElement, modal: HTMLElement): void {
     if (!form.checkValidity()) {
       event.preventDefault();
       event.stopPropagation();
     } else {
-      this.finishOrder(form);
+      this.finishOrder(modal);
       setTimeout(() => {
         this.closeModal();
         appRouter.navigate(RouterPath.Main);
@@ -181,13 +181,21 @@ export class PurchaseModal {
     form.classList.add('was-validated');
   }
 
-  private finishOrder(form: HTMLFormElement): void {
-    form.innerHTML = '';
-    const orderMessageText = 'Thank you for the order. You will be redirected to the main page';
-    const orderMessage = appDrawer.getPurchaseModalOrderMessage(orderMessageText);
-    form.append(orderMessage);
-    appStorage.emptyCart();
-    cartPage.setCartState();
+  private finishOrder(modal: HTMLElement): void {
+    const modalBody = modal.querySelector('.modal-body');
+    const modalFooter = modal.querySelector('.modal-footer');
+    if (modalFooter) {
+      modalFooter.innerHTML = '';
+    }
+    if (modalBody) {
+      modalBody.innerHTML = '';
+      const orderMessageText = 'Thank you for the order. You will be redirected to the main page';
+      const orderMessage = appDrawer.getPurchaseModalOrderMessage(orderMessageText);
+      modalBody.append(orderMessage);
+      appStorage.emptyCart();
+      cartPage.setCartState();
+    }
+
   }
 
   private closeModal(): void {
