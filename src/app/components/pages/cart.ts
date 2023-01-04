@@ -8,7 +8,7 @@ import { ProductCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
 import { CartSummaryPromoCode } from '../promo-code/promo-code';
-import { PurchaseModal } from '../purchase-modal/purcase-modal';
+import { PurchaseModal } from '../purchase-modal/purchase-modal';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;

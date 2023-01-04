@@ -83,11 +83,20 @@ export interface FormInput {
   id: string,
   placeholder: string,
   inputType: 'tel' | 'text' | 'email',
-  validation: Partial<FormInputValidation>,
+  validationParameters: Partial<FormInputValidation>,
+  validationErrorMessage: string,
+  label: string,
+  icon?: string,
+  iconClassName?: string,
 }
 
 export interface FormInputValidation {
   pattern: string,
   minLength: number,
   maxLength: number,
+}
+
+export interface CreditCard {
+  firstDigit: number,
+  icon: string,
 }

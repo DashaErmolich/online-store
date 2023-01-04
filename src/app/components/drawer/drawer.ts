@@ -106,7 +106,7 @@ class Drawer {
 
   getPurchaseModalFormGroupContainer(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'input-group mb-4';
+    container.className = 'input-group mb-4 has-validation';
     return container;
   }
 
@@ -169,10 +169,25 @@ class Drawer {
     return container;
   }
 
-  getPurchaseModalInputIcon(iconPath: string): HTMLImageElement {
-    const purchaseModalInputIcon = document.createElement('img');
-    purchaseModalInputIcon.src = iconPath;
-    purchaseModalInputIcon.className = 'form-input-icon input-group-text';
+  getPurchaseModalSvgObject(icon: string): HTMLElement {
+    const object = document.createElement('object');
+    object.id = 'credit-card-icon';
+    object.data = icon;
+    object.width = '16';
+    object.height = '16';
+    return object;
+  }
+
+  getPurchaseModalInputIcon(inputTemplate: FormInput): HTMLElement {
+    const purchaseModalInputIcon = document.createElement('span');
+    if (inputTemplate.iconClassName) {
+      purchaseModalInputIcon.className = `input-group-text ${inputTemplate.iconClassName}`;
+    }
+    if (inputTemplate.icon) {
+      purchaseModalInputIcon.className = 'input-group-text';
+      const object = this.getPurchaseModalSvgObject(inputTemplate.icon);
+      purchaseModalInputIcon.append(object);
+    }
     return purchaseModalInputIcon;
   }
 
@@ -184,49 +199,60 @@ class Drawer {
     purchaseModalInput.placeholder = inputModel.placeholder;
     purchaseModalInput.id = inputModel.id;
 
-    if (inputModel.validation.pattern) {
-      purchaseModalInput.pattern = inputModel.validation['pattern'];
+    if (inputModel.validationParameters.pattern) {
+      purchaseModalInput.pattern = inputModel.validationParameters['pattern'];
     }
 
-    if (inputModel.validation.minLength) {
-      purchaseModalInput.minLength = inputModel.validation['minLength'];
+    if (inputModel.validationParameters.minLength) {
+      purchaseModalInput.minLength = inputModel.validationParameters['minLength'];
     }
 
-    if (inputModel.validation.maxLength) {
-      purchaseModalInput.maxLength = inputModel.validation['maxLength'];
+    if (inputModel.validationParameters.maxLength) {
+      purchaseModalInput.maxLength = inputModel.validationParameters['maxLength'];
     }
     
     return purchaseModalInput;
   }
 
-  getPurchaseModalSubmitButton(): HTMLInputElement {
-    const submitButton = document.createElement('input');
+  getPurchaseModalSubmitButton(): HTMLElement {
+    const submitButton = document.createElement('button');
+    submitButton.className = 'btn btn-primary';
     submitButton.type = 'submit';
-    submitButton.value = 'Submit';
-    submitButton.className = 'btn btn-success'
+    submitButton.innerHTML = 'Submit';
     return submitButton;
   }
 
   getPurchaseModalInputLabel(text: string, id: string): HTMLElement {
     const inputLabel = document.createElement('label');
     inputLabel.className = 'form-label';
-    inputLabel.innerHTML = text;
+    inputLabel.innerText = text;
     inputLabel.htmlFor = id;
     return inputLabel;
   }
 
-  getPurchaseModalInputError(): HTMLElement {
-    const errorMessage = document.createElement('span');
-    errorMessage.setAttribute('aria-live', 'polite');
-    errorMessage.className = 'form-input-error';
-    return errorMessage;
+  getPurchaseModalInputError(errorMessage: string): HTMLElement {
+    const error = document.createElement('div');
+    error.className = 'invalid-feedback';
+    error.innerHTML = errorMessage;
+    return error;
   }
 
-  getPurchaseModalInputWrapper(input: HTMLInputElement, iconSrc: string): HTMLElement {
-    const container = this.getPurchaseModalFormGroupContainer();
-    const icon = this.getPurchaseModalInputIcon(iconSrc);
-    const error = this.getPurchaseModalInputError();
-    container.append(icon, input, error);
+  getPurchaseModalInputGroup(input: HTMLInputElement, inputTemplate: FormInput): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'form-field'
+    const label = this.getPurchaseModalInputLabel(inputTemplate.label, inputTemplate.id);
+    container.append(label);
+    
+    const inputGroup = this.getPurchaseModalFormGroupContainer();
+
+    if (inputTemplate.iconClassName || inputTemplate.icon) {
+      const icon: HTMLElement = this.getPurchaseModalInputIcon(inputTemplate);
+      inputGroup.append(icon);
+    }
+
+    const errorMessage = this.getPurchaseModalInputError(inputTemplate.validationErrorMessage);
+    inputGroup.append(input, errorMessage);
+    container.append(inputGroup);
     return container;
   }
 
@@ -261,6 +287,7 @@ class Drawer {
     modalCloseButton.className = 'btn-close';
     modalCloseButton.type = 'button';
     modalCloseButton.setAttribute('data-bs-dismiss', 'modal');
+    modalCloseButton.id = 'purchase-modal-close-button';
     modalCloseButton.setAttribute('aria-label', 'Close');
 
     const modalBody = document.createElement('div');
@@ -291,6 +318,21 @@ class Drawer {
     formBillingAddressTitle.className = 'mb-3'
     formBillingAddressTitle.innerHTML = text;
     return formBillingAddressTitle;
+  }
+
+  getPurchaseModalForm(): HTMLFormElement {
+    const form = document.createElement('form');
+    form.className = 'needs-validation';
+    form.setAttribute('novalidate', '');
+    return form;
+  }
+
+  getPurchaseModalContainer(title: string, className: string): HTMLElement {
+    const formContainer = document.createElement('div');
+    const formContainerTitle = this.getPurchaseModalFormTitle(title);
+    formContainer.className = className;
+    formContainer.append(formContainerTitle);
+    return formContainer;
   }
 }
 
