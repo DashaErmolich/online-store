@@ -1,10 +1,10 @@
 import { productsFilter } from '../components/filter/filter';
 import { UrlParamKey } from '../enums/enums';
 import { FormInput, CreditCard } from '../models/interfaces';
-import CREDIT_CARD_NUMBER_DEFAULT_ICON from '@icons/credit-card-logo.svg';
-import CREDIT_CARD_NUMBER_VISA_ICON from '@icons/visa-logo.svg';
-import CREDIT_CARD_NUMBER_MASTERCARD_ICON from '@icons/mastercard-logo.svg';
-import CREDIT_CARD_NUMBER_JCB_ICON from '@icons/JCB-logo.svg';
+import CREDIT_CARD_NUMBER_DEFAULT_ICON from 'appIcons/credit-card-logo.svg';
+import CREDIT_CARD_NUMBER_VISA_ICON from 'appIcons/visa-logo.svg';
+import CREDIT_CARD_NUMBER_MASTERCARD_ICON from 'appIcons/mastercard-logo.svg';
+import CREDIT_CARD_NUMBER_JCB_ICON from 'appIcons/JCB-logo.svg';
 
 export const PAGINATION_LIMIT_DEFAULT = 5;
 export const PAGINATION_LIMIT_MIN = 1;
