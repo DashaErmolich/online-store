@@ -18,7 +18,7 @@ export class MainPage extends AbstractPage {
     const mainWrapper = document.createElement('div');
     mainWrapper.classList.add('main-content-wrapper');
     const filtersWrapper = document.createElement('div');
-    filtersWrapper.classList.add('filters-wrapper'); // TODO: function for generate
+    filtersWrapper.classList.add('filters-wrapper'); 
     filtersWrapper.innerHTML = `
     <div class="filters__category">
     <h3 class="filters__category-title">Category</h3>
@@ -65,8 +65,8 @@ export class MainPage extends AbstractPage {
       }
 
     })
-    
     filtersWrapper.append(resetCardBtn);
+
     const cardsWrapper = document.createElement('div');
     cardsWrapper.classList.add('cards-wrapper');
     this.generateCards(cardsWrapper);
@@ -77,12 +77,24 @@ export class MainPage extends AbstractPage {
 
     return content;
   }
-
+  filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { 
+    if (!brand && !category) {
+      const fragment = document.createDocumentFragment();
+      const wrapper = document.querySelector('.cards-wrapper') as HTMLDivElement;
+      const card = document.querySelector('#card-temp') as HTMLTemplateElement;
+      console.log(card)
+      const clone = card.content.cloneNode(true) as HTMLTemplateElement;
+      (clone.querySelector('.card__title') as HTMLDivElement).textContent = elem.title;
+      (clone.querySelector('.card__category') as HTMLParagraphElement).textContent = elem.category;
+      fragment.append(clone);
+      wrapper.appendChild(fragment);
+    }
+  }
   generateCards (wrapper: HTMLDivElement):void {
     const cards = possibleCards.products;
     cards.forEach(e => this.createCard(wrapper, e));
   }
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  //TODO: smash it into small segments
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
     const card = document.createElement('div');
     card.classList.add('card');
 
@@ -141,13 +153,7 @@ export class MainPage extends AbstractPage {
       }
     })
 
-    // TODO: think about 2nd button
-    // const detailsBtn = document.createElement ('button');
-    // detailsBtn.classList.add('card__btn');
-    // detailsBtn.classList.add('card__details-btn');
-
     cardBtnField.append(toCardBtn);
-    // cardBtnField.append(detailsBtn);
     card.append(cardBtnField);
 
     wrapper.append(card);
