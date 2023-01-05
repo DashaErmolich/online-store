@@ -1,7 +1,7 @@
 export enum RouterPath {
   Main = '/',
   Cart = '/cart',
-  Products = '/products',
+  Products = '/products/:id',
 }
 
 export enum UrlParamKey {
