@@ -22,6 +22,9 @@
     "url": "https://github.com/DashaErmolich/online-store/issues"
   },
   "homepage": "https://github.com/DashaErmolich/online-store#readme",
+  "browser": {
+    "[module-name]": false   
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
