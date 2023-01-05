@@ -334,6 +334,98 @@ class Drawer {
     formContainer.append(formContainerTitle);
     return formContainer;
   }
+
+  getProductDetailsCardHorizontalWrapper(): HTMLElement {
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'card mb-3';
+    const card = document.createElement('div');
+    card.className = 'row g-0';
+    cardContainer.append(card);
+    return cardContainer;
+  }
+
+  getProductDetailsCarousel(carouselId: string): HTMLElement {
+    const carousel = document.createElement('div');
+    carousel.className = 'carousel slide';
+    carousel.id = carouselId;
+    return carousel;
+  }
+
+  getProductDetailsCarouselIndicators(carouselId: string, images: string[], title: string): HTMLElement {
+    const carouselIndicators = document.createElement('div');
+    carouselIndicators.className = 'carousel-indicators';
+
+    let i = 0;
+
+    while (i < images.length) {
+      const src = images[i];
+      const alt = `${title} (${i + 1})`;
+      const button = this.getProductDetailsCarouselIndicatorsButton(carouselId, i);
+      if (i === 0) {
+        button.classList.add('active');
+      }
+      const image = this.getProductDetailsCarouselImage(src, alt);
+      button.append(image);
+      carouselIndicators.append(button);
+      i++;
+    }
+    return carouselIndicators;
+  }
+
+  getProductDetailsCarouselInner(images: string[], title: string): HTMLElement {
+    const carouselInner = document.createElement('div');
+    carouselInner.className = 'carousel-inner';
+
+    let i = 0;
+
+    while (i < images.length) {
+      const src = images[i];
+      const alt = `${title} (${i + 1})`;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'carousel-item';
+      if (i === 0) {
+        wrapper.classList.add('active');
+      }
+      const image = this.getProductDetailsCarouselImage(src, alt);
+      wrapper.append(image);
+      carouselInner.append(wrapper);
+      i++;
+    }
+    return carouselInner;
+  }
+
+  getProductDetailsCarouselControl(carouselId: string, direction: string, text: string): HTMLElement {
+    const button = document.createElement('button');
+    button.className = `carousel-control-${direction}`;
+    button.type = 'button';
+    button.setAttribute('data-bs-target', `#${carouselId}`);
+    button.setAttribute('data-bs-slide', direction);
+    const icon = document.createElement('span');
+    icon.className = `carousel-control-${direction}-icon`;
+    icon.setAttribute('aria-hidden', 'true');
+    const title = document.createElement('span');
+    title.className = 'visually-hidden';
+    title.innerHTML = text;
+    button.append(icon, title)
+    return button;
+  }
+
+  getProductDetailsCarouselIndicatorsButton(carouselId: string, slideIdx: number): HTMLElement {
+    const button = document.createElement('button');
+    button.setAttribute('data-bs-target', `#${carouselId}`);
+    button.setAttribute('data-bs-slide-to', `${slideIdx}`);
+    button.setAttribute('aria-current', 'true');
+    button.setAttribute('aria-label', `Slide ${slideIdx + 1}`);
+    return button;
+  }
+
+  getProductDetailsCarouselImage(imageSrc: string, imageAlt: string): HTMLElement {
+    const image = document.createElement('img');
+    image.className = 'd-block w-100';
+    image.src = imageSrc;
+    image.alt = imageAlt;
+    return image;
+  }
 }
 
 export const appDrawer = new Drawer();
