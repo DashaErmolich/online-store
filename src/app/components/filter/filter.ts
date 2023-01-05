@@ -1,4 +1,4 @@
-import { possibleCards } from '../../../assets/samples/cards';
+import { possibleCards } from '../../../assets/samples/possible-cards';
 import { SimpleCard, NumberRange } from '../../models/interfaces';
 import { UrlParamKey } from '../../enums/enums';
 
