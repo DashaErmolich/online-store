@@ -347,18 +347,18 @@ class Drawer {
 
   getProductDetailsCarousel(carouselId: string): HTMLElement {
     const carousel = document.createElement('div');
-    carousel.className = 'carousel slide';
+    carousel.className = 'carousel slide carousel_custom';
     carousel.id = carouselId;
     return carousel;
   }
 
   getProductDetailsCarouselIndicators(carouselId: string, images: string[], title: string): HTMLElement {
     const carouselIndicators = document.createElement('div');
-    carouselIndicators.className = 'carousel-indicators carousel-indicators_custom';
+    carouselIndicators.className = 'carousel-indicators';
 
     let i = 0;
 
-    while (i < images.length - 1) {
+    while (i < images.length) {
       const src = images[i];
       const alt = `${title}(${i + 1})`;
       const button = this.getProductDetailsCarouselIndicatorsButton(carouselId, i);
@@ -375,15 +375,15 @@ class Drawer {
 
   getProductDetailsCarouselInner(images: string[], title: string): HTMLElement {
     const carouselInner = document.createElement('div');
-    carouselInner.className = 'carousel-inner carousel-inner_custom';
+    carouselInner.className = 'carousel-inner h-100';
 
     let i = 0;
 
-    while (i < images.length - 1) {
+    while (i < images.length) {
       const src = images[i];
       const alt = `${title}(${i + 1})`;
       const wrapper = document.createElement('div');
-      wrapper.className = 'carousel-item';
+      wrapper.className = 'carousel-item h-100';
       if (i === 0) {
         wrapper.classList.add('active');
       }
@@ -423,7 +423,7 @@ class Drawer {
 
   getProductDetailsCarouselImage(imageSrc: string, imageAlt: string): HTMLElement {
     const image = document.createElement('img');
-    image.className = 'd-block w-100';
+    image.className = 'custom';
     image.src = imageSrc;
     image.alt = imageAlt;
     return image;
@@ -492,19 +492,24 @@ class Drawer {
     return container;
   }
 
-  getProductDetailsPrice(card: SimpleCard): HTMLElement {
-    const container = document.createElement('div');
-    const price = this.getProductPrice(card.price, 'display-6');
-    const discount = this.getProductDiscount(card.discountPercentage);
-    const rating = this.getProductRating(card.rating);
-    const stock = this.getProductStockQty(card.stock);
+  getProductDetailsSummary(card: SimpleCard): HTMLElement {
+    const container = this.getSimpleElement('ul', 'list-group list-group-flush mb-3 text-center');
+    
+    const price = this.getProductPrice(card.price, 'display-6 list-group-item', 'li');
+    const discount = this.getProductDiscount(card.discountPercentage, 'list-group-item', 'li');
+    const rating = this.getProductRating(card.rating, 'list-group-item', 'li');
+    const stock = this.getProductStockQty(card.stock, 'list-group-item', 'li');
 
     container.append(price, discount, rating, stock);
+
     return container;
   }
 
-  getProductPrice(productPrice: number, specialClass?: string): HTMLElement {
-    const cardPrice = document.createElement('div');
+  getProductPrice(productPrice: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardPrice = document.createElement(tagName);
     if (specialClass) {
       cardPrice.className = specialClass;
     }
@@ -516,14 +521,27 @@ class Drawer {
     return cardPrice;
   }
 
-  getProductDiscount(discount: number): HTMLElement {
-    const cardDiscount = document.createElement('div');
+  getProductDiscount(discount: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardDiscount = document.createElement(tagName);
+    if (specialClass) {
+      cardDiscount.className = specialClass;
+    }
+
     cardDiscount.innerHTML = `Discount: ${discount}%`;
     return cardDiscount;
   }
 
-  getProductRating(rating: number): HTMLElement {
-    const container = document.createElement('div');
+  getProductRating(rating: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const container = document.createElement(tagName);
+    if (specialClass) {
+      container.className = specialClass;
+    }
     const cardRatingIcon = document.createElement('i');
     cardRatingIcon.className = 'bi bi-star';
     const cardRating = document.createElement('span');
@@ -532,8 +550,14 @@ class Drawer {
     return container;
   }
 
-  getProductStockQty(stockQty: number): HTMLElement {
-    const cardStockQty = document.createElement('div');
+  getProductStockQty(stockQty: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardStockQty = document.createElement(tagName);
+    if (specialClass) {
+      cardStockQty.className = specialClass;
+    }
     cardStockQty.innerHTML = `Stock: ${stockQty}`;
     return cardStockQty;
   }
@@ -544,6 +568,38 @@ class Drawer {
     button.innerHTML = text;
 
     return button;
+  }
+
+  getSimpleElement(tagName: string, elementClassName: string): HTMLElement {
+    const element = document.createElement(tagName);
+    element.className = elementClassName;
+    return element;
+  }
+  
+  getOopsErrorMessage(message: string): HTMLElement {
+    const contentFirstLine = document.createElement('p');
+    contentFirstLine.className = 'fs-3';
+    const contentFirstLineOops = document.createElement('span');
+    contentFirstLineOops.className = 'text-danger';
+    contentFirstLineOops.innerHTML = 'Oops!';
+    const contentFirstLineMessage = document.createElement('span');
+    contentFirstLineMessage.innerHTML = message;
+    contentFirstLine.append(contentFirstLineOops, contentFirstLineMessage);
+    return contentFirstLine;
+  }
+
+  getNotFoundItemErrorMessage(message: string): HTMLElement {
+    const contentSecondLine = document.createElement('p');
+    contentSecondLine.className = 'lead';
+    contentSecondLine.innerHTML = message;
+    return contentSecondLine;
+  }
+
+  getGoHomeButton(): HTMLElement {
+    const goHomeButton = document.createElement('button');
+    goHomeButton.className = 'btn btn-primary';
+    goHomeButton.innerHTML = 'Go Home';
+    return goHomeButton;
   }
 }
 

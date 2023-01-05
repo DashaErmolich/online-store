@@ -13,25 +13,79 @@ export class ProductPage extends AbstractPage {
   }
   
   getPageContent(): PageComponents['content'] {
-    const content = document.createElement('div');
-    content.className = 'row';
+    cartPage.setCartState();
 
-    const cardContainer = document.createElement('section');
-    cardContainer.className = 'col-9';
+    const contentContainer = appDrawer.getSimpleElement('div', 'row');
 
-    const priceContainer = document.createElement('aside');
-    priceContainer.className = 'col-3';
+    const productDescriptionContainer = appDrawer.getSimpleElement('section', 'col-md-9');
+    const productSummaryContainer = appDrawer.getSimpleElement('aside', 'col-md-3');
 
     const productIndex: number = appRouter.getProductIndex();
     const card: SimpleCard = possibleCards.products[productIndex - 1];
-    console.log(card)
+    console.log(card);
 
-    const productTitle = appDrawer.getProductDetailsTitle(card.title);
+    if (card) {
+      this.drawProductFilters(contentContainer, card);
+      this.drawProductTile(contentContainer, card.title);
+      this.drawProductCarousel(productDescriptionContainer, card);
+      this.drawProductDescription(productDescriptionContainer, card.description);
+      this.drawProductSummary(productSummaryContainer, card);
+  
+      contentContainer.append(productDescriptionContainer, productSummaryContainer);
+    } else {
+      this.showNotFoundMessage(contentContainer, productIndex);
+    }
+
+    return contentContainer;
+  }
+
+  private showNotFoundMessage(parentElement: HTMLElement, productIndex: number): void {
+    const notFoundContainer = appDrawer.getSimpleElement('div', 'text-center');
+    const notFoundMessage = appDrawer.getOopsErrorMessage(` Product number ${productIndex} not found.`);
+    const goHomeButton = appDrawer.getGoHomeButton();
+    goHomeButton.addEventListener('click', () => {
+      appRouter.navigate(RouterPath.Main);
+    })
+    notFoundContainer.append(notFoundMessage, goHomeButton)
+    parentElement.append(notFoundContainer);
+  }
+
+  private drawProductFilters(parentElement: HTMLElement, card: SimpleCard): void {
     const productFilters = appDrawer.getProductDetailsSubtitle(card.category, card.brand, card.title);
-    const productDescription = appDrawer.getProductDetailsDescription(card.description);
+    parentElement.append(productFilters);
+  }
 
-    this.drawProductSummary(priceContainer, card);
+  private drawProductTile(parentElement: HTMLElement, title: string): void {
+    const productTitle = appDrawer.getProductDetailsTitle(title);
+    parentElement.append(productTitle)
+  }
 
+  private drawProductSummary(parentElement: HTMLElement, card: SimpleCard): void {
+    const productSummaryId = 'product-details-summary';
+    document.getElementById(productSummaryId)?.remove();
+
+    const productSummary = appDrawer.getProductDetailsSummary(card);
+    productSummary.id = productSummaryId;
+    parentElement.append(productSummary);
+
+    const buyProductNowButton =  this.getBuyProductNowButton(card);
+
+    if (this.isProductInCart(card)) {
+      this.getRemoveProductFromCartButton(parentElement, card, buyProductNowButton);
+    } else {
+      this.getAddProductToCartButton(parentElement, card, buyProductNowButton);
+    }
+
+    parentElement.append(buyProductNowButton);
+
+  }
+
+  private drawProductDescription(parentElement: HTMLElement, description: string): void {
+    const productDescription = appDrawer.getProductDetailsDescription(description);
+    parentElement.append(productDescription);
+  }
+
+  private drawProductCarousel(parentElement: HTMLElement, card: SimpleCard): void {
     const carouselId = 'product-page-carousel';
     const carousel = appDrawer.getProductDetailsCarousel(carouselId);
     const carouselIndicators = appDrawer.getProductDetailsCarouselIndicators(carouselId, card.images, card.title);
@@ -40,30 +94,7 @@ export class ProductPage extends AbstractPage {
     const carouselNextControl = appDrawer.getProductDetailsCarouselControl(carouselId, 'next', 'Next');
 
     carousel.append(carouselInner, carouselPrevControl, carouselNextControl, carouselIndicators);
-
-    cardContainer.append(carousel, productDescription);
-    content.append(productFilters, productTitle, cardContainer, priceContainer);
-    return content;
-  }
-
-  private drawProductSummary(parentElement: HTMLElement, card: SimpleCard): void {
-    const productSummaryId = 'product-details-summary';
-    document.getElementById(productSummaryId)?.remove();
-
-    const productPrice = appDrawer.getProductDetailsPrice(card);
-    productPrice.id = productSummaryId;
-
-    if (this.isProductInCart(card)) {
-      const removeProductFromCartButton = this.removeProductFromCartButton(parentElement, card);
-      productPrice.append(removeProductFromCartButton);
-    } else {
-      const addProductToCartButton = this.getAddProductToCartButton(parentElement, card);
-      productPrice.append(addProductToCartButton);
-    }
-
-    const buyProductNowButton = this.getBuyProductNowButton(card);
-    productPrice.append(buyProductNowButton);
-    parentElement.append(productPrice);
+    parentElement.append(carousel);
   }
 
   private isProductInCart(card: SimpleCard): boolean {
@@ -77,32 +108,36 @@ export class ProductPage extends AbstractPage {
     return index;
   }
 
-  private getAddProductToCartButton(parentElement: HTMLElement, card: SimpleCard): HTMLElement {
-    const button = appDrawer.getSimpleButton('Add to cart', 'btn btn-primary');
+  private getAddProductToCartButton(parentElement: HTMLElement, card: SimpleCard, buyProductNowButton: HTMLElement) {
+    const button = appDrawer.getSimpleButton('Add to cart', 'btn btn-primary text-uppercase w-100 mb-3');
 
     button.addEventListener('click', () => {
       appStorage.addProductToCart(card);
       cartPage.setCartState();
       this.drawProductSummary(parentElement, card);
+      button.remove();
+      buyProductNowButton.remove();
     })
 
-    return button;
+    parentElement.append(button);
   }
 
-  private removeProductFromCartButton(parentElement: HTMLElement, card: SimpleCard): HTMLElement {
-    const button = appDrawer.getSimpleButton('Remove from cart', 'btn btn-primary b-block text-uppercase');
+  private getRemoveProductFromCartButton(parentElement: HTMLElement, card: SimpleCard, buyProductNowButton: HTMLElement) {
+    const button = appDrawer.getSimpleButton('Remove from cart', 'btn btn-primary text-uppercase w-100 mb-3');
     
     button.addEventListener('click', () => {
       appStorage.removeProductFromCart(card);
       cartPage.setCartState();
       this.drawProductSummary(parentElement, card);
+      button.remove();
+      buyProductNowButton.remove();
     })
 
-    return button;
+    parentElement.append(button);
   }
 
   private getBuyProductNowButton(card: SimpleCard): HTMLElement {
-    const button = appDrawer.getSimpleButton('BuyNow', 'btn btn-success d-block text-uppercase');
+    const button = appDrawer.getSimpleButton('Buy Now', 'btn btn-success text-uppercase w-100 mb-3');
 
     button.addEventListener('click', () => {
       this.placeOrder(card);
