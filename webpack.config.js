@@ -128,5 +128,5 @@ module.exports = {
 
     ]
   },
-  devtool: false,
+  devtool: 'eval-source-map',
 }
