@@ -50,9 +50,21 @@
   flex-shrink: 2;
   gap: 1%;
 }
-.card {
+.cards-wrapper-table {
+  flex-direction: row;
+}
+.cards-wrapper-row {
+  flex-direction: column;
+}
+.mainCard {
   border: 1px solid black;
   width: 24%;
+}
+.mainCard-table {
+  width: 24%;
+}
+.mainCard-row {
+  width: 100%;
 }
 .card__title {
   margin-top: 10px;

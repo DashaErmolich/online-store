@@ -1,7 +1,6 @@
 import { possibleCards } from '../../../assets/samples/possible-cards';
 import { AbstractPage } from '../../abstracts/abstracts';
-import { SimpleCard } from '../../models/interfaces';
-import { appStorage } from '../storage/app-storage';
+import { Cards } from '../storage/cards';
 
 export class MainPage extends AbstractPage {
   constructor() {
@@ -15,111 +14,18 @@ export class MainPage extends AbstractPage {
     content.innerHTML = ` 
     <h1>Online Shop</h1>
     `;
+
+    const cards = new Cards (possibleCards.products);
+    if (!localStorage.getItem('main-current-state')) localStorage.setItem('main-current-state', 'Table'); // table state at first page loading
+
     const mainWrapper = document.createElement('div');
     mainWrapper.classList.add('row');
     const filtersWrapper = document.createElement('div');
     filtersWrapper.classList.add('filters-wrapper');
     filtersWrapper.classList.add('col'); 
-    filtersWrapper.innerHTML = `
-    <div class="filters__window">
-  <h3>Appearance:</h3>
-  <div class="filters__window-checkers">
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-      <label class="form-check-label" for="flexRadioDefault1">
-        Rows
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-      <label class="form-check-label" for="flexRadioDefault2">
-        Table
-      </label>
-    </div>
-  </div>
-</div>
-<div class="filters__filters">
-  <h3>Filters:</h3>
-  <div class="filters__category">
-    <h6 class="filters__category-title">Category</h6>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="smartphonesChecker">
-      <label class="form-check-label" for="smartphonesChecker">
-        Smartphones
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="laptopsChecker">
-      <label class="form-check-label" for="laptopsChecker">
-        Laptops
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="fragancesChecker">
-      <label class="form-check-label" for="fragancesChecker">
-        Fragances
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="skincareChecker">
-      <label class="form-check-label" for="skincareChecker">
-        Skincare
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="groceriesChecker">
-      <label class="form-check-label" for="groceriesChecker">
-        Groceries
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="homeDecorationChecker">
-      <label class="form-check-label" for="homeDecorationChecker">
-        Home decoration
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="furnitureChecker">
-      <label class="form-check-label" for="furnitureChecker">
-        Furniture
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="topsChecker">
-      <label class="form-check-label" for="topsChecker">
-        Tops
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="womanDressesChecker">
-      <label class="form-check-label" for="womanDressesChecker">
-        Womens dresses
-      </label>
-    </div>
-  </div>
-  <div class="filters__brand">
-    <h6 class="filters__category-title">Brand</h6>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="appleChecker">
-      <label class="form-check-label" for="appleChecker">
-        Apple
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="samsungChecker">
-      <label class="form-check-label" for="samsungChecker">
-        Samsung
-      </label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="oppoChecker">
-      <label class="form-check-label" for="oppoChecker">
-        OPPO
-      </label>
-    </div>
-  </div>
-</div>
-    `
+
+    cards.generateFiltersField(filtersWrapper);
+
     // !temporary! this is a button for delete all cards from local storage
     const resetCardBtn = document.createElement('button');
     resetCardBtn.classList.add('card__btn');
@@ -135,98 +41,18 @@ export class MainPage extends AbstractPage {
 
     })
     filtersWrapper.append(resetCardBtn);
+    // !end of temporary button
 
     const cardsWrapper = document.createElement('div');
     cardsWrapper.classList.add('cards-wrapper');
     cardsWrapper.classList.add('col-6');
-    this.generateCards(cardsWrapper);
+    cards.generateCards(cardsWrapper);
 
     mainWrapper.append(cardsWrapper);
     mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
 
     return content;
-  }
-  filterAndCreate(elem: SimpleCard, category?:string, brand?:string) { 
-    if (!brand && !category) {
-      const fragment = document.createDocumentFragment();
-      const wrapper = document.querySelector('.cards-wrapper') as HTMLDivElement;
-      const card = document.querySelector('#card-temp') as HTMLTemplateElement;
-      console.log(card)
-      const clone = card.content.cloneNode(true) as HTMLTemplateElement;
-      (clone.querySelector('.card__title') as HTMLDivElement).textContent = elem.title;
-      (clone.querySelector('.card__category') as HTMLParagraphElement).textContent = elem.category;
-      fragment.append(clone);
-      wrapper.appendChild(fragment);
-    }
-  }
-  generateCards (wrapper: HTMLDivElement):void {
-    const cards = possibleCards.products;
-    cards.forEach(e => this.createCard(wrapper, e));
-  }
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
-    const card = document.createElement('div');
-    card.classList.add('card');
-
-    const cardH3 = document.createElement('h3');
-    card.classList.add('card__title');
-    cardH3.textContent = elem.title;
-    card.append(cardH3);
-
-    const cardDescrField = document.createElement('div');
-    cardDescrField.classList.add('card__description-field');
-
-    const cardCategory = document.createElement('p');
-    cardCategory.textContent = elem.category;
-    cardCategory.classList.add('card__category');
-    cardDescrField.append(cardCategory);
-
-    const cardBrand = document.createElement('p');
-    cardBrand.textContent = elem.brand;
-    cardBrand.classList.add('card__brand');
-    cardDescrField.append(cardBrand);
-
-    const cardPrice = document.createElement('p');
-    cardPrice.textContent = elem.price + ' $';
-    cardPrice.classList.add('card__price');
-    cardDescrField.append(cardPrice);
-
-    const cardDiscount = document.createElement('p');
-    cardDiscount.textContent = elem.discountPercentage + ' $';
-    cardDiscount.classList.add('card__discount');
-    cardDescrField.append(cardDiscount);
-
-    const cardRating = document.createElement('p');
-    cardRating.textContent = elem.rating + ' $';
-    cardRating.classList.add('card__rating');
-    cardDescrField.append(cardRating);
-
-    const cardStock = document.createElement('p');
-    cardStock.textContent = elem.stock + '';
-    cardStock.classList.add('card__Stock');
-    cardDescrField.append(cardStock);
-
-    card.append(cardDescrField);
-
-    const cardBtnField = document.createElement ('div');
-    cardBtnField.classList.add('card__buttons-field');
-
-    const toCardBtn = document.createElement ('button');
-    toCardBtn.classList.add('card__btn');
-    toCardBtn.classList.add('card__to-cart-btn'); 
-    toCardBtn.textContent = 'Add to cart';
-    toCardBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const target = e.target as HTMLElement;
-      if (target) {
-        appStorage.addProductToCart(elem);
-      }
-    })
-
-    cardBtnField.append(toCardBtn);
-    card.append(cardBtnField);
-
-    wrapper.append(card);
   }
 }
 
