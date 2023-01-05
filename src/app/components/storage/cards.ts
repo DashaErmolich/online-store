@@ -118,6 +118,8 @@ export class Cards {
   createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
+    if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
+    if (localStorage.getItem('main-current-state') === 'Row') card.classList.add('mainCard-row');
 
     const cardH3 = document.createElement('h3');
     card.classList.add('card__title');
