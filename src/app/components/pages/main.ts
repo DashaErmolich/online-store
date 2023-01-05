@@ -16,40 +16,109 @@ export class MainPage extends AbstractPage {
     <h1>Online Shop</h1>
     `;
     const mainWrapper = document.createElement('div');
-    mainWrapper.classList.add('main-content-wrapper');
+    mainWrapper.classList.add('row');
     const filtersWrapper = document.createElement('div');
-    filtersWrapper.classList.add('filters-wrapper'); 
+    filtersWrapper.classList.add('filters-wrapper');
+    filtersWrapper.classList.add('col'); 
     filtersWrapper.innerHTML = `
-    <div class="filters__category">
-    <h3 class="filters__category-title">Category</h3>
-    <div class="filters__category-line">
-      <input type="checkbox" name="categories">
-      <label for="categories">Smartphones</label>
+    <div class="filters__window">
+  <h3>Appearance:</h3>
+  <div class="filters__window-checkers">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+      <label class="form-check-label" for="flexRadioDefault1">
+        Rows
+      </label>
     </div>
-    <div class="filters__category-line">
-      <input type="checkbox" name="categories">
-      <label for="categories">Laptops</label>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+      <label class="form-check-label" for="flexRadioDefault2">
+        Table
+      </label>
     </div>
-    <div class="filters__category-line">
-      <input type="checkbox" name="categories">
-      <label for="categories">Fragrances</label>
+  </div>
+</div>
+<div class="filters__filters">
+  <h3>Filters:</h3>
+  <div class="filters__category">
+    <h6 class="filters__category-title">Category</h6>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="smartphonesChecker">
+      <label class="form-check-label" for="smartphonesChecker">
+        Smartphones
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="laptopsChecker">
+      <label class="form-check-label" for="laptopsChecker">
+        Laptops
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="fragancesChecker">
+      <label class="form-check-label" for="fragancesChecker">
+        Fragances
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="skincareChecker">
+      <label class="form-check-label" for="skincareChecker">
+        Skincare
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="groceriesChecker">
+      <label class="form-check-label" for="groceriesChecker">
+        Groceries
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="homeDecorationChecker">
+      <label class="form-check-label" for="homeDecorationChecker">
+        Home decoration
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="furnitureChecker">
+      <label class="form-check-label" for="furnitureChecker">
+        Furniture
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="topsChecker">
+      <label class="form-check-label" for="topsChecker">
+        Tops
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="womanDressesChecker">
+      <label class="form-check-label" for="womanDressesChecker">
+        Womens dresses
+      </label>
     </div>
   </div>
   <div class="filters__brand">
-    <h3 class="filters__category-title">Brand</h3>
-    <div class="filters__category-line">
-      <input type="checkbox" name="brands">
-      <label for="brands">Apple</label>
+    <h6 class="filters__category-title">Brand</h6>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="appleChecker">
+      <label class="form-check-label" for="appleChecker">
+        Apple
+      </label>
     </div>
-    <div class="filters__category-line">
-      <input type="checkbox" name="brands">
-      <label for="brands">Samsung</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="samsungChecker">
+      <label class="form-check-label" for="samsungChecker">
+        Samsung
+      </label>
     </div>
-    <div class="filters__category-line">
-      <input type="checkbox" name="brands">
-      <label for="brands">OPPO</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="oppoChecker">
+      <label class="form-check-label" for="oppoChecker">
+        OPPO
+      </label>
     </div>
   </div>
+</div>
     `
     // !temporary! this is a button for delete all cards from local storage
     const resetCardBtn = document.createElement('button');
@@ -69,10 +138,11 @@ export class MainPage extends AbstractPage {
 
     const cardsWrapper = document.createElement('div');
     cardsWrapper.classList.add('cards-wrapper');
+    cardsWrapper.classList.add('col-6');
     this.generateCards(cardsWrapper);
 
-    mainWrapper.append(filtersWrapper);
     mainWrapper.append(cardsWrapper);
+    mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
 
     return content;
