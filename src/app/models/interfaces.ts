@@ -26,6 +26,7 @@ export interface SimpleCard {
   category: string;
   thumbnail: string;
   images: Array<string>;
+  qty?: number;
 }
 
 export interface CartUrlParams {
@@ -45,7 +46,15 @@ export interface UrlParams extends CartUrlParams, MainUrlParams {}
 export interface AppStorage {
   getCartProducts(): SimpleCard[],
   addProductToCart(product: SimpleCard): void,
-  getCartProductsQty(): number,
+  getCartProductsCardsQty(): number,
+  setCartProductQty(product: SimpleCard, qty: number): void,
+  getProductIndex(cartProducts: SimpleCard[], product: SimpleCard): number,
+  removeProductFromCart(product: SimpleCard): void,
+  getCartPromoCodes(): PromoCode[],
+  addCartPromoCode(promoCode: PromoCode): void,
+  getPromoCodeIndex(promoCodes: PromoCode[], promoCode: PromoCode): number,
+  removeCartPromoCode(promoCode: PromoCode): void;
+  emptyCart(): void,
 }
 
 export interface CartPageSettings {
@@ -54,7 +63,40 @@ export interface CartPageSettings {
   activePage: number,
 }
 
+export interface PaginationCardIdxRange {
+  start: number, 
+  end: number
+}
+
+export interface PromoCode {
+  id: number,
+  name: string,
+  discountPercent: number,
+  description: string,
+}
 export interface NumberRange {
   min: number,
   max: number,
+}
+
+export interface FormInput {
+  id: string,
+  placeholder: string,
+  inputType: 'tel' | 'text' | 'email',
+  validationParameters: Partial<FormInputValidation>,
+  validationErrorMessage: string,
+  label: string,
+  icon?: string,
+  iconClassName?: string,
+}
+
+export interface FormInputValidation {
+  pattern: string,
+  minLength: number,
+  maxLength: number,
+}
+
+export interface CreditCard {
+  firstDigit: number,
+  icon: string,
 }

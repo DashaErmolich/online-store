@@ -2,8 +2,13 @@ import { AbstractPage } from '../../abstracts/abstracts';
 import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
-import { CartPageSettings } from '../../models/interfaces';
-import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP } from '../../constants/constants';
+import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
+import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
+import { ProductCard } from '../cart-product-cards/cart-product-card';
+import { promoCodes } from '../../../assets/promo-codes/promo-codes';
+import { appDrawer } from '../drawer/drawer';
+import { CartSummaryPromoCode } from '../promo-code/promo-code';
+import { PurchaseModal } from '../purchase-modal/purchase-modal';
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -12,54 +17,29 @@ export class CartPage extends AbstractPage {
     super();
     this.setPageTitle('Shop Cart');
     this.cartSettings = {
-      productsQty: appStorage.getCartProductsQty(),
+      productsQty: appStorage.getCartProductsCardsQty(),
       paginationLimit: appRouter.getPaginationLimitValue(),
       activePage: appRouter.getPageNumber(),
     };
   }
 
-  public listenPaginationButtons(): void {
-    const pageContent = document.getElementById('page-content');
-
-    if (pageContent) {
-      pageContent.addEventListener('click', (event: Event): void => {
-
-        let activePage: number = this.cartSettings.activePage;
-        if (event.target instanceof HTMLElement) {
-
-          if (event.target.classList.contains('new-page-link')) {
-            activePage = Number(event.target.id);
-          }
-
-          if (event.target.classList.contains('prev-page-link')) {
-            activePage = this.cartSettings.activePage - 1;
-          }
-
-          if (event.target.classList.contains('next-page-link')) {
-            activePage = this.cartSettings.activePage + 1;
-          }
-        }
-
-        appRouter.updateUrlParams(UrlParamKey.Page, String(activePage));
-        this.cartSettings.activePage = activePage;
-        this.handleActiveButton();
-        this.setActivePage(pageContent);
-      })
-    }
+  private listenPaginationButtons(): void {
+    appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
+    this.handleActiveButton();
+    this.drawPaginationPage();
   }
 
-  public listenPaginationInput(): void {
+  private listenPaginationInput(): void {
+    appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+    this.updatePagination();
+    this.drawPaginationPage();
+  }
+
+  private updatePagination(): void {
+    const pagesQty: number = this.getPagesQty();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      pageContent.addEventListener('change', (event: Event): void => {
-        if (event.target instanceof HTMLInputElement && event.target.id === 'cart-items-per-page') {
-          appRouter.updateUrlParams(UrlParamKey.Limit, event.target.value);
-          this.cartSettings.paginationLimit =  Number(event.target.value);
-          const pagesQty: number = this.getPagesQty();
-          this.handlePagination(pageContent, pagesQty);
-          this.setActivePage(pageContent);
-        }
-      })
+      this.handlePagination(pageContent, pagesQty);
     }
   }
 
@@ -69,12 +49,15 @@ export class CartPage extends AbstractPage {
 
     if (pagesQty > 0) {
       this.handlePagination(pageContentContainer, pagesQty);
-      
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-
-      this.drawCartProducts(pageContentContainer);
-      this.setActivePage(pageContentContainer);
+      const rowContainer = document.createElement('div');
+      rowContainer.className = 'row';
+      rowContainer.id = 'pagination-container';
+      this.drawPaginationPage(rowContainer);
+      this.drawCartSummary(rowContainer);
+      this.setCartIcon(this.getCartTotalProductQty())
+      pageContentContainer.append(rowContainer);
     } else {
       const message = document.createElement('span');
       message.innerText = 'Cart is empty now';
@@ -100,23 +83,15 @@ export class CartPage extends AbstractPage {
 
   private handlePagination(parentElement: HTMLElement, pagesQty: number): void {
     document.getElementById('page-navigation')?.remove();
-
     this.validateActivePage(pagesQty);
     this.drawPagination(parentElement, pagesQty);
   }
 
-  private setActivePage(parentElement: HTMLElement): void {
-    const prevRange: number = (this.cartSettings.activePage - 1) * this.cartSettings.paginationLimit;
-    const currentRange: number = this.cartSettings.activePage * this.cartSettings.paginationLimit;
-
-    const cartProductsCards = parentElement.querySelectorAll('.card');
-
-    cartProductsCards.forEach((card, index) => {
-      card.classList.add('d-none');
-      if (index >= prevRange && index < currentRange) {
-        card.classList.remove('d-none');
-      }
-    })
+  private getActivePageRange(): PaginationCardIdxRange {
+    return {
+      start: (this.cartSettings.activePage - 1) * this.cartSettings.paginationLimit,
+      end: this.cartSettings.activePage * this.cartSettings.paginationLimit,
+    }
   }
 
   private drawPagination(parentElement: HTMLElement, pagesQty: number): void {
@@ -142,6 +117,10 @@ export class CartPage extends AbstractPage {
 
       if (i === 0) {
         button.classList.add('prev-page-link');
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage--;
+          this.listenPaginationButtons();
+        });
 
         if (this.cartSettings.activePage === 1) {
           button.classList.add('disabled');
@@ -151,6 +130,10 @@ export class CartPage extends AbstractPage {
 
       } else if (i === buttonsQty - 1) {
         button.classList.add('next-page-link');
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage++;
+          this.listenPaginationButtons();
+        });
 
         if (this.cartSettings.activePage === pagesQty) {
           button.classList.add('disabled');
@@ -161,7 +144,11 @@ export class CartPage extends AbstractPage {
       } else {
         button.classList.add('new-page-link');
         button.innerHTML = String(i);
-        button.id = `${i}`
+        button.id = `${i}`;
+        button.addEventListener('click', () => {
+          this.cartSettings.activePage = Number(button.id);
+          this.listenPaginationButtons();
+        })
       }
 
       li.append(button);
@@ -178,35 +165,58 @@ export class CartPage extends AbstractPage {
   }
 
   private drawPaginationInput(parentElement: HTMLElement, inputValue: number): void {
-    const paginationInputWrapper = `
-    <div class="form-outline d-flex flex-row justify-content-end align-items-center mb-3">
-      <label class="" for="cart-items-per-page">Products per page:&nbsp</label>
-      <input type="number" value="${inputValue}" id="cart-items-per-page" class="form-control w-auto" min="${PAGINATION_LIMIT_MIN}" max="${PAGINATION_LIMIT_MAX}" step="${PAGINATION_LIMIT_STEP}">
-    </div>`;
-  
-    parentElement.insertAdjacentHTML('beforeend', paginationInputWrapper);
+    const paginationInputContainer = document.createElement('section');
+    paginationInputContainer.className = 'form-outline d-flex flex-row justify-content-end align-items-center mb-3';
+    
+    const paginationInputLabel = document.createElement('label');
+    paginationInputLabel.htmlFor = 'cart-items-per-page';
+    paginationInputLabel.innerHTML = 'Products per page:&nbsp';
+    
+    const paginationInput = document.createElement('input');
+    paginationInput.type = 'number';
+    paginationInput.value = String(inputValue);
+    paginationInput.id = 'cart-items-per-page';
+    paginationInput.className = 'form-control w-auto';
+    paginationInput.min = String(PAGINATION_LIMIT_MIN);
+    paginationInput.max = String(PAGINATION_LIMIT_MAX);
+    paginationInput.step = String(PAGINATION_LIMIT_STEP);
+    paginationInput.addEventListener('change', () => {
+      this.cartSettings.paginationLimit = Number(paginationInput.value);
+      this.listenPaginationInput();
+    })
+
+    paginationInputContainer.append(paginationInputLabel, paginationInput)
+
+    parentElement.append(paginationInputContainer);
   }
-  
-  private drawCartProducts(parentElement: HTMLElement): void {
-    let i = this.cartSettings.productsQty;
-  
-    const cardDeck = document.createElement('div');
-    cardDeck.className = 'card-deck';
-  
-    while (i) {
-      const product = `
-      <div class="card">
-      <img class="card-img-top" src="" alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-        </div>
-      </div>`
-      cardDeck.insertAdjacentHTML('beforeend', product);
-      i--;
+
+  public drawPaginationPage(parentElement?: HTMLElement): void {
+    const paginationContainer = document.getElementById('pagination-container');
+    document.querySelector('.card-columns')?.remove();
+
+    const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts()
+    const cardDeck = document.createElement('section');
+    cardDeck.className = 'card-columns col-9';
+
+    let i = paginationActivePageRange.start;
+
+    while (i < paginationActivePageRange.end) {
+      const card: SimpleCard = cartProducts[i];
+      if (card) {
+        const cartProduct = new ProductCard(card, i + 1);
+        cardDeck.append(cartProduct.getCartCardContent())
+
+      }
+      i++;
     }
-    parentElement.append(cardDeck);
+    if (paginationContainer && !parentElement) {
+      paginationContainer.prepend(cardDeck);
+    }
+    
+    if (parentElement) {
+      parentElement.prepend(cardDeck);
+    }
   }
 
   private handleActiveButton() {
@@ -231,5 +241,217 @@ export class CartPage extends AbstractPage {
         button.classList.add('disabled');
       }
     })
+  }
+
+  private drawCartSummary(parentElement: HTMLElement): void {
+    const cartSummaryContainer: HTMLElement = appDrawer.getCartSummaryContainer();
+    const cartSummaryTitle: HTMLElement = appDrawer.getCartSummaryTitle();
+    const cartSummaryTotalProductsQty: HTMLElement = appDrawer.getCartSummaryProductsQty(this.getCartTotalProductQty());
+    const cartSummaryTotalSum: HTMLElement = appDrawer.getCartSummaryTotalSum(this.getCartTotalSum());
+    cartSummaryContainer.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+
+    let appliedPromoCodesContainer: HTMLElement;
+
+    if (this.isAppliedPromoCodes()) {
+      cartSummaryTotalSum.classList.add('text-decoration-line-through');
+      const cartSummaryTotalSumDiscount: HTMLElement = appDrawer.getCartSummaryTotalSumDiscount(this.getCartTotalSumDiscount());
+      appliedPromoCodesContainer = appDrawer.getAppliedPromoCodesContainer();
+      this.drawAppliedPromoCodes(appliedPromoCodesContainer);
+      cartSummaryContainer.append(cartSummaryTotalSumDiscount, appliedPromoCodesContainer);
+    }
+
+    const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
+    cartSummaryPromoCodeInput.addEventListener('input', () => {
+      this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPurchaseButton, cartSummaryPromoCodeInput.value);
+    });
+
+    const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
+    const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
+
+    const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
+
+    cartSummaryPurchaseButton.setAttribute('data-bs-toggle', 'modal');
+    cartSummaryPurchaseButton.setAttribute('data-bs-target', '#purchase-modal');
+
+    const modal = new PurchaseModal();
+    cartSummaryContainer.append(modal.getPurchaseModalContent());
+    
+    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryPurchaseButton);
+    this.setHeaderCartTotalSum();
+    parentElement.append(cartSummaryContainer);
+  }
+
+  private getAllPromoCodesNames(): string {
+    return promoCodes.map((promoCode) => promoCode.name.toUpperCase()).join(', ');
+  }
+
+  private removeMatchPromoCodeCartSummaryContainer() {
+    const matchPromoCodeCartSummaryContainer = document.getElementById('match-promo-code');
+    if (matchPromoCodeCartSummaryContainer) {
+      matchPromoCodeCartSummaryContainer.remove();
+    }
+  }
+
+  private listenPromoCodeInput(cartSummaryContainer: HTMLElement, cartSummaryOrderCheckoutButton: HTMLElement, value: string): void {
+    const validatedValue = String(value).trim().toLowerCase();
+    const promoCodeIndex = this.getPromoCodeIndex(promoCodes, validatedValue);
+
+    this.removeMatchPromoCodeCartSummaryContainer();
+    const matchPromoCodeCartSummaryContainer = appDrawer.getMatchPromoCodeCartSummaryContainer();
+
+    if (promoCodeIndex >= 0) {
+      const promoCode = new CartSummaryPromoCode(promoCodes[promoCodeIndex]);
+
+      if (this.isPromoCodeApplied(promoCodes[promoCodeIndex])) {
+        matchPromoCodeCartSummaryContainer.append(promoCode.getPromoCodeName());
+      } else {
+        matchPromoCodeCartSummaryContainer.append(promoCode.getNewPromoCodeContent());
+      }
+      cartSummaryContainer.insertBefore(matchPromoCodeCartSummaryContainer, cartSummaryOrderCheckoutButton);
+    }
+  }
+
+  private drawAppliedPromoCodes(parentElement: HTMLElement): void {
+    const appliedPromoCodes = appStorage.getCartPromoCodes();
+
+    if (appliedPromoCodes.length) {
+
+      let i = 0;
+      while(i < appliedPromoCodes.length) {
+        const promoCode = new CartSummaryPromoCode(appliedPromoCodes[i]);
+        parentElement.append(promoCode.getAppliedPromoCodeContent());
+        i++
+      }
+    }
+  }
+
+  public isPromoCodeApplied(promoCode: PromoCode): boolean {
+    const appliedPromoCodes = appStorage.getCartPromoCodes();
+    const appliedPromoCodeIndex = this.getPromoCodeIndex(appliedPromoCodes, promoCode.name);
+    if (appliedPromoCodeIndex >= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private isAppliedPromoCodes(): boolean {
+    const appliedPromoCodesEmpty = appStorage.getCartPromoCodes();
+    if (appliedPromoCodesEmpty.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private updateCartSummary() {
+    const cartSummary = document.getElementById('cart-summary-container');
+    if (cartSummary) {
+      const cartSummaryParent = cartSummary.parentElement;
+      if (cartSummaryParent) {
+        cartSummary.remove()
+        this.drawCartSummary(cartSummaryParent);
+      }
+    }
+  }
+
+  public applyPromoCodeToCartSummary(promoCode: PromoCode) {
+    appStorage.addCartPromoCode(promoCode);
+    this.updateCartSummary();
+  }
+
+  public removePromoCodeFromCartSummary(promoCode: PromoCode) {
+    appStorage.removeCartPromoCode(promoCode);
+    this.updateCartSummary();
+  }
+
+  private getPromoCodeIndex(promoCodes: PromoCode[], validatedValue: string): number {
+    const promoCodeIndex = promoCodes.findIndex((promoCode => validatedValue === promoCode.name));
+    return promoCodeIndex;
+  }
+
+  public setCartSummary(cartProductsQty: number): void {
+    this.setCartSummaryQty(cartProductsQty)
+    this.setCartSummarySum();
+  }
+
+  private setCartSummarySum(): void {
+    const productsSum = document.getElementById('cart-summary-products-sum');
+    if (productsSum) {
+      productsSum.innerHTML = `${this.getCartTotalSum()}`;
+    }
+
+    const productsSumDiscount = document.getElementById('cart-summary-products-sum-discount');
+    if (productsSumDiscount) {
+      productsSumDiscount.innerHTML = `${this.getCartTotalSumDiscount()}`;
+    }
+  }
+
+  private setCartSummaryQty(cartProductsQty: number): void {
+    const productsQty = document.getElementById('cart-summary-products-qty');
+    if (productsQty) {
+      productsQty.innerHTML = `${cartProductsQty}`;
+    }
+  }
+
+  private getCartTotalSum(): number {
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const totalSum: number = cartProducts.reduce((acc, product) => acc + product.price * (product.qty || PRODUCT_CART_QTY_DEFAULT), 0);
+    return totalSum;
+  }
+
+  private getCartTotalSumDiscount(): number {
+    const totalSum: number = this.getCartTotalSum();
+    const promoCodes = appStorage.getCartPromoCodes();
+    let discount = 0;
+
+    if (promoCodes.length) {
+      const discounts = promoCodes.map((promoCode) => promoCode.discountPercent);
+      discount = discounts.reduce((acc, discount) => acc + discount, 0);
+    }
+    
+    return totalSum * (100 - discount) / 100;
+  }
+
+  private getCartTotalProductQty(): number {
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const totalProductQty: number = cartProducts.reduce((acc, product) => acc + (product.qty || PRODUCT_CART_QTY_DEFAULT), 0);
+    return totalProductQty;
+  }
+
+  public updatePage(): void {
+    this.cartSettings.productsQty = appStorage.getCartProductsCardsQty();
+    this.updatePagination();
+    this.drawPaginationPage();
+    const cartProductsQty = this.getCartTotalProductQty();
+    this.setCartSummary(cartProductsQty);
+    this.setCartIcon(cartProductsQty);
+    this.setHeaderCartTotalSum();
+  }
+
+  private setCartIcon(cartProductsQty: number): void {
+    const cartIconQty = document.getElementById('cart-total-items');
+    if (cartIconQty) {
+      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '';
+    }
+  }
+
+  private setHeaderCartTotalSum(): void {
+    const headerCartTotalSum = document.getElementById('cart-total-money');
+    if (headerCartTotalSum) {
+      headerCartTotalSum.innerHTML = `${this.getCartTotalSumDiscount()}`;
+    }
+  }
+
+  private setCartSettings(): void {
+    this.cartSettings.productsQty = appStorage.getCartProductsCardsQty();
+    this.cartSettings.paginationLimit = appRouter.getPaginationLimitValue();
+    this.cartSettings.activePage = appRouter.getPageNumber();
+  }
+
+  public setCartState(): void {
+    this.setCartSettings();
+    this.setCartIcon(this.getCartTotalProductQty());
+    this.setHeaderCartTotalSum();
   }
 }
