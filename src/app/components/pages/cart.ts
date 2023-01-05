@@ -272,6 +272,7 @@ export class CartPage extends AbstractPage {
 
     cartSummaryPurchaseButton.setAttribute('data-bs-toggle', 'modal');
     cartSummaryPurchaseButton.setAttribute('data-bs-target', '#purchase-modal');
+    cartSummaryPurchaseButton.id = 'purchase-modal-open-button';
 
     const modal = new PurchaseModal();
     cartSummaryContainer.append(modal.getPurchaseModalContent());

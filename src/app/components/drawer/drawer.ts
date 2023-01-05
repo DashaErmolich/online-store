@@ -1,5 +1,6 @@
 import { CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
-import { FormInput } from '../../models/interfaces';
+import { FormInput, SimpleCard } from '../../models/interfaces';
+import { RouterPath } from '../../enums/enums';
 class Drawer {
   getCartSummaryTitle(): HTMLElement {
     const cartSummaryTitle = document.createElement('h5');
@@ -71,11 +72,11 @@ class Drawer {
     return cartSummaryContainer;
   }
 
-  getPromoCodeButton(value: string): HTMLElement {
-    const promoCodeButton = document.createElement('button');
-    promoCodeButton.innerHTML = value;
-    promoCodeButton.className = 'btn btn-dark';
-    return promoCodeButton;
+  getSimpleButton(value: string, btnClass: string): HTMLElement {
+    const button = document.createElement('button');
+    button.innerHTML = value;
+    button.className = btnClass;
+    return button;
   }
 
   getPromoCodeTitle(promoCodeDescription: string, promoCodeDiscount: number): HTMLElement {
@@ -353,13 +354,13 @@ class Drawer {
 
   getProductDetailsCarouselIndicators(carouselId: string, images: string[], title: string): HTMLElement {
     const carouselIndicators = document.createElement('div');
-    carouselIndicators.className = 'carousel-indicators';
+    carouselIndicators.className = 'carousel-indicators carousel-indicators_custom';
 
     let i = 0;
 
-    while (i < images.length) {
+    while (i < images.length - 1) {
       const src = images[i];
-      const alt = `${title} (${i + 1})`;
+      const alt = `${title}(${i + 1})`;
       const button = this.getProductDetailsCarouselIndicatorsButton(carouselId, i);
       if (i === 0) {
         button.classList.add('active');
@@ -374,13 +375,13 @@ class Drawer {
 
   getProductDetailsCarouselInner(images: string[], title: string): HTMLElement {
     const carouselInner = document.createElement('div');
-    carouselInner.className = 'carousel-inner';
+    carouselInner.className = 'carousel-inner carousel-inner_custom';
 
     let i = 0;
 
-    while (i < images.length) {
+    while (i < images.length - 1) {
       const src = images[i];
-      const alt = `${title} (${i + 1})`;
+      const alt = `${title}(${i + 1})`;
       const wrapper = document.createElement('div');
       wrapper.className = 'carousel-item';
       if (i === 0) {
@@ -412,6 +413,7 @@ class Drawer {
 
   getProductDetailsCarouselIndicatorsButton(carouselId: string, slideIdx: number): HTMLElement {
     const button = document.createElement('button');
+    button.className = 'indicators-button_custom';
     button.setAttribute('data-bs-target', `#${carouselId}`);
     button.setAttribute('data-bs-slide-to', `${slideIdx}`);
     button.setAttribute('aria-current', 'true');
@@ -425,6 +427,123 @@ class Drawer {
     image.src = imageSrc;
     image.alt = imageAlt;
     return image;
+  }
+
+  getProductDetailsTitle(productTitle: string): HTMLElement {
+    const title = document.createElement('h1');
+    title.className = 'display-5';
+    title.innerHTML = productTitle;
+    return title;
+  }
+
+  getProductDetailsSubtitle(productCategory: string, productBrand: string, productTitle: string): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'text-capitalize d-flex';
+
+    const storeLink = this.getNavigoLink('Store', RouterPath.Main);
+    storeLink.className = 'link-dark text-decoration-none';
+    const category = this.getSimpleParagraphElement(productCategory);
+    const brand = this.getSimpleParagraphElement(productBrand);
+    const title = this.getSimpleParagraphElement(productTitle);
+
+    const arr = [];
+    arr.push(storeLink, category, brand, title);
+
+    let i = 0;
+
+    while (i < arr.length) {
+      const separator: HTMLElement = this.getSimpleParagraphElement('&bull;');
+      separator.className = 'ms-4 me-4';
+      const item = arr[i];
+      container.append(item);
+      
+      if (i !== arr.length - 1) {
+        container.append(separator);
+      }
+
+      i++;
+    }
+
+    return container;
+  }
+
+  getNavigoLink(text: string, hrefPath: RouterPath): HTMLElement {
+    const link = document.createElement('a');
+    link.innerHTML = text;
+    link.href = hrefPath;
+    link.setAttribute('data-navigo', '');
+    return link;
+  }
+
+  getSimpleParagraphElement(text: string): HTMLElement {
+    const p = document.createElement('p');
+    p.innerHTML = text;
+    return p;
+  }
+
+  getProductDetailsDescription(productTitle: string): HTMLElement {
+    const container = document.createElement('div');
+    container.classList.add('mb-2')
+    const title = document.createElement('h3');
+    title.innerHTML = 'Description';
+    const text = document.createElement('p');
+    text.innerHTML = productTitle;
+    container.append(title, text);
+    return container;
+  }
+
+  getProductDetailsPrice(card: SimpleCard): HTMLElement {
+    const container = document.createElement('div');
+    const price = this.getProductPrice(card.price, 'display-6');
+    const discount = this.getProductDiscount(card.discountPercentage);
+    const rating = this.getProductRating(card.rating);
+    const stock = this.getProductStockQty(card.stock);
+
+    container.append(price, discount, rating, stock);
+    return container;
+  }
+
+  getProductPrice(productPrice: number, specialClass?: string): HTMLElement {
+    const cardPrice = document.createElement('div');
+    if (specialClass) {
+      cardPrice.className = specialClass;
+    }
+    const price = document.createElement('span');
+    price.innerHTML = `${productPrice}`;
+    const priceCurrency = document.createElement('i');
+    priceCurrency.className = CURRENCY_ICON_CLASS_NAME;
+    cardPrice.append(price, priceCurrency);
+    return cardPrice;
+  }
+
+  getProductDiscount(discount: number): HTMLElement {
+    const cardDiscount = document.createElement('div');
+    cardDiscount.innerHTML = `Discount: ${discount}%`;
+    return cardDiscount;
+  }
+
+  getProductRating(rating: number): HTMLElement {
+    const container = document.createElement('div');
+    const cardRatingIcon = document.createElement('i');
+    cardRatingIcon.className = 'bi bi-star';
+    const cardRating = document.createElement('span');
+    cardRating.innerHTML = ` ${rating}`;
+    container.append(cardRatingIcon, cardRating);
+    return container;
+  }
+
+  getProductStockQty(stockQty: number): HTMLElement {
+    const cardStockQty = document.createElement('div');
+    cardStockQty.innerHTML = `Stock: ${stockQty}`;
+    return cardStockQty;
+  }
+
+  getProductCartButton(text: string): HTMLElement {
+    const button = document.createElement('button');
+    button.className = 'btn btn-primary';
+    button.innerHTML = text;
+
+    return button;
   }
 }
 
