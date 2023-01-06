@@ -1,13 +1,15 @@
-import { SimpleCard } from '../../models/interfaces';
+import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
 import { appRouter } from '../router/router';
 import { UrlParamKey, CardsAppearance } from '../../enums/enums';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
+import { appStorage } from './app-storage';
 
 export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
   cardsAppearance: string;
+  properties: MainFilterProperties;
 
   constructor (cards: SimpleCard[], cardsAppearance: string) { 
     this.cards = cards;
@@ -171,7 +173,7 @@ export class Cards {
   }
 
   generateCardsOld (wrapper: HTMLDivElement): void {
-    this.cards.forEach((e) => this.createCard(wrapper, e));
+    this.cards.forEach((e) => this.createCardOld(wrapper, e));
   }
   // createCardOld (wrapper: HTMLDivElement, elem: SimpleCard):void {  
   //   const card = document.createElement('div');
@@ -253,6 +255,7 @@ export class Cards {
     if (this.cardsAppearance === CardsAppearance.Table) {
       wrapper.append(productCard.getTableCardContent());
     }
+  }
 
   sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
     cards.sort(byField(property));
