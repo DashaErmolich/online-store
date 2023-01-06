@@ -1,10 +1,11 @@
-import { SimpleCard } from "../../models/interfaces";
+import { FilterProperties, MainFilterProperties, SimpleCard } from "../../models/interfaces";
 import { appStorage } from '../storage/app-storage';
 
 export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
+  properties: MainFilterProperties;
 
   constructor (cards: SimpleCard[]) { 
     this.cards = cards;
@@ -14,6 +15,15 @@ export class Cards {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
     });
+    //TODO: fill filter properties from query string
+    this.properties = {
+      sortProperty: '',
+      searchProperty: '',
+      filterProperty: {
+        categoryProperties: [],
+        brandProperties: []
+      }
+    }
   }
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
@@ -100,6 +110,35 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
+      formInput.addEventListener('click', () => { // fiters logic here
+        const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        if (formInput.checked) {
+          console.log (element + ' checked');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+        if (!formInput.checked) {
+          console.log (element + ' not checked now');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+      })
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
@@ -112,10 +151,17 @@ export class Cards {
     });
     wrapper.append(filterUnit);
   }
-  generateCards (wrapper: HTMLDivElement):void {
-    this.cards.forEach(e => this.createCard(wrapper, e));
+  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+    cards.sort(byField(property));
+    function byField (field: 'title' | 'price' | 'rating') {
+      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+    }
   }
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
+  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+    if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
+    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
+  }   
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
     if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
@@ -175,10 +221,32 @@ export class Cards {
         appStorage.addProductToCart(elem);
       }
     })
-
     cardBtnField.append(toCardBtn);
-    card.append(cardBtnField);
 
+    //search
+    if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
+    else card.classList.remove('d-none');
+
+    //filter
+    if (filterProp.categoryProperties.length > 0) {
+      console.log('filterProp.categoryProperties');
+      filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0) {
+      console.log('filterProp.brandProperties');
+      filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {
+      filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+
+    card.append(cardBtnField);
     wrapper.append(card);
+  }
+  removeCards ():void {
+    const cardsWrap = document.querySelector('.cards-wrapper');
+    while(cardsWrap?.firstChild) {
+      cardsWrap.removeChild(cardsWrap.firstChild);
+    }
   }
 }

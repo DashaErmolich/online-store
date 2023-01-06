@@ -100,3 +100,14 @@ export interface CreditCard {
   firstDigit: number,
   icon: string,
 }
+
+export interface MainFilterProperties {
+  sortProperty: 'title' | 'price' | 'rating' | '';
+  searchProperty: string;
+  filterProperty: FilterProperties;
+}
+
+export interface FilterProperties {
+  categoryProperties: string[];
+  brandProperties: string[];
+} 
