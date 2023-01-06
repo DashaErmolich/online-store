@@ -1,6 +1,6 @@
 import { productsFilter } from '../components/filter/filter';
-import { UrlParamKey } from '../enums/enums';
-import { FormInput, CreditCard } from '../models/interfaces';
+import { UrlParamKey, CardsAppearance } from '../enums/enums';
+import { FormInput, CreditCard, MyUrlSearchParam } from '../models/interfaces';
 import CREDIT_CARD_NUMBER_DEFAULT_ICON from 'appIcons/credit-card-logo.svg';
 import CREDIT_CARD_NUMBER_VISA_ICON from 'appIcons/visa-logo.svg';
 import CREDIT_CARD_NUMBER_MASTERCARD_ICON from 'appIcons/mc-logo.svg';
@@ -126,4 +126,22 @@ export const creditCardJCB: CreditCard = {
 export const creditCardDefault: CreditCard = {
   firstDigit: Number('/^[0-9]{1}/'),
   icon: CREDIT_CARD_NUMBER_DEFAULT_ICON,
+}
+
+export const cardsAppearanceSearchParam: MyUrlSearchParam = {
+  key: UrlParamKey.Appearance,
+  defaultValue: CardsAppearance.Table,
+  isMultiple: false, 
+}
+
+export const paginationLimitSearchParam: MyUrlSearchParam = {
+  key: UrlParamKey.Limit,
+  defaultValue: PAGINATION_LIMIT_DEFAULT,
+  isMultiple: false, 
+}
+
+export const activePageSearchParam: MyUrlSearchParam = {
+  key: UrlParamKey.Page,
+  defaultValue: ACTIVE_PAGE_DEFAULT,
+  isMultiple: false, 
 }

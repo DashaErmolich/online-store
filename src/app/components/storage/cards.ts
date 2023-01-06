@@ -1,5 +1,7 @@
 import { SimpleCard } from "../../models/interfaces";
 import { appStorage } from '../storage/app-storage';
+import { appRouter } from '../router/router';
+import { UrlParamKey, CardsAppearance } from '../../enums/enums';
 
 export class Cards {
   cards: SimpleCard[];
@@ -23,8 +25,8 @@ export class Cards {
     appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Row');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Table');
+    this.generateAppearanceCheckers(appearanceCheckers, CardsAppearance.Row);
+    this.generateAppearanceCheckers(appearanceCheckers, CardsAppearance.Table);
     appearanceWrapper.append(appearanceCheckers);
 
     const filtersWrapper = document.createElement('div');
@@ -40,7 +42,7 @@ export class Cards {
     wrapper.append(filtersWrapper);
 
   }
-  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: 'Table' | 'Row'):void { //generate radio buttons
+  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance):void { //generate radio buttons
     const formWrapper = document.createElement('div');
     formWrapper.classList.add('form-check');
 
@@ -49,12 +51,16 @@ export class Cards {
     formInput.type = 'radio';
     formInput.name = 'appearanceRadio';
     formInput.id = `appearanceRadio${appearance}`;
-    if (localStorage.getItem('main-current-state') === appearance) formInput.checked = true;
+
+    if (localStorage.getItem('main-current-state') === appearance) {
+      formInput.checked = true
+    }
+    
     formInput.addEventListener('change', () => {
       if (formInput.checked) {
         const cardsWrapper = document.querySelector('.cards-wrapper');
         const singleCards = document.querySelectorAll('.mainCard');
-        if (appearance === 'Row') {
+        if (appearance === CardsAppearance.Row) {
           cardsWrapper?.classList.add('cards-wrapper-row');
           cardsWrapper?.classList.remove('cards-wrapper-table');
           singleCards.forEach(singleCardWrapper => {
@@ -71,7 +77,8 @@ export class Cards {
             singleCardWrapper?.classList.remove('mainCard-row');
           });
         }
-        localStorage.setItem('main-current-state', appearance);
+        appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
+        //localStorage.setItem('main-current-state', appearance);
       }
     })
     formWrapper.append(formInput);

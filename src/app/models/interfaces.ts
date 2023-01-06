@@ -1,4 +1,5 @@
 import { AbstractPage } from '../abstracts/abstracts';
+import { UrlParamKey } from '../enums/enums';
 
 export interface PageComponents {
   title: string,
@@ -99,4 +100,10 @@ export interface FormInputValidation {
 export interface CreditCard {
   firstDigit: number,
   icon: string,
+}
+
+export interface MyUrlSearchParam {
+  key: UrlParamKey,
+  defaultValue: string | number,
+  isMultiple: boolean,
 }
