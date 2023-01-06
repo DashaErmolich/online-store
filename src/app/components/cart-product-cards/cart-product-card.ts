@@ -1,7 +1,8 @@
-import { CURRENCY_ICON_CLASS_NAME, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
+import { PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { SimpleCard } from '../../models/interfaces';
 import { appStorage } from '../storage/app-storage';
 import { cartPage } from '../router/router';
+import { appDrawer } from '../drawer/drawer';
 
 export class ProductCard {
 
@@ -35,12 +36,7 @@ export class ProductCard {
     })
     cardHeader.append(cardTitle, cardTrashButton);
 
-    const cardPrice = document.createElement('h6');
-    cardPrice.className = 'card-title';
-    cardPrice.innerHTML = `${this.card.price}`;
-    const priceCurrency = document.createElement('i');
-    priceCurrency.className = CURRENCY_ICON_CLASS_NAME;
-    cardPrice.append(priceCurrency);
+    const cardPrice = appDrawer.getProductPrice(this.card.price, 'card-title');
 
     const cardCategoryAndBrand = document.createElement('p');
     cardCategoryAndBrand.className = 'card-text text-capitalize';
@@ -50,23 +46,25 @@ export class ProductCard {
     cardDescription.className = 'card-text';
     cardDescription.innerHTML = this.card.description;
 
-    const cardStockQty = document.createElement('p');
-    cardStockQty.innerHTML = `Stock: ${this.card.stock}`;
+    const cardStockQty = appDrawer.getProductStockQty(this.card.stock)
 
     const cardInfo = document.createElement('div');
     cardInfo.className = 'd-flex justify-content-between';
 
     const cardRatingAndDiscount = document.createElement('div');
     cardRatingAndDiscount.className = 'card-text';
-    const cardRatingIcon = document.createElement('i');
-    cardRatingIcon.className = 'bi bi-star';
-    const cardRating = document.createElement('span');
-    cardRating.className = 'text-muted';
-    cardRating.innerHTML = `${this.card.rating} &bull;`;
-    const cardDiscount = document.createElement('span');
-    cardDiscount.className = 'text-muted';
-    cardDiscount.innerHTML = `Discount: ${this.card.discountPercentage}%`;
-    cardRatingAndDiscount.append(cardRatingIcon, cardRating, cardDiscount);
+
+    const cardRating = appDrawer.getProductRating(this.card.rating);
+    cardRating.classList.add('text-muted');
+    cardRating.classList.add('d-inline');
+    const separator = appDrawer.getSimpleParagraphElement('&bull;');
+    separator.classList.add('text-muted');
+    separator.classList.add('d-inline');
+    const cardDiscount = appDrawer.getProductDiscount(this.card.discountPercentage);
+    cardDiscount.classList.add('text-muted');
+    cardDiscount.classList.add('d-inline');
+    
+    cardRatingAndDiscount.append(cardRating, separator, cardDiscount);
 
     const cardQtyAndButtons = document.createElement('div');
     cardQtyAndButtons.className = 'd-flex justify-content-between align-items-center';
