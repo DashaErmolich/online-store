@@ -112,9 +112,16 @@ export class Cards {
     });
     wrapper.append(filterUnit);
   }
-  generateCards (wrapper: HTMLDivElement):void {
-    this.cards.forEach(e => this.createCard(wrapper, e));
+  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+    cards.sort(byField(property));
+    function byField (field: 'title' | 'price' | 'rating') {
+      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+    }
   }
+  generateCards (wrapper: HTMLDivElement, sortProp?: 'title' | 'price' | 'rating'):void {
+    if (sortProp) this.sortBy(this.cards, sortProp);
+    this.cards.forEach(e => this.createCard(wrapper, e));
+  }   
   createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
@@ -180,5 +187,11 @@ export class Cards {
     card.append(cardBtnField);
 
     wrapper.append(card);
+  }
+  removeCards ():void {
+    const cardsWrap = document.querySelector('.cards-wrapper');
+    while(cardsWrap?.firstChild) {
+      cardsWrap.removeChild(cardsWrap.firstChild);
+    }
   }
 }
