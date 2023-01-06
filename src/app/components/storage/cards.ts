@@ -71,7 +71,7 @@ export class Cards {
           // cardsWrapper?.classList.add('cards-wrapper-row');
           // cardsWrapper?.classList.remove('cards-wrapper-table');
           if (cardsWrapper) {
-            cardsWrapper.className = 'cards-wrapper cards-wrapper-row';
+            cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';
           }
           singleCards.forEach(singleCardWrapper => {
             singleCardWrapper?.classList.add('mainCard-row');
@@ -208,7 +208,13 @@ export class Cards {
   // }
 
   createCard (wrapper: HTMLDivElement, elem: SimpleCard): void {
-    const productCard = new MainPageProductCard(elem);
-    wrapper.append(productCard.getCardContent());
+    const productCard = new MainPageProductCard(elem, this.cardsAppearance);
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      wrapper.append(productCard.getRowCardContent());
+    }
+    if (this.cardsAppearance === CardsAppearance.Table) {
+      wrapper.append(productCard.getTableCardContent());
+    }
+
   }
 }

@@ -3,7 +3,7 @@ import { SimpleCard, MainPageCardElement } from '../../models/interfaces';
 import { appStorage } from '../storage/app-storage';
 import { cartPage, productPage } from '../router/router';
 import { appDrawer } from '../drawer/drawer';
-import { RouterPath } from '../../enums/enums';
+import { RouterPath, CardsAppearance } from '../../enums/enums';
 
 export class ProductCard {
 
@@ -126,12 +126,14 @@ export class ProductCard {
 export class MainPageProductCard {
   card: SimpleCard;
   cardElement: MainPageCardElement;
+  cardsAppearance: string;
 
-  constructor(card: SimpleCard) {
+  constructor(card: SimpleCard, cardsAppearance: string) {
     this.card = card;
+    this.cardsAppearance = cardsAppearance;
 
     this.cardElement = {
-      image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, 'card-img-top card-image_custom'),
+      image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
       price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-3'),
       discount: appDrawer.getProductDiscount(this.card.discountPercentage),
@@ -146,7 +148,7 @@ export class MainPageProductCard {
     }
   }
 
-  public getCardContent(): HTMLElement {
+  public getTableCardContent(): HTMLElement {
     const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body');
@@ -160,8 +162,11 @@ export class MainPageProductCard {
       this.cardElement.removeFromCartButton.classList.add('d-none');
     }
 
-    const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative');
-    stretchedLinkWrap.append(this.cardElement.image, cardBody, this.cardElement.linkToProductPage);
+    const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100');
+    const cardImageWrapper = appDrawer.getSimpleElement('div', 'card-image-wrapper_custom');
+    this.cardElement.image.className = 'card-img-top card-image_custom';
+    cardImageWrapper.append(this.cardElement.image);
+    stretchedLinkWrap.append(cardImageWrapper, cardBody, this.cardElement.linkToProductPage);
 
     cardFooter.append(this.cardElement.stock, this.cardElement.rating);
     card.append(stretchedLinkWrap, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton, cardFooter);
@@ -169,8 +174,48 @@ export class MainPageProductCard {
     return container;
   }
 
+  public getRowCardContent(): HTMLElement {
+    const container = appDrawer.getSimpleElement('article', 'col');
+    const card = appDrawer.getSimpleElement('div', 'card h-100');
+
+    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0');
+
+    const cardImageWrapper = appDrawer.getSimpleElement('div', 'col-md-4 position-relative h-100');
+    //const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100');
+    //stretchedLinkWrap.append(cardImageWrapper, this.cardElement.linkToProductPage);
+
+    const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-md-8');
+    const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
+
+    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom h-100';
+    cardImageWrapper.append(this.cardElement.image, this.cardElement.linkToProductPage);
+
+    this.cardElement.stock.className = 'mb-2';
+  
+    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    cardBodyWrapper.append(cardBody);
+
+    if (this.isProductInCart(this.card)) {
+      this.cardElement.addToCartButton.classList.add('d-none');
+    } else {
+      this.cardElement.removeFromCartButton.classList.add('d-none');
+    }
+
+    cardContentWrapper.append(cardImageWrapper, cardBodyWrapper);
+    card.append(cardContentWrapper);
+    container.append(card)
+
+    return container;
+  }
+
   private getAddProductToCartButton(card: SimpleCard) {
-    const button = appDrawer.getSimpleButton('Add to cart', 'btn btn-light text-uppercase rounded-0 bg-transparent add-product-button');
+    let button: HTMLElement;
+
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      button = appDrawer.getSimpleButton('', 'btn btn-link bi bi-bag-plus fs-3 position-absolute top-0 end-0 add-product-button');
+    } else {
+      button = appDrawer.getSimpleButton(' Add to cart', 'btn btn-light bi bi-bag-plus text-primary fs-5 text-uppercase rounded-0 bg-transparent add-product-button');
+    }
 
     button.addEventListener('click', () => {
       appStorage.addProductToCart(card);
@@ -194,7 +239,13 @@ export class MainPageProductCard {
   }
 
   private getRemoveProductFromCartButton(card: SimpleCard) {
-    const button = appDrawer.getSimpleButton('Remove from cart', 'btn btn-light text-uppercase rounded-0 bg-transparent remove-product-button');
+    let button: HTMLElement;
+
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      button = appDrawer.getSimpleButton('', 'btn btn-link bi bi bi-bag-x-fill text-danger fs-3 position-absolute top-0 end-0 remove-product-button');
+    } else {
+      button = appDrawer.getSimpleButton(' Remove from cart', 'btn btn-light bi bi bi-bag-x-fill text-danger fs-5 text-uppercase rounded-0 bg-transparent remove-product-button');
+    }
     
     button.addEventListener('click', () => {
       appStorage.removeProductFromCart(card);

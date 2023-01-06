@@ -88,7 +88,12 @@ export class MainPage extends AbstractPage {
     //cardsWrapper.classList.add('cards-wrapper'); // loading stance from storage
     // if (localStorage.getItem('main-current-state') === 'Table') cardsWrapper.classList.add('cards-wrapper-table');
     // if (localStorage.getItem('main-current-state') === 'Row') cardsWrapper.classList.add('cards-wrapper-row');
-    cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4'
+    if (this.mainPageSettings.cardsAppearance === CardsAppearance.Table) {
+      cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+    }
+    if (this.mainPageSettings.cardsAppearance === CardsAppearance.Row) {
+      cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';
+    }
     cards.generateCards(cardsWrapper);
 
     contentWrapper.append(sortingWrapper);
