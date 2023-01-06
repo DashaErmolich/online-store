@@ -3,7 +3,7 @@ import { appRouter } from '../components/router/router';
 import { UrlParamKey } from '../enums/enums';
 import { FILTERS_VALUES_SEPARATOR } from '../constants/constants';
 
-export abstract class AbstractPage {
+export class AbstractPage {
 
   protected setPageTitle(title: PageComponents['title']): void {
     document.title = title;
@@ -25,11 +25,11 @@ export abstract class AbstractPage {
     return myValue;
   }
 
-  getValidStringValueFromUrl(urlParamsKey: UrlParamKey, defaultValue: string): string {
+  getValidStringValueFromUrl(urlParamsKey: UrlParamKey, possibleValues: string[], defaultValue: string): string {
     const value: string | undefined = appRouter.getUrlParamsValue(urlParamsKey);
     let myValue: string = defaultValue;
     
-    if (value && !Number(value)) {
+    if (value && !Number(value) && possibleValues.includes(value)) {
       myValue = value;
     }
 

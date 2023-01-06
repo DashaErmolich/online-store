@@ -3,7 +3,7 @@ import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes, NumberRange } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
 import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
-import { mainPage } from '../pages/main';
+import { MainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
 import { productPage } from '../pages/product-details';
 
@@ -20,7 +20,7 @@ class MyNavigo extends Navigo {
   public updateUrlParams(key: UrlParamKey, value: string | NumberRange, isChecked?: boolean): void {
     const params = this.getUrlParams();
 
-    if (key === UrlParamKey.Page || UrlParamKey.Limit) {
+    if (key === UrlParamKey.Page || UrlParamKey.Limit || UrlParamKey.Appearance) {
       if (typeof(value) === 'string') {
         this.updateSingleChoiceUrlParams(params, key, value);
       }
@@ -183,6 +183,7 @@ class MyNavigo extends Navigo {
 }
 
 export const appRouter = new MyNavigo('/');
+export const mainPage = new MainPage();
 export const cartPage = new CartPage();
 
 const routes: Routes[] = [

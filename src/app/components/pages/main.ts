@@ -1,11 +1,23 @@
 import { possibleCards } from '../../../assets/samples/possible-cards';
 import { AbstractPage } from '../../abstracts/abstracts';
 import { Cards } from '../storage/cards';
+import { MainPageSettings } from '../../models/interfaces';
+import { cardsAppearanceSearchParam } from '../../constants/constants';
+import { CardsAppearance } from '../../enums/enums';
 
 export class MainPage extends AbstractPage {
+  mainPageSettings: MainPageSettings;
+
   constructor() {
     super();
     this.setPageTitle('Shop Cart');
+    this.mainPageSettings = {
+      cardsAppearance: this.getCardsAppearance(),
+    }
+  }
+
+  private getCardsAppearance(): string {
+    return this.getValidStringValueFromUrl(cardsAppearanceSearchParam.key, Object.values(CardsAppearance), cardsAppearanceSearchParam.defaultValue);
   }
 
   getPageContent(): HTMLElement {
@@ -14,7 +26,7 @@ export class MainPage extends AbstractPage {
     content.innerHTML = ` 
     <h1>Online Shop</h1>
     `;
-    const cards = new Cards (possibleCards.products);
+    const cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance);
     if (!localStorage.getItem('main-current-state')) localStorage.setItem('main-current-state', 'Table'); // table state at first page loading
     
     const mainWrapper = document.createElement('div');
@@ -78,7 +90,7 @@ export class MainPage extends AbstractPage {
   }
 }
 
-export const mainPage = new MainPage();
+// export const mainPage = new MainPage();
 
 // current HTML State: 
 /*

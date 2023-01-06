@@ -114,3 +114,7 @@ export interface MyNumberValueUrlSearchParam extends MyBaseUrlSearchParam {
 export interface MyStringValueUrlSearchParam extends MyBaseUrlSearchParam {
   defaultValue: string,
 }
+
+export interface MainPageSettings {
+  cardsAppearance : string,
+}

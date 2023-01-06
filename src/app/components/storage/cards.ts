@@ -7,11 +7,13 @@ export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
+  cardsAppearance: string;
 
-  constructor (cards: SimpleCard[]) { 
+  constructor (cards: SimpleCard[], cardsAppearance: string) { 
     this.cards = cards;
     this.categories = [];
     this.brands = [];
+    this.cardsAppearance = cardsAppearance;
     cards.forEach(element => {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
@@ -25,8 +27,12 @@ export class Cards {
     appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
-    this.generateAppearanceCheckers(appearanceCheckers, CardsAppearance.Row);
-    this.generateAppearanceCheckers(appearanceCheckers, CardsAppearance.Table);
+    
+    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+    cardsAppearances.forEach((appearance) => {
+      this.generateAppearanceCheckers(appearanceCheckers, appearance);
+    })
+
     appearanceWrapper.append(appearanceCheckers);
 
     const filtersWrapper = document.createElement('div');
@@ -42,7 +48,7 @@ export class Cards {
     wrapper.append(filtersWrapper);
 
   }
-  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance):void { //generate radio buttons
+  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance): void { //generate radio buttons
     const formWrapper = document.createElement('div');
     formWrapper.classList.add('form-check');
 
@@ -52,7 +58,7 @@ export class Cards {
     formInput.name = 'appearanceRadio';
     formInput.id = `appearanceRadio${appearance}`;
 
-    if (localStorage.getItem('main-current-state') === appearance) {
+    if (this.cardsAppearance === appearance) {
       formInput.checked = true
     }
     
@@ -78,7 +84,6 @@ export class Cards {
           });
         }
         appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
-        //localStorage.setItem('main-current-state', appearance);
       }
     })
     formWrapper.append(formInput);
@@ -125,8 +130,13 @@ export class Cards {
   createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
-    if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
-    if (localStorage.getItem('main-current-state') === 'Row') card.classList.add('mainCard-row');
+
+    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+    cardsAppearances.forEach((appearance) => {
+      if (this.cardsAppearance === appearance) {
+        card.classList.add(`mainCard-${appearance}`)
+      }
+    })
 
     const cardH3 = document.createElement('h3');
     card.classList.add('card__title');
