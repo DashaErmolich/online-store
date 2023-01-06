@@ -19,7 +19,7 @@ export class CartSummaryPromoCode {
   getNewPromoCodeContent(): HTMLElement {
     const promoCodeBase = this.getPromoCodeName();
 
-    const promoCodeAddButton: HTMLElement = appDrawer.getPromoCodeButton('Add');
+    const promoCodeAddButton: HTMLElement = appDrawer.getSimpleButton('Add', 'btn-btn-dark');
     promoCodeAddButton.addEventListener('click', () => {
       this.listenPromoCodeAddButton();
     })
@@ -31,7 +31,7 @@ export class CartSummaryPromoCode {
   getAppliedPromoCodeContent(): HTMLElement {
     const promoCodeBase = this.getPromoCodeName();
     
-    const promoCodeRemoveButton: HTMLElement = appDrawer.getPromoCodeButton('Remove');
+    const promoCodeRemoveButton: HTMLElement = appDrawer.getSimpleButton('Remove', 'btn-btn-dark');
     promoCodeRemoveButton.addEventListener('click', () => {
       this.listenPromoCodeRemoveButton();
     })

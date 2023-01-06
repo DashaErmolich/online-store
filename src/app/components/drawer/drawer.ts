@@ -1,5 +1,6 @@
 import { CURRENCY_ICON_CLASS_NAME } from '../../constants/constants';
-import { FormInput } from '../../models/interfaces';
+import { FormInput, SimpleCard } from '../../models/interfaces';
+import { RouterPath } from '../../enums/enums';
 class Drawer {
   getCartSummaryTitle(): HTMLElement {
     const cartSummaryTitle = document.createElement('h5');
@@ -71,11 +72,11 @@ class Drawer {
     return cartSummaryContainer;
   }
 
-  getPromoCodeButton(value: string): HTMLElement {
-    const promoCodeButton = document.createElement('button');
-    promoCodeButton.innerHTML = value;
-    promoCodeButton.className = 'btn btn-dark';
-    return promoCodeButton;
+  getSimpleButton(value: string, btnClass: string): HTMLElement {
+    const button = document.createElement('button');
+    button.innerHTML = value;
+    button.className = btnClass;
+    return button;
   }
 
   getPromoCodeTitle(promoCodeDescription: string, promoCodeDiscount: number): HTMLElement {
@@ -333,6 +334,268 @@ class Drawer {
     formContainer.className = className;
     formContainer.append(formContainerTitle);
     return formContainer;
+  }
+
+  getProductDetailsCardHorizontalWrapper(): HTMLElement {
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'card mb-3';
+    const card = document.createElement('div');
+    card.className = 'row g-0';
+    cardContainer.append(card);
+    return cardContainer;
+  }
+
+  getProductDetailsCarousel(carouselId: string): HTMLElement {
+    const carousel = document.createElement('div');
+    carousel.className = 'carousel slide carousel_custom carousel-dark';
+    carousel.id = carouselId;
+    return carousel;
+  }
+
+  getProductDetailsCarouselIndicators(carouselId: string, images: string[], title: string): HTMLElement {
+    const carouselIndicators = document.createElement('div');
+    carouselIndicators.className = 'carousel-indicators carousel-indicators_custom';
+
+    let i = 0;
+
+    while (i < images.length) {
+      const src = images[i];
+      const alt = `${title}(${i + 1})`;
+      const button = this.getProductDetailsCarouselIndicatorsButton(carouselId, i);
+      if (i === 0) {
+        button.classList.add('active');
+      }
+      const image = this.getProductDetailsCarouselImage(src, alt);
+      button.append(image);
+      carouselIndicators.append(button);
+      i++;
+    }
+    return carouselIndicators;
+  }
+
+  getProductDetailsCarouselInner(images: string[], title: string): HTMLElement {
+    const carouselInner = document.createElement('div');
+    carouselInner.className = 'carousel-inner h-100';
+
+    let i = 0;
+
+    while (i < images.length) {
+      const src = images[i];
+      const alt = `${title}(${i + 1})`;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'carousel-item h-100';
+      if (i === 0) {
+        wrapper.classList.add('active');
+      }
+      const image = this.getProductDetailsCarouselImage(src, alt);
+      wrapper.append(image);
+      carouselInner.append(wrapper);
+      i++;
+    }
+    return carouselInner;
+  }
+
+  getProductDetailsCarouselControl(carouselId: string, direction: string, text: string): HTMLElement {
+    const button = document.createElement('button');
+    button.className = `carousel-control-${direction}`;
+    button.type = 'button';
+    button.setAttribute('data-bs-target', `#${carouselId}`);
+    button.setAttribute('data-bs-slide', direction);
+    const icon = document.createElement('span');
+    icon.className = `carousel-control-${direction}-icon`;
+    icon.setAttribute('aria-hidden', 'true');
+    const title = document.createElement('span');
+    title.className = 'visually-hidden';
+    title.innerHTML = text;
+    button.append(icon, title)
+    return button;
+  }
+
+  getProductDetailsCarouselIndicatorsButton(carouselId: string, slideIdx: number): HTMLElement {
+    const button = document.createElement('button');
+    button.className = 'indicators-button_custom';
+    button.setAttribute('data-bs-target', `#${carouselId}`);
+    button.setAttribute('data-bs-slide-to', `${slideIdx}`);
+    button.setAttribute('aria-current', 'true');
+    button.setAttribute('aria-label', `Slide ${slideIdx + 1}`);
+    return button;
+  }
+
+  getProductDetailsCarouselImage(imageSrc: string, imageAlt: string): HTMLElement {
+    const image = document.createElement('img');
+    image.className = 'd-block w-100 h-100 carousel-image_custom';
+    image.src = imageSrc;
+    image.alt = imageAlt;
+    return image;
+  }
+
+  getProductDetailsTitle(productTitle: string): HTMLElement {
+    const title = document.createElement('h1');
+    title.className = 'display-5';
+    title.innerHTML = productTitle;
+    return title;
+  }
+
+  getProductDetailsBreadcrumb(...filters: string[]): HTMLElement {
+    const container = this.getSimpleElement('nav', 'text-capitalize');
+    container.setAttribute('aria-label', 'breadcrumb');
+    container.setAttribute('style', `--bs-breadcrumb-divider: '•'`)
+    const list = this.getSimpleElement('ul', 'breadcrumb');
+
+    let i = 0;
+    const breadcrumbs = filters;
+
+    while (i < breadcrumbs.length) {
+      const item = this.getSimpleElement('li', 'breadcrumb-item active');
+      item.setAttribute('aria-current', 'page');
+      if (i === 0) {
+        const link = this.getNavigoLink(breadcrumbs[i], RouterPath.Main);
+        link.classList.add('link-secondary');
+        item.append(link);
+      } else {
+        item.innerHTML = breadcrumbs[i];
+      }
+
+      list.append(item);
+      i++;
+    }
+    container.append(list)
+    return container;
+  }
+
+  getNavigoLink(text: string, hrefPath: RouterPath): HTMLElement {
+    const link = document.createElement('a');
+    link.innerHTML = text;
+    link.href = hrefPath;
+    link.setAttribute('data-navigo', '');
+    return link;
+  }
+
+  getSimpleParagraphElement(text: string): HTMLElement {
+    const p = document.createElement('p');
+    p.innerHTML = text;
+    return p;
+  }
+
+  getProductDetailsDescription(productTitle: string): HTMLElement {
+    const container = document.createElement('div');
+    container.classList.add('mb-2')
+    const title = document.createElement('h3');
+    title.innerHTML = 'Description';
+    const text = document.createElement('p');
+    text.innerHTML = productTitle;
+    container.append(title, text);
+    return container;
+  }
+
+  getProductDetailsSummary(card: SimpleCard): HTMLElement {
+    const container = this.getSimpleElement('ul', 'list-group list-group-flush mb-3 text-center');
+    
+    const price = this.getProductPrice(card.price, 'display-6 list-group-item', 'li');
+    const discount = this.getProductDiscount(card.discountPercentage, 'list-group-item', 'li');
+    const rating = this.getProductRating(card.rating, 'list-group-item', 'li');
+    const stock = this.getProductStockQty(card.stock, 'list-group-item', 'li');
+
+    container.append(price, discount, rating, stock);
+
+    return container;
+  }
+
+  getProductPrice(productPrice: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardPrice = document.createElement(tagName);
+    if (specialClass) {
+      cardPrice.className = specialClass;
+    }
+    const price = document.createElement('span');
+    price.innerHTML = `${productPrice}`;
+    const priceCurrency = document.createElement('i');
+    priceCurrency.className = CURRENCY_ICON_CLASS_NAME;
+    cardPrice.append(price, priceCurrency);
+    return cardPrice;
+  }
+
+  getProductDiscount(discount: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardDiscount = document.createElement(tagName);
+    if (specialClass) {
+      cardDiscount.className = specialClass;
+    }
+
+    cardDiscount.innerHTML = `Discount: ${discount}%`;
+    return cardDiscount;
+  }
+
+  getProductRating(rating: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const container = document.createElement(tagName);
+    if (specialClass) {
+      container.className = specialClass;
+    }
+    const cardRatingIcon = document.createElement('i');
+    cardRatingIcon.className = 'bi bi-star';
+    const cardRating = document.createElement('span');
+    cardRating.innerHTML = ` ${rating}`;
+    container.append(cardRatingIcon, cardRating);
+    return container;
+  }
+
+  getProductStockQty(stockQty: number, specialClass?: string, tagName?: string): HTMLElement {
+    if (!tagName) {
+      tagName = 'div';
+    }
+    const cardStockQty = document.createElement(tagName);
+    if (specialClass) {
+      cardStockQty.className = specialClass;
+    }
+    cardStockQty.innerHTML = `Stock: ${stockQty}`;
+    return cardStockQty;
+  }
+
+  getProductCartButton(text: string): HTMLElement {
+    const button = document.createElement('button');
+    button.className = 'btn btn-primary';
+    button.innerHTML = text;
+
+    return button;
+  }
+
+  getSimpleElement(tagName: string, elementClassName: string): HTMLElement {
+    const element = document.createElement(tagName);
+    element.className = elementClassName;
+    return element;
+  }
+  
+  getOopsErrorMessage(message: string): HTMLElement {
+    const contentFirstLine = document.createElement('p');
+    contentFirstLine.className = 'fs-3';
+    const contentFirstLineOops = document.createElement('span');
+    contentFirstLineOops.className = 'text-danger';
+    contentFirstLineOops.innerHTML = 'Oops!';
+    const contentFirstLineMessage = document.createElement('span');
+    contentFirstLineMessage.innerHTML = message;
+    contentFirstLine.append(contentFirstLineOops, contentFirstLineMessage);
+    return contentFirstLine;
+  }
+
+  getNotFoundItemErrorMessage(message: string): HTMLElement {
+    const contentSecondLine = document.createElement('p');
+    contentSecondLine.className = 'lead';
+    contentSecondLine.innerHTML = message;
+    return contentSecondLine;
+  }
+
+  getGoHomeButton(): HTMLElement {
+    const goHomeButton = document.createElement('button');
+    goHomeButton.className = 'btn btn-primary';
+    goHomeButton.innerHTML = 'Go Home';
+    return goHomeButton;
   }
 }
 

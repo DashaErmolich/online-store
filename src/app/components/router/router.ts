@@ -5,7 +5,7 @@ import { NotFoundPage } from '../pages/404';
 import { PAGINATION_LIMIT_DEFAULT, ACTIVE_PAGE_DEFAULT, FILTERS_VALUES_SEPARATOR, PRICE_RANGE_DEFAULT, STOCK_RANGE_DEFAULT } from '../../constants/constants';
 import { mainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
-import { productPage } from '../pages/products';
+import { productPage } from '../pages/product-details';
 
 class MyNavigo extends Navigo {
 
@@ -162,6 +162,13 @@ class MyNavigo extends Navigo {
       }
     }
     return filterValues;
+  }
+
+  public getProductIndex(): number {
+    const url: Location = window.location;
+    const pathName = url.pathname;
+    const productIndex = pathName.split('/').pop();
+    return Number(productIndex)
   }
 }
 
