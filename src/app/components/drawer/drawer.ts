@@ -347,14 +347,14 @@ class Drawer {
 
   getProductDetailsCarousel(carouselId: string): HTMLElement {
     const carousel = document.createElement('div');
-    carousel.className = 'carousel slide carousel_custom';
+    carousel.className = 'carousel slide carousel_custom carousel-dark';
     carousel.id = carouselId;
     return carousel;
   }
 
   getProductDetailsCarouselIndicators(carouselId: string, images: string[], title: string): HTMLElement {
     const carouselIndicators = document.createElement('div');
-    carouselIndicators.className = 'carousel-indicators';
+    carouselIndicators.className = 'carousel-indicators carousel-indicators_custom';
 
     let i = 0;
 
@@ -423,7 +423,7 @@ class Drawer {
 
   getProductDetailsCarouselImage(imageSrc: string, imageAlt: string): HTMLElement {
     const image = document.createElement('img');
-    image.className = 'custom';
+    image.className = 'd-block w-100 h-100 carousel-image_custom';
     image.src = imageSrc;
     image.alt = imageAlt;
     return image;
@@ -436,34 +436,30 @@ class Drawer {
     return title;
   }
 
-  getProductDetailsSubtitle(productCategory: string, productBrand: string, productTitle: string): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'text-capitalize d-flex';
-
-    const storeLink = this.getNavigoLink('Store', RouterPath.Main);
-    storeLink.className = 'link-dark text-decoration-none';
-    const category = this.getSimpleParagraphElement(productCategory);
-    const brand = this.getSimpleParagraphElement(productBrand);
-    const title = this.getSimpleParagraphElement(productTitle);
-
-    const arr = [];
-    arr.push(storeLink, category, brand, title);
+  getProductDetailsBreadcrumb(...filters: string[]): HTMLElement {
+    const container = this.getSimpleElement('nav', 'text-capitalize');
+    container.setAttribute('aria-label', 'breadcrumb');
+    container.setAttribute('style', `--bs-breadcrumb-divider: '•'`)
+    const list = this.getSimpleElement('ul', 'breadcrumb');
 
     let i = 0;
+    const breadcrumbs = filters;
 
-    while (i < arr.length) {
-      const separator: HTMLElement = this.getSimpleParagraphElement('&bull;');
-      separator.className = 'ms-4 me-4';
-      const item = arr[i];
-      container.append(item);
-      
-      if (i !== arr.length - 1) {
-        container.append(separator);
+    while (i < breadcrumbs.length) {
+      const item = this.getSimpleElement('li', 'breadcrumb-item active');
+      item.setAttribute('aria-current', 'page');
+      if (i === 0) {
+        const link = this.getNavigoLink(breadcrumbs[i], RouterPath.Main);
+        link.classList.add('link-secondary');
+        item.append(link);
+      } else {
+        item.innerHTML = breadcrumbs[i];
       }
 
+      list.append(item);
       i++;
     }
-
+    container.append(list)
     return container;
   }
 

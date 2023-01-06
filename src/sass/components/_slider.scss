@@ -1,31 +1,21 @@
-// .carousel-indicators_custom {
-//   position: relative;
-//   left: auto;
-//   right: auto;
-//   bottom: auto;
-//   width: 100%;
-//   margin: 0;
-// }
-
-// .indicators-button_custom {
-//   width: auto !important;
-//   height: auto !important;
-// }
-
 .carousel_custom {
-  height: 300px;
+  height: 500px;
 }
 
-.custom {
+.carousel-image_custom {
   object-fit: contain;
-  width: 100%;
-  height: 100%;
 }
 
-// .carousel-item_custom img {
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   max-height: 300px;
-//   object-fit: contain;
-// }
+.indicators-button_custom {
+  height: 100px !important;
+  width: 100% !important;
+  opacity: 1 !important;
+}
+
+.carousel-indicators_custom {
+  position: static;
+}
+
+.carousel-control_custom {
+  color: black !important;
+}

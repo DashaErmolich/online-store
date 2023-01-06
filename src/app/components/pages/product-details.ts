@@ -25,7 +25,7 @@ export class ProductPage extends AbstractPage {
     console.log(card);
 
     if (card) {
-      this.drawProductFilters(contentContainer, card);
+      this.drawBreadcrumb(contentContainer, card);
       this.drawProductTile(contentContainer, card.title);
       this.drawProductCarousel(productDescriptionContainer, card);
       this.drawProductDescription(productDescriptionContainer, card.description);
@@ -50,9 +50,10 @@ export class ProductPage extends AbstractPage {
     parentElement.append(notFoundContainer);
   }
 
-  private drawProductFilters(parentElement: HTMLElement, card: SimpleCard): void {
-    const productFilters = appDrawer.getProductDetailsSubtitle(card.category, card.brand, card.title);
+  private drawBreadcrumb(parentElement: HTMLElement, card: SimpleCard): void {
+    const productFilters = appDrawer.getProductDetailsBreadcrumb('Store', card.category, card.brand, card.title);
     parentElement.append(productFilters);
+    appRouter.updatePageLinks();
   }
 
   private drawProductTile(parentElement: HTMLElement, title: string): void {
@@ -93,8 +94,8 @@ export class ProductPage extends AbstractPage {
     const carouselPrevControl = appDrawer.getProductDetailsCarouselControl(carouselId, 'prev', 'Previous');
     const carouselNextControl = appDrawer.getProductDetailsCarouselControl(carouselId, 'next', 'Next');
 
-    carousel.append(carouselInner, carouselPrevControl, carouselNextControl, carouselIndicators);
-    parentElement.append(carousel);
+    carousel.append(carouselInner, carouselPrevControl, carouselNextControl);
+    parentElement.append(carousel, carouselIndicators);
   }
 
   private isProductInCart(card: SimpleCard): boolean {
