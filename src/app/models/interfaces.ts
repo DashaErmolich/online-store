@@ -102,8 +102,15 @@ export interface CreditCard {
   icon: string,
 }
 
-export interface MyUrlSearchParam {
+export interface MyBaseUrlSearchParam {
   key: UrlParamKey,
-  defaultValue: string | number,
   isMultiple: boolean,
+}
+
+export interface MyNumberValueUrlSearchParam extends MyBaseUrlSearchParam {
+  defaultValue: number,
+}
+
+export interface MyStringValueUrlSearchParam extends MyBaseUrlSearchParam {
+  defaultValue: string,
 }

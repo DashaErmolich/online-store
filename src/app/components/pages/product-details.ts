@@ -13,7 +13,7 @@ export class ProductPage extends AbstractPage {
   }
   
   getPageContent(): PageComponents['content'] {
-    cartPage.setCartState();
+    cartPage.updateCartState();
 
     const contentContainer = appDrawer.getSimpleElement('div', 'row');
 
@@ -114,7 +114,7 @@ export class ProductPage extends AbstractPage {
 
     button.addEventListener('click', () => {
       appStorage.addProductToCart(card);
-      cartPage.setCartState();
+      cartPage.updateCartState();
       this.drawProductSummary(parentElement, card);
       button.remove();
       buyProductNowButton.remove();
@@ -128,7 +128,7 @@ export class ProductPage extends AbstractPage {
     
     button.addEventListener('click', () => {
       appStorage.removeProductFromCart(card);
-      cartPage.setCartState();
+      cartPage.updateCartState();
       this.drawProductSummary(parentElement, card);
       button.remove();
       buyProductNowButton.remove();
