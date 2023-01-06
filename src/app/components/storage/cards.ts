@@ -19,6 +19,15 @@ export class Cards {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
     });
+    //TODO: fill filter properties from query string
+    this.properties = {
+      sortProperty: '',
+      searchProperty: '',
+      filterProperty: {
+        categoryProperties: [],
+        brandProperties: []
+      }
+    }
   }
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
@@ -119,6 +128,35 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
+      formInput.addEventListener('click', () => { // fiters logic here
+        const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        if (formInput.checked) {
+          console.log (element + ' checked');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+        if (!formInput.checked) {
+          console.log (element + ' not checked now');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+      })
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
@@ -132,10 +170,10 @@ export class Cards {
     wrapper.append(filterUnit);
   }
 
-  generateCards (wrapper: HTMLDivElement): void {
+  generateCardsOld (wrapper: HTMLDivElement): void {
     this.cards.forEach((e) => this.createCard(wrapper, e));
   }
-  // createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
+  // createCardOld (wrapper: HTMLDivElement, elem: SimpleCard):void {  
   //   const card = document.createElement('div');
   //   card.classList.add('mainCard');
 
@@ -207,7 +245,7 @@ export class Cards {
   //   wrapper.append(card);
   // }
 
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard): void {
+  createCardOld (wrapper: HTMLDivElement, elem: SimpleCard): void {
     const productCard = new MainPageProductCard(elem, this.cardsAppearance);
     if (this.cardsAppearance === CardsAppearance.Row) {
       wrapper.append(productCard.getRowCardContent());
@@ -216,5 +254,103 @@ export class Cards {
       wrapper.append(productCard.getTableCardContent());
     }
 
+  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+    cards.sort(byField(property));
+    function byField (field: 'title' | 'price' | 'rating') {
+      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+    }
+  }
+  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+    if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
+    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
+  }   
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
+    const card = document.createElement('div');
+    card.classList.add('mainCard');
+    if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
+    if (localStorage.getItem('main-current-state') === 'Row') card.classList.add('mainCard-row');
+
+    const cardH3 = document.createElement('h3');
+    card.classList.add('card__title');
+    cardH3.textContent = elem.title;
+    card.append(cardH3);
+
+    const cardDescrField = document.createElement('div');
+    cardDescrField.classList.add('card__description-field');
+
+    const cardCategory = document.createElement('p');
+    cardCategory.textContent = elem.category;
+    cardCategory.classList.add('card__category');
+    cardDescrField.append(cardCategory);
+
+    const cardBrand = document.createElement('p');
+    cardBrand.textContent = elem.brand;
+    cardBrand.classList.add('card__brand');
+    cardDescrField.append(cardBrand);
+
+    const cardPrice = document.createElement('p');
+    cardPrice.textContent = elem.price + ' $';
+    cardPrice.classList.add('card__price');
+    cardDescrField.append(cardPrice);
+
+    const cardDiscount = document.createElement('p');
+    cardDiscount.textContent = elem.discountPercentage + ' $';
+    cardDiscount.classList.add('card__discount');
+    cardDescrField.append(cardDiscount);
+
+    const cardRating = document.createElement('p');
+    cardRating.textContent = elem.rating + ' $';
+    cardRating.classList.add('card__rating');
+    cardDescrField.append(cardRating);
+
+    const cardStock = document.createElement('p');
+    cardStock.textContent = elem.stock + '';
+    cardStock.classList.add('card__Stock');
+    cardDescrField.append(cardStock);
+
+    card.append(cardDescrField);
+
+    const cardBtnField = document.createElement ('div');
+    cardBtnField.classList.add('card__buttons-field');
+
+    const toCardBtn = document.createElement ('button');
+    toCardBtn.classList.add('card__btn');
+    toCardBtn.classList.add('card__to-cart-btn'); 
+    toCardBtn.textContent = 'Add to cart';
+    toCardBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const target = e.target as HTMLElement;
+      if (target) {
+        appStorage.addProductToCart(elem);
+      }
+    })
+    cardBtnField.append(toCardBtn);
+
+    //search
+    if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
+    else card.classList.remove('d-none');
+
+    //filter
+    if (filterProp.categoryProperties.length > 0) {
+      console.log('filterProp.categoryProperties');
+      filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0) {
+      console.log('filterProp.brandProperties');
+      filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {
+      filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+
+    card.append(cardBtnField);
+    wrapper.append(card);
+  }
+  
+  removeCards ():void {
+    const cardsWrap = document.querySelector('.cards-wrapper');
+    while(cardsWrap?.firstChild) {
+      cardsWrap.removeChild(cardsWrap.firstChild);
+    }
   }
 }

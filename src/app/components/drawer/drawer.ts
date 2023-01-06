@@ -463,6 +463,7 @@ class Drawer {
     return container;
   }
 
+
   getNavigoLink(text: string, hrefPath: RouterPath | string): HTMLElement {
     const link = document.createElement('a');
     link.innerHTML = text;
@@ -620,7 +621,6 @@ class Drawer {
     }
     return cardTitle;
   }
-
 }
 
 export const appDrawer = new Drawer();

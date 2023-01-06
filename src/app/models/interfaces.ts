@@ -149,3 +149,15 @@ export interface CartPageCardElement extends ProductCardElement {
 export interface ProductPageCardElement extends ProductCardElement, MainPageCardElement {
   buyNowButton: HTMLElement,
 }
+
+export interface MainFilterProperties {
+  sortProperty: 'title' | 'price' | 'rating' | '';
+  searchProperty: string;
+  filterProperty: FilterProperties;
+}
+
+export interface FilterProperties {
+  categoryProperties: string[];
+  brandProperties: string[];
+} 
+

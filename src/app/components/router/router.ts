@@ -180,6 +180,13 @@ class MyNavigo extends Navigo {
     const productIndex = pathName.split('/').pop();
     return Number(productIndex)
   }
+
+  public getProductIndex(): number {
+    const url: Location = window.location;
+    const pathName = url.pathname;
+    const productIndex = pathName.split('/').pop();
+    return Number(productIndex)
+  }
 }
 
 export const appRouter = new MyNavigo('/');

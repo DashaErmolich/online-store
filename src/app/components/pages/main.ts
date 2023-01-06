@@ -46,21 +46,6 @@ export class MainPage extends AbstractPage {
     contentWrapper.classList.add('content-wrapper');
     contentWrapper.classList.add('col-9');
 
-    const sortingWrapper = document.createElement('div'); // generate sorting line
-    sortingWrapper.classList.add('sorting-wrapper');
-    const nameSort = document.createElement('span');
-    nameSort.innerText = 'sort by name';
-    nameSort.classList.add('sort-item');
-    const priceSort = document.createElement('span');
-    priceSort.innerText = 'sort by price';
-    priceSort.classList.add('sort-item');
-    const ratingSort = document.createElement('span');
-    ratingSort.innerText = 'sort by rating';
-    ratingSort.classList.add('sort-item');
-    sortingWrapper.append(nameSort);
-    sortingWrapper.append(priceSort);
-    sortingWrapper.append(ratingSort);
-
     const filtersWrapper = document.createElement('div');
     filtersWrapper.classList.add('filters-wrapper');
     filtersWrapper.classList.add('col'); 
@@ -96,12 +81,49 @@ export class MainPage extends AbstractPage {
     }
     cards.generateCards(cardsWrapper);
 
+    const sortingWrapper = document.createElement('div'); // generate sorting line
+    sortingWrapper.classList.add('sorting-wrapper');
+    const nameSort = document.createElement('span');
+    nameSort.innerText = 'sort by name';
+    nameSort.classList.add('sort-item');
+    nameSort.addEventListener('click', () => {
+      cards.removeCards();
+      cards.properties.sortProperty = 'title';
+      cards.generateCards(cardsWrapper);
+    })
+    const priceSort = document.createElement('span');
+    priceSort.innerText = 'sort by price';
+    priceSort.classList.add('sort-item');
+    priceSort.addEventListener('click', () => {
+      cards.removeCards();
+      cards.properties.sortProperty = 'price';
+      cards.generateCards(cardsWrapper);
+    })
+    const ratingSort = document.createElement('span');
+    ratingSort.innerText = 'sort by rating';
+    ratingSort.classList.add('sort-item');
+    ratingSort.addEventListener('click', () => {
+      cards.removeCards();
+      cards.properties.sortProperty = 'rating';
+      cards.generateCards(cardsWrapper);
+    })
+    sortingWrapper.append(nameSort);
+    sortingWrapper.append(priceSort);
+    sortingWrapper.append(ratingSort);
+
     contentWrapper.append(sortingWrapper);
     contentWrapper.append(cardsWrapper);
     mainWrapper.append(contentWrapper);
     mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
     appRouter.updatePageLinks();
+    const searchBtn = document.querySelector('.btn-outline-secondary');
+    const searchField = document.querySelector('.form-control') as HTMLInputElement;
+    searchBtn?.addEventListener('click', () => {
+      cards.removeCards();
+      cards.properties.searchProperty = searchField.value;
+      cards.generateCards(cardsWrapper);
+    })
     return content;
   }
 }

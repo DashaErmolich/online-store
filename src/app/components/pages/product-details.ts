@@ -7,7 +7,6 @@ import { appStorage } from '../storage/app-storage';
 import { RouterPath } from '../../enums/enums';
 
 export class ProductPage extends AbstractPage {
-
   private productPageSettings: ProductPageSettings;
 
   constructor() {
