@@ -22,7 +22,6 @@ export class ProductPage extends AbstractPage {
 
     const productIndex: number = appRouter.getProductIndex();
     const card: SimpleCard = possibleCards.products[productIndex - 1];
-    console.log(card);
 
     if (card) {
       this.drawBreadcrumb(contentContainer, card);

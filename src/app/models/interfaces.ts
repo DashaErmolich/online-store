@@ -118,3 +118,29 @@ export interface MyStringValueUrlSearchParam extends MyBaseUrlSearchParam {
 export interface MainPageSettings {
   cardsAppearance : string,
 }
+
+export interface ProductCardElement {
+  image: HTMLElement,
+  title: HTMLElement,
+  price: HTMLElement,
+  discount: HTMLElement,
+  category: HTMLElement,
+  brand: HTMLElement,
+  stock: HTMLElement,
+  rating: HTMLElement,
+  description: HTMLElement,
+}
+
+export interface MainPageCardElement extends ProductCardElement {
+  addToCartButton: HTMLElement,
+  removeFromCartButton: HTMLElement,
+}
+
+export interface CartPageCardElement extends ProductCardElement {
+  addQtyButton: HTMLElement,
+  removeQtyButton: HTMLElement,
+}
+
+export interface ProductPageCardElement extends ProductCardElement, MainPageCardElement {
+  buyNowButton: HTMLElement,
+}

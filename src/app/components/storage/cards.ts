@@ -1,7 +1,7 @@
-import { SimpleCard } from "../../models/interfaces";
-import { appStorage } from '../storage/app-storage';
+import { SimpleCard } from '../../models/interfaces';
 import { appRouter } from '../router/router';
 import { UrlParamKey, CardsAppearance } from '../../enums/enums';
+import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 
 export class Cards {
   cards: SimpleCard[];
@@ -14,6 +14,7 @@ export class Cards {
     this.categories = [];
     this.brands = [];
     this.cardsAppearance = cardsAppearance;
+    
     cards.forEach(element => {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
@@ -59,7 +60,7 @@ export class Cards {
     formInput.id = `appearanceRadio${appearance}`;
 
     if (this.cardsAppearance === appearance) {
-      formInput.checked = true
+      formInput.checked = true;
     }
     
     formInput.addEventListener('change', () => {
@@ -67,8 +68,11 @@ export class Cards {
         const cardsWrapper = document.querySelector('.cards-wrapper');
         const singleCards = document.querySelectorAll('.mainCard');
         if (appearance === CardsAppearance.Row) {
-          cardsWrapper?.classList.add('cards-wrapper-row');
-          cardsWrapper?.classList.remove('cards-wrapper-table');
+          // cardsWrapper?.classList.add('cards-wrapper-row');
+          // cardsWrapper?.classList.remove('cards-wrapper-table');
+          if (cardsWrapper) {
+            cardsWrapper.className = 'cards-wrapper cards-wrapper-row';
+          }
           singleCards.forEach(singleCardWrapper => {
             singleCardWrapper?.classList.add('mainCard-row');
             singleCardWrapper?.classList.remove('mainCard-table');
@@ -76,8 +80,11 @@ export class Cards {
           
         }
         else {
-          cardsWrapper?.classList.add('cards-wrapper-table');
-          cardsWrapper?.classList.remove('cards-wrapper-row');
+          // cardsWrapper?.classList.add('cards-wrapper-table');
+          // cardsWrapper?.classList.remove('cards-wrapper-row');
+          if (cardsWrapper) {
+            cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+          }
           singleCards.forEach(singleCardWrapper => {
             singleCardWrapper?.classList.add('mainCard-table');
             singleCardWrapper?.classList.remove('mainCard-row');
@@ -124,78 +131,84 @@ export class Cards {
     });
     wrapper.append(filterUnit);
   }
-  generateCards (wrapper: HTMLDivElement):void {
-    this.cards.forEach(e => this.createCard(wrapper, e));
+
+  generateCards (wrapper: HTMLDivElement): void {
+    this.cards.forEach((e) => this.createCard(wrapper, e));
   }
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
-    const card = document.createElement('div');
-    card.classList.add('mainCard');
+  // createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
+  //   const card = document.createElement('div');
+  //   card.classList.add('mainCard');
 
-    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
-    cardsAppearances.forEach((appearance) => {
-      if (this.cardsAppearance === appearance) {
-        card.classList.add(`mainCard-${appearance}`)
-      }
-    })
+  //   const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+  //   cardsAppearances.forEach((appearance) => {
+  //     if (this.cardsAppearance === appearance) {
+  //       card.classList.add(`mainCard-${appearance}`)
+  //     }
+  //   })
 
-    const cardH3 = document.createElement('h3');
-    card.classList.add('card__title');
-    cardH3.textContent = elem.title;
-    card.append(cardH3);
+  //   const cardH3 = document.createElement('h3');
+  //   card.classList.add('card__title');
+  //   cardH3.textContent = elem.title;
+  //   card.append(cardH3);
 
-    const cardDescrField = document.createElement('div');
-    cardDescrField.classList.add('card__description-field');
+  //   const cardDescrField = document.createElement('div');
+  //   cardDescrField.classList.add('card__description-field');
 
-    const cardCategory = document.createElement('p');
-    cardCategory.textContent = elem.category;
-    cardCategory.classList.add('card__category');
-    cardDescrField.append(cardCategory);
+  //   const cardCategory = document.createElement('p');
+  //   cardCategory.textContent = elem.category;
+  //   cardCategory.classList.add('card__category');
+  //   cardDescrField.append(cardCategory);
 
-    const cardBrand = document.createElement('p');
-    cardBrand.textContent = elem.brand;
-    cardBrand.classList.add('card__brand');
-    cardDescrField.append(cardBrand);
+  //   const cardBrand = document.createElement('p');
+  //   cardBrand.textContent = elem.brand;
+  //   cardBrand.classList.add('card__brand');
+  //   cardDescrField.append(cardBrand);
 
-    const cardPrice = document.createElement('p');
-    cardPrice.textContent = elem.price + ' $';
-    cardPrice.classList.add('card__price');
-    cardDescrField.append(cardPrice);
+  //   const cardPrice = document.createElement('p');
+  //   cardPrice.textContent = elem.price + ' $';
+  //   cardPrice.classList.add('card__price');
+  //   cardDescrField.append(cardPrice);
 
-    const cardDiscount = document.createElement('p');
-    cardDiscount.textContent = elem.discountPercentage + ' $';
-    cardDiscount.classList.add('card__discount');
-    cardDescrField.append(cardDiscount);
+  //   const cardDiscount = document.createElement('p');
+  //   cardDiscount.textContent = elem.discountPercentage + ' $';
+  //   cardDiscount.classList.add('card__discount');
+  //   cardDescrField.append(cardDiscount);
 
-    const cardRating = document.createElement('p');
-    cardRating.textContent = elem.rating + ' $';
-    cardRating.classList.add('card__rating');
-    cardDescrField.append(cardRating);
+  //   const cardRating = document.createElement('p');
+  //   cardRating.textContent = elem.rating + ' $';
+  //   cardRating.classList.add('card__rating');
+  //   cardDescrField.append(cardRating);
 
-    const cardStock = document.createElement('p');
-    cardStock.textContent = elem.stock + '';
-    cardStock.classList.add('card__Stock');
-    cardDescrField.append(cardStock);
+  //   const cardStock = document.createElement('p');
+  //   cardStock.textContent = elem.stock + '';
+  //   cardStock.classList.add('card__Stock');
+  //   cardDescrField.append(cardStock);
 
-    card.append(cardDescrField);
+  //   card.append(cardDescrField);
 
-    const cardBtnField = document.createElement ('div');
-    cardBtnField.classList.add('card__buttons-field');
+  //   const cardBtnField = document.createElement ('div');
+  //   cardBtnField.classList.add('card__buttons-field');
 
-    const toCardBtn = document.createElement ('button');
-    toCardBtn.classList.add('card__btn');
-    toCardBtn.classList.add('card__to-cart-btn'); 
-    toCardBtn.textContent = 'Add to cart';
-    toCardBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const target = e.target as HTMLElement;
-      if (target) {
-        appStorage.addProductToCart(elem);
-      }
-    })
+  //   const toCardBtn = document.createElement ('button');
+  //   toCardBtn.classList.add('card__btn');
+  //   toCardBtn.classList.add('card__to-cart-btn'); 
+  //   toCardBtn.textContent = 'Add to cart';
+  //   toCardBtn.addEventListener('click', e => {
+  //     e.stopPropagation();
+  //     const target = e.target as HTMLElement;
+  //     if (target) {
+  //       appStorage.addProductToCart(elem);
+  //     }
+  //   })
 
-    cardBtnField.append(toCardBtn);
-    card.append(cardBtnField);
+  //   cardBtnField.append(toCardBtn);
+  //   card.append(cardBtnField);
 
-    wrapper.append(card);
+  //   wrapper.append(card);
+  // }
+
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard): void {
+    const productCard = new MainPageProductCard(elem);
+    return wrapper.append(productCard.getCardContent());
   }
 }

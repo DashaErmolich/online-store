@@ -4,6 +4,8 @@ import { Cards } from '../storage/cards';
 import { MainPageSettings } from '../../models/interfaces';
 import { cardsAppearanceSearchParam } from '../../constants/constants';
 import { CardsAppearance } from '../../enums/enums';
+import { appRouter } from '../router/router';
+
 
 export class MainPage extends AbstractPage {
   mainPageSettings: MainPageSettings;
@@ -17,7 +19,14 @@ export class MainPage extends AbstractPage {
   }
 
   private getCardsAppearance(): string {
-    return this.getValidStringValueFromUrl(cardsAppearanceSearchParam.key, Object.values(CardsAppearance), cardsAppearanceSearchParam.defaultValue);
+    const possibleValues: string[] = Object.values(CardsAppearance);
+    const value = this.getValidStringValueFromUrl(cardsAppearanceSearchParam.key, possibleValues, cardsAppearanceSearchParam.defaultValue);
+    
+    if (!possibleValues.includes(value)) {
+      appRouter.updateUrlParams(cardsAppearanceSearchParam.key, value);
+    }
+    
+    return value;
   }
 
   getPageContent(): HTMLElement {
@@ -75,9 +84,10 @@ export class MainPage extends AbstractPage {
     // !end of temporary button
 
     const cardsWrapper = document.createElement('div');
-    cardsWrapper.classList.add('cards-wrapper'); // loading stance from storage
-    if (localStorage.getItem('main-current-state') === 'Table') cardsWrapper.classList.add('cards-wrapper-table');
-    if (localStorage.getItem('main-current-state') === 'Row') cardsWrapper.classList.add('cards-wrapper-row');
+    //cardsWrapper.classList.add('cards-wrapper'); // loading stance from storage
+    // if (localStorage.getItem('main-current-state') === 'Table') cardsWrapper.classList.add('cards-wrapper-table');
+    // if (localStorage.getItem('main-current-state') === 'Row') cardsWrapper.classList.add('cards-wrapper-row');
+    cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4'
     cards.generateCards(cardsWrapper);
 
     contentWrapper.append(sortingWrapper);

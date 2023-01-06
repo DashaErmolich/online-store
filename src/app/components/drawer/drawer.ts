@@ -477,13 +477,13 @@ class Drawer {
     return p;
   }
 
-  getProductDetailsDescription(productTitle: string): HTMLElement {
+  getProductDetailsDescription(description: string): HTMLElement {
     const container = document.createElement('div');
     container.classList.add('mb-2')
     const title = document.createElement('h3');
     title.innerHTML = 'Description';
     const text = document.createElement('p');
-    text.innerHTML = productTitle;
+    text.innerHTML = description;
     container.append(title, text);
     return container;
   }
@@ -539,7 +539,7 @@ class Drawer {
       container.className = specialClass;
     }
     const cardRatingIcon = document.createElement('i');
-    cardRatingIcon.className = 'bi bi-star';
+    cardRatingIcon.className = 'bi bi-star-fill text-warning';
     const cardRating = document.createElement('span');
     cardRating.innerHTML = ` ${rating}`;
     container.append(cardRatingIcon, cardRating);
@@ -566,9 +566,12 @@ class Drawer {
     return button;
   }
 
-  getSimpleElement(tagName: string, elementClassName: string): HTMLElement {
+  getSimpleElement(tagName: string, elementClassName: string, text?: string): HTMLElement {
     const element = document.createElement(tagName);
     element.className = elementClassName;
+    if (text) {
+      element.innerHTML = text;
+    }
     return element;
   }
   
@@ -597,6 +600,27 @@ class Drawer {
     goHomeButton.innerHTML = 'Go Home';
     return goHomeButton;
   }
+
+  getProductCardImage(imgAlt: string, imgSrc: string, elemClass: string): HTMLElement {
+    const image = document.createElement('img');
+    image.className = elemClass;
+    image.src = imgSrc;
+    image.alt = imgAlt;
+    return image
+  }
+
+  getProductCardTitle(tagName: string, text: string, index?: number): HTMLElement {
+    const cardTitle = document.createElement(tagName);
+    cardTitle.className = 'card-title';
+
+    if (!index) {
+      cardTitle.innerHTML = text;
+    } else {
+      cardTitle.innerHTML = `${index} - ${text}`;
+    }
+    return cardTitle;
+  }
+
 }
 
 export const appDrawer = new Drawer();
