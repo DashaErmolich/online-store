@@ -1,20 +1,42 @@
 import { possibleCards } from '../../../assets/samples/possible-cards';
 import { AbstractPage } from '../../abstracts/abstracts';
 import { Cards } from '../storage/cards';
+import { MainPageSettings } from '../../models/interfaces';
+import { cardsAppearanceSearchParam } from '../../constants/constants';
+import { CardsAppearance } from '../../enums/enums';
+import { appRouter, cartPage } from '../router/router';
+
 
 export class MainPage extends AbstractPage {
+  mainPageSettings: MainPageSettings;
+
   constructor() {
     super();
     this.setPageTitle('Shop Cart');
+    this.mainPageSettings = {
+      cardsAppearance: this.getCardsAppearance(),
+    }
+  }
+
+  private getCardsAppearance(): string {
+    const possibleValues: string[] = Object.values(CardsAppearance);
+    const value = this.getValidStringValueFromUrl(cardsAppearanceSearchParam.key, possibleValues, cardsAppearanceSearchParam.defaultValue);
+    
+    if (!possibleValues.includes(value)) {
+      appRouter.updateUrlParams(cardsAppearanceSearchParam.key, value);
+    }
+    
+    return value;
   }
 
   getPageContent(): HTMLElement {
+    cartPage.updateCartState();
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
     content.innerHTML = ` 
     <h1>Online Shop</h1>
     `;
-    const cards = new Cards (possibleCards.products);
+    const cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance);
     if (!localStorage.getItem('main-current-state')) localStorage.setItem('main-current-state', 'Table'); // table state at first page loading
     
     const mainWrapper = document.createElement('div');
@@ -48,9 +70,15 @@ export class MainPage extends AbstractPage {
     // !end of temporary button
 
     const cardsWrapper = document.createElement('div');
-    cardsWrapper.classList.add('cards-wrapper'); // loading stance from storage
-    if (localStorage.getItem('main-current-state') === 'Table') cardsWrapper.classList.add('cards-wrapper-table');
-    if (localStorage.getItem('main-current-state') === 'Row') cardsWrapper.classList.add('cards-wrapper-row');
+    //cardsWrapper.classList.add('cards-wrapper'); // loading stance from storage
+    // if (localStorage.getItem('main-current-state') === 'Table') cardsWrapper.classList.add('cards-wrapper-table');
+    // if (localStorage.getItem('main-current-state') === 'Row') cardsWrapper.classList.add('cards-wrapper-row');
+    if (this.mainPageSettings.cardsAppearance === CardsAppearance.Table) {
+      cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+    }
+    if (this.mainPageSettings.cardsAppearance === CardsAppearance.Row) {
+      cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';
+    }
     cards.generateCards(cardsWrapper);
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
@@ -88,7 +116,7 @@ export class MainPage extends AbstractPage {
     mainWrapper.append(contentWrapper);
     mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
-
+    appRouter.updatePageLinks();
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
     searchBtn?.addEventListener('click', () => {
@@ -96,12 +124,11 @@ export class MainPage extends AbstractPage {
       cards.properties.searchProperty = searchField.value;
       cards.generateCards(cardsWrapper);
     })
-
     return content;
   }
 }
 
-export const mainPage = new MainPage();
+// export const mainPage = new MainPage();
 
 // current HTML State: 
 /*

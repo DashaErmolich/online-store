@@ -1,16 +1,21 @@
-import { FilterProperties, MainFilterProperties, SimpleCard } from "../../models/interfaces";
-import { appStorage } from '../storage/app-storage';
+import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
+import { appRouter } from '../router/router';
+import { UrlParamKey, CardsAppearance } from '../../enums/enums';
+import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 
 export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
+  cardsAppearance: string;
   properties: MainFilterProperties;
 
-  constructor (cards: SimpleCard[]) { 
+  constructor (cards: SimpleCard[], cardsAppearance: string) { 
     this.cards = cards;
     this.categories = [];
     this.brands = [];
+    this.cardsAppearance = cardsAppearance;
+    
     cards.forEach(element => {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
@@ -33,8 +38,12 @@ export class Cards {
     appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Row');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Table');
+    
+    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+    cardsAppearances.forEach((appearance) => {
+      this.generateAppearanceCheckers(appearanceCheckers, appearance);
+    })
+
     appearanceWrapper.append(appearanceCheckers);
 
     const filtersWrapper = document.createElement('div');
@@ -50,7 +59,7 @@ export class Cards {
     wrapper.append(filtersWrapper);
 
   }
-  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: 'Table' | 'Row'):void { //generate radio buttons
+  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance): void { //generate radio buttons
     const formWrapper = document.createElement('div');
     formWrapper.classList.add('form-check');
 
@@ -59,30 +68,14 @@ export class Cards {
     formInput.type = 'radio';
     formInput.name = 'appearanceRadio';
     formInput.id = `appearanceRadio${appearance}`;
-    if (localStorage.getItem('main-current-state') === appearance) formInput.checked = true;
+
+    if (this.cardsAppearance === appearance) {
+      formInput.checked = true;
+    }
+    
     formInput.addEventListener('change', () => {
-      if (formInput.checked) {
-        const cardsWrapper = document.querySelector('.cards-wrapper');
-        const singleCards = document.querySelectorAll('.mainCard');
-        if (appearance === 'Row') {
-          cardsWrapper?.classList.add('cards-wrapper-row');
-          cardsWrapper?.classList.remove('cards-wrapper-table');
-          singleCards.forEach(singleCardWrapper => {
-            singleCardWrapper?.classList.add('mainCard-row');
-            singleCardWrapper?.classList.remove('mainCard-table');
-          });
-          
-        }
-        else {
-          cardsWrapper?.classList.add('cards-wrapper-table');
-          cardsWrapper?.classList.remove('cards-wrapper-row');
-          singleCards.forEach(singleCardWrapper => {
-            singleCardWrapper?.classList.add('mainCard-table');
-            singleCardWrapper?.classList.remove('mainCard-row');
-          });
-        }
-        localStorage.setItem('main-current-state', appearance);
-      }
+      this.listenCardsAppearanceCheckBoxes(formInput, appearance);
+        
     })
     formWrapper.append(formInput);
 
@@ -151,6 +144,7 @@ export class Cards {
     });
     wrapper.append(filterUnit);
   }
+
   sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
     cards.sort(byField(property));
     function byField (field: 'title' | 'price' | 'rating') {
@@ -162,70 +156,20 @@ export class Cards {
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
   }   
   createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
-    const card = document.createElement('div');
-    card.classList.add('mainCard');
-    if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
-    if (localStorage.getItem('main-current-state') === 'Row') card.classList.add('mainCard-row');
+    const productCard = new MainPageProductCard(elem, this.cardsAppearance);
+    let card: HTMLElement;
 
-    const cardH3 = document.createElement('h3');
-    card.classList.add('card__title');
-    cardH3.textContent = elem.title;
-    card.append(cardH3);
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      card = productCard.getRowCardContent()
+    } else {
+      card = productCard.getTableCardContent();
+    }
 
-    const cardDescrField = document.createElement('div');
-    cardDescrField.classList.add('card__description-field');
-
-    const cardCategory = document.createElement('p');
-    cardCategory.textContent = elem.category;
-    cardCategory.classList.add('card__category');
-    cardDescrField.append(cardCategory);
-
-    const cardBrand = document.createElement('p');
-    cardBrand.textContent = elem.brand;
-    cardBrand.classList.add('card__brand');
-    cardDescrField.append(cardBrand);
-
-    const cardPrice = document.createElement('p');
-    cardPrice.textContent = elem.price + ' $';
-    cardPrice.classList.add('card__price');
-    cardDescrField.append(cardPrice);
-
-    const cardDiscount = document.createElement('p');
-    cardDiscount.textContent = elem.discountPercentage + ' $';
-    cardDiscount.classList.add('card__discount');
-    cardDescrField.append(cardDiscount);
-
-    const cardRating = document.createElement('p');
-    cardRating.textContent = elem.rating + ' $';
-    cardRating.classList.add('card__rating');
-    cardDescrField.append(cardRating);
-
-    const cardStock = document.createElement('p');
-    cardStock.textContent = elem.stock + '';
-    cardStock.classList.add('card__Stock');
-    cardDescrField.append(cardStock);
-
-    card.append(cardDescrField);
-
-    const cardBtnField = document.createElement ('div');
-    cardBtnField.classList.add('card__buttons-field');
-
-    const toCardBtn = document.createElement ('button');
-    toCardBtn.classList.add('card__btn');
-    toCardBtn.classList.add('card__to-cart-btn'); 
-    toCardBtn.textContent = 'Add to cart';
-    toCardBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const target = e.target as HTMLElement;
-      if (target) {
-        appStorage.addProductToCart(elem);
-      }
-    })
-    cardBtnField.append(toCardBtn);
-
-    //search
-    if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
-    else card.classList.remove('d-none');
+    if (searchProp && !productCard.card.title.startsWith(searchProp)) {
+      card.classList.add('d-none');
+    } else {
+      card.classList.remove('d-none');
+    }
 
     //filter
     if (filterProp.categoryProperties.length > 0) {
@@ -240,13 +184,35 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
-    card.append(cardBtnField);
+    //card.append(cardBtnField);
     wrapper.append(card);
   }
-  removeCards ():void {
+  
+  removeCards():void {
     const cardsWrap = document.querySelector('.cards-wrapper');
     while(cardsWrap?.firstChild) {
       cardsWrap.removeChild(cardsWrap.firstChild);
+    }
+  }
+  
+  private listenCardsAppearanceCheckBoxes(formInput: HTMLInputElement, appearance: CardsAppearance): void {
+    if (formInput.checked) {
+      const cardsWrapper = document.querySelector('.cards-wrapper');
+
+      if (cardsWrapper instanceof HTMLDivElement) {
+
+        if (appearance === CardsAppearance.Row) {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';   
+        } else {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+        }
+
+        this.removeCards();
+        this.generateCards(cardsWrapper);
+        appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
+      }
     }
   }
 }

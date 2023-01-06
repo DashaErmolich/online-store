@@ -193,7 +193,7 @@ export class PurchaseModal {
       const orderMessage = appDrawer.getPurchaseModalOrderMessage(orderMessageText);
       modalBody.append(orderMessage);
       appStorage.emptyCart();
-      cartPage.setCartState();
+      cartPage.updateCartState();
     }
 
   }
