@@ -1,4 +1,4 @@
-import { MainFilterProperties, SimpleCard } from "../../models/interfaces";
+import { FilterProperties, MainFilterProperties, SimpleCard } from "../../models/interfaces";
 import { appStorage } from '../storage/app-storage';
 
 export class Cards {
@@ -110,9 +110,34 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
-      formInput.addEventListener('click', () => {
-        if (formInput.checked) console.log (formInput.id + ' checked')
-        if (!formInput.checked) console.log (formInput.id + ' not checked now')
+      formInput.addEventListener('click', () => { // fiters logic here
+        const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        if (formInput.checked) {
+          console.log (element + ' checked');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+        if (!formInput.checked) {
+          console.log (element + ' not checked now');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
       })
       formUnit.append(formInput);
 
@@ -134,9 +159,9 @@ export class Cards {
   }
   generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
     if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
-    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty));
+    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
   }   
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp?: string):void {  
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
     if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
@@ -198,8 +223,22 @@ export class Cards {
     })
     cardBtnField.append(toCardBtn);
 
+    //search
     if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
     else card.classList.remove('d-none');
+
+    //filter
+    if (filterProp.categoryProperties.length > 0) {
+      console.log('filterProp.categoryProperties');
+      filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0) {
+      console.log('filterProp.brandProperties');
+      filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {
+      filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
 
     card.append(cardBtnField);
     wrapper.append(card);
