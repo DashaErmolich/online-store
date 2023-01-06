@@ -463,7 +463,7 @@ class Drawer {
     return container;
   }
 
-  getNavigoLink(text: string, hrefPath: RouterPath): HTMLElement {
+  getNavigoLink(text: string, hrefPath: RouterPath | string): HTMLElement {
     const link = document.createElement('a');
     link.innerHTML = text;
     link.href = hrefPath;

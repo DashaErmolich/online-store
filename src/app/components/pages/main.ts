@@ -4,7 +4,7 @@ import { Cards } from '../storage/cards';
 import { MainPageSettings } from '../../models/interfaces';
 import { cardsAppearanceSearchParam } from '../../constants/constants';
 import { CardsAppearance } from '../../enums/enums';
-import { appRouter } from '../router/router';
+import { appRouter, cartPage } from '../router/router';
 
 
 export class MainPage extends AbstractPage {
@@ -30,6 +30,7 @@ export class MainPage extends AbstractPage {
   }
 
   getPageContent(): HTMLElement {
+    cartPage.updateCartState();
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
     content.innerHTML = ` 
@@ -95,7 +96,7 @@ export class MainPage extends AbstractPage {
     mainWrapper.append(contentWrapper);
     mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
-
+    appRouter.updatePageLinks();
     return content;
   }
 }

@@ -209,6 +209,6 @@ export class Cards {
 
   createCard (wrapper: HTMLDivElement, elem: SimpleCard): void {
     const productCard = new MainPageProductCard(elem);
-    return wrapper.append(productCard.getCardContent());
+    wrapper.append(productCard.getCardContent());
   }
 }

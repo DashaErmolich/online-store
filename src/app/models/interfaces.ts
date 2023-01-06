@@ -116,7 +116,11 @@ export interface MyStringValueUrlSearchParam extends MyBaseUrlSearchParam {
 }
 
 export interface MainPageSettings {
-  cardsAppearance : string,
+  cardsAppearance: string,
+}
+
+export interface ProductPageSettings {
+  productIndex: number,
 }
 
 export interface ProductCardElement {
@@ -134,6 +138,7 @@ export interface ProductCardElement {
 export interface MainPageCardElement extends ProductCardElement {
   addToCartButton: HTMLElement,
   removeFromCartButton: HTMLElement,
+  linkToProductPage: HTMLElement,
 }
 
 export interface CartPageCardElement extends ProductCardElement {

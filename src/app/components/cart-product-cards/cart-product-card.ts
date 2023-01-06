@@ -1,8 +1,9 @@
 import { PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
 import { SimpleCard, MainPageCardElement } from '../../models/interfaces';
 import { appStorage } from '../storage/app-storage';
-import { cartPage } from '../router/router';
+import { cartPage, productPage } from '../router/router';
 import { appDrawer } from '../drawer/drawer';
+import { RouterPath } from '../../enums/enums';
 
 export class ProductCard {
 
@@ -132,7 +133,7 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, 'card-img-top card-image_custom'),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'display-6'),
+      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-3'),
       discount: appDrawer.getProductDiscount(this.card.discountPercentage),
       category: appDrawer.getSimpleElement('p', '', this.card.category),
       brand: appDrawer.getSimpleElement('p', '', this.card.brand),
@@ -141,11 +142,12 @@ export class MainPageProductCard {
       stock: appDrawer.getProductStockQty(this.card.stock, 'text-muted'),
       addToCartButton: this.getAddProductToCartButton(this.card),
       removeFromCartButton: this.getRemoveProductFromCartButton(this.card),
+      linkToProductPage: this.getLinkToProducts(this.card.id),
     }
   }
 
   public getCardContent(): HTMLElement {
-    const container = appDrawer.getSimpleElement('div', 'col');
+    const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
@@ -158,19 +160,13 @@ export class MainPageProductCard {
       this.cardElement.removeFromCartButton.classList.add('d-none');
     }
 
+    const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative');
+    stretchedLinkWrap.append(this.cardElement.image, cardBody, this.cardElement.linkToProductPage);
+
     cardFooter.append(this.cardElement.stock, this.cardElement.rating);
-    card.append(this.cardElement.image, cardBody, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton, cardFooter);
-    container.append(card)
+    card.append(stretchedLinkWrap, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton, cardFooter);
+    container.append(card);
     return container;
-  }
-
-  private showButton(): HTMLElement {
-
-    if (this.isProductInCart(this.card)) {
-      return this.getRemoveProductFromCartButton(this.card);
-    } else {
-      return this.getAddProductToCartButton(this.card);
-    }
   }
 
   private getAddProductToCartButton(card: SimpleCard) {
@@ -208,5 +204,16 @@ export class MainPageProductCard {
     })
 
     return button;
+  }
+
+  private getLinkToProducts(id: number) {
+    const path: string[] = RouterPath.Products.split('/');
+    path[path.length - 1] = `${id}`;
+    const link = appDrawer.getNavigoLink('', path.join('/'));
+    link.classList.add('stretched-link');
+    link.addEventListener('click', () => {
+      productPage.setProductIndex(id);
+    })
+    return link;
   }
 }
