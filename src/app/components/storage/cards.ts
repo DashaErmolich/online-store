@@ -113,6 +113,8 @@ export class Cards {
     wrapper.append(filterUnit);
   }
   sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+    const searchField = document.querySelector('.form-control') as HTMLInputElement;
+    searchField.value = '';
     cards.sort(byField(property));
     function byField (field: 'title' | 'price' | 'rating') {
       return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;

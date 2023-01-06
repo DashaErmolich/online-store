@@ -86,6 +86,17 @@ export class MainPage extends AbstractPage {
     mainWrapper.append(filtersWrapper);
     content.append(mainWrapper);
 
+    const searchBtn = document.querySelector('.btn-outline-secondary');
+    const searchField = document.querySelector('.form-control') as HTMLInputElement;
+    searchBtn?.addEventListener('click', () => {
+      console.log(searchField?.value);
+      const currCards = document.querySelectorAll('.mainCard');
+      currCards.forEach(element => {
+        if ((element.firstChild as HTMLHeadingElement).innerText.startsWith(searchField.value)) element.classList.remove('d-none');
+        else element.classList.add('d-none');
+      });
+    })
+
     return content;
   }
 }
