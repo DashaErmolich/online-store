@@ -60,21 +60,24 @@ export class MainPage extends AbstractPage {
     nameSort.classList.add('sort-item');
     nameSort.addEventListener('click', () => {
       cards.removeCards();
-      cards.generateCards(cardsWrapper, 'title');
+      cards.properties.sortProperty = 'title';
+      cards.generateCards(cardsWrapper);
     })
     const priceSort = document.createElement('span');
     priceSort.innerText = 'sort by price';
     priceSort.classList.add('sort-item');
     priceSort.addEventListener('click', () => {
       cards.removeCards();
-      cards.generateCards(cardsWrapper, 'price');
+      cards.properties.sortProperty = 'price';
+      cards.generateCards(cardsWrapper);
     })
     const ratingSort = document.createElement('span');
     ratingSort.innerText = 'sort by rating';
     ratingSort.classList.add('sort-item');
     ratingSort.addEventListener('click', () => {
       cards.removeCards();
-      cards.generateCards(cardsWrapper, 'rating');
+      cards.properties.sortProperty = 'rating';
+      cards.generateCards(cardsWrapper);
     })
     sortingWrapper.append(nameSort);
     sortingWrapper.append(priceSort);
@@ -89,12 +92,9 @@ export class MainPage extends AbstractPage {
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
     searchBtn?.addEventListener('click', () => {
-      console.log(searchField?.value);
-      const currCards = document.querySelectorAll('.mainCard');
-      currCards.forEach(element => {
-        if ((element.firstChild as HTMLHeadingElement).innerText.startsWith(searchField.value)) element.classList.remove('d-none');
-        else element.classList.add('d-none');
-      });
+      cards.removeCards();
+      cards.properties.searchProperty = searchField.value;
+      cards.generateCards(cardsWrapper);
     })
 
     return content;

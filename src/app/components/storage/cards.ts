@@ -1,10 +1,11 @@
-import { SimpleCard } from "../../models/interfaces";
+import { MainFilterProperties, SimpleCard } from "../../models/interfaces";
 import { appStorage } from '../storage/app-storage';
 
 export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
+  properties: MainFilterProperties;
 
   constructor (cards: SimpleCard[]) { 
     this.cards = cards;
@@ -14,6 +15,15 @@ export class Cards {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
     });
+    //TODO: fill filter properties from query string
+    this.properties = {
+      sortProperty: '',
+      searchProperty: '',
+      filterProperty: {
+        categoryProperties: [],
+        brandProperties: []
+      }
+    }
   }
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
@@ -100,6 +110,10 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
+      formInput.addEventListener('click', () => {
+        if (formInput.checked) console.log (formInput.id + ' checked')
+        if (!formInput.checked) console.log (formInput.id + ' not checked now')
+      })
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
@@ -113,18 +127,16 @@ export class Cards {
     wrapper.append(filterUnit);
   }
   sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
-    const searchField = document.querySelector('.form-control') as HTMLInputElement;
-    searchField.value = '';
     cards.sort(byField(property));
     function byField (field: 'title' | 'price' | 'rating') {
       return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
     }
   }
-  generateCards (wrapper: HTMLDivElement, sortProp?: 'title' | 'price' | 'rating'):void {
-    if (sortProp) this.sortBy(this.cards, sortProp);
-    this.cards.forEach(e => this.createCard(wrapper, e));
+  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+    if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
+    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty));
   }   
-  createCard (wrapper: HTMLDivElement, elem: SimpleCard):void {  
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp?: string):void {  
     const card = document.createElement('div');
     card.classList.add('mainCard');
     if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
@@ -184,10 +196,12 @@ export class Cards {
         appStorage.addProductToCart(elem);
       }
     })
-
     cardBtnField.append(toCardBtn);
-    card.append(cardBtnField);
 
+    if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
+    else card.classList.remove('d-none');
+
+    card.append(cardBtnField);
     wrapper.append(card);
   }
   removeCards ():void {
