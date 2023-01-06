@@ -1,4 +1,4 @@
-export class Card {
+export class DepricatedCard {
   private id: number;
   private title: string;
   private description: string;
