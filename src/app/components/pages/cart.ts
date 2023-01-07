@@ -205,7 +205,7 @@ export class CartPage extends AbstractPage {
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
     const cartProducts: SimpleCard[] = appStorage.getCartProducts()
     const cardDeck = document.createElement('section');
-    cardDeck.className = 'card-columns col-9';
+    cardDeck.className = 'card-columns col-md-8';
 
     let i = paginationActivePageRange.start;
 
@@ -254,20 +254,28 @@ export class CartPage extends AbstractPage {
   private drawCartSummary(parentElement: HTMLElement): void {
     const cartSummaryContainer: HTMLElement = appDrawer.getCartSummaryContainer();
     const cartSummaryTitle: HTMLElement = appDrawer.getCartSummaryTitle();
+    const cartSummaryListGroup: HTMLElement = appDrawer.getSimpleElement('ul', 'list-group mb-3');
     const cartSummaryTotalProductsQty: HTMLElement = appDrawer.getCartSummaryProductsQty(this.getCartTotalProductQty());
     const cartSummaryTotalSum: HTMLElement = appDrawer.getCartSummaryTotalSum(this.getCartTotalSum());
-    cartSummaryContainer.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+    cartSummaryListGroup.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+    cartSummaryContainer.append(cartSummaryListGroup);
 
     let appliedPromoCodesContainer: HTMLElement;
 
     if (this.isAppliedPromoCodes()) {
       cartSummaryTotalSum.classList.add('text-decoration-line-through');
       const cartSummaryTotalSumDiscount: HTMLElement = appDrawer.getCartSummaryTotalSumDiscount(this.getCartTotalSumDiscount());
+      
       appliedPromoCodesContainer = appDrawer.getAppliedPromoCodesContainer();
+      const appliedPromoCodesTitle: HTMLElement = appDrawer.getSimpleElement('li', 'list-group-item d-flex justify-content-center lh-sm align-items-start list-group-item-secondary text-center', 'Applied promo codes');
+      appliedPromoCodesContainer.append(appliedPromoCodesTitle);
       this.drawAppliedPromoCodes(appliedPromoCodesContainer);
-      cartSummaryContainer.append(cartSummaryTotalSumDiscount, appliedPromoCodesContainer);
+      
+      cartSummaryListGroup.append(cartSummaryTotalSumDiscount);
+      cartSummaryContainer.append(appliedPromoCodesContainer);
     }
 
+    const cartSummaryPromoCodeInputForm = appDrawer.getSimpleElement('form', '');
     const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
     cartSummaryPromoCodeInput.addEventListener('input', () => {
       this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPurchaseButton, cartSummaryPromoCodeInput.value);
@@ -276,7 +284,8 @@ export class CartPage extends AbstractPage {
     const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
-    const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
+    const cartSummaryPurchaseButton = appDrawer.getSimpleButton('Place order', 'btn btn-primary text-uppercase w-100 mb-3 mt-3');
+    //const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
 
     cartSummaryPurchaseButton.setAttribute('data-bs-toggle', 'modal');
     cartSummaryPurchaseButton.setAttribute('data-bs-target', '#purchase-modal');
@@ -285,7 +294,8 @@ export class CartPage extends AbstractPage {
     const modal = new PurchaseModal();
     cartSummaryContainer.append(modal.getPurchaseModalContent());
     
-    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryPurchaseButton);
+    cartSummaryPromoCodeInputForm.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
+    cartSummaryContainer.append(cartSummaryPromoCodeInputForm, cartSummaryPurchaseButton);
     this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
   }
@@ -324,9 +334,9 @@ export class CartPage extends AbstractPage {
     const appliedPromoCodes = appStorage.getCartPromoCodes();
 
     if (appliedPromoCodes.length) {
-
       let i = 0;
-      while(i < appliedPromoCodes.length) {
+
+      while (i < appliedPromoCodes.length) {
         const promoCode = new CartSummaryPromoCode(appliedPromoCodes[i]);
         parentElement.append(promoCode.getAppliedPromoCodeContent());
         i++
