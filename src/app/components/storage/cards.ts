@@ -243,7 +243,7 @@ export class Cards {
   sortBy(cards: SimpleCard[], property: CardsSortBy) {
     cards.sort(byField(property));
     function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title | CardsSortBy.Initial) {
-      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+      return (a: SimpleCard, b:SimpleCard) => a[field] >= b[field] ? 1 : -1;
     }
   }
 
@@ -281,11 +281,9 @@ export class Cards {
 
     //filter
     if (filterProp.categoryProperties.length > 0) {
-      console.log('filterProp.categoryProperties');
       filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
     if (filterProp.brandProperties.length > 0) {
-      console.log('filterProp.brandProperties');
       filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
     if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {
