@@ -20,13 +20,13 @@ class MyNavigo extends Navigo {
   public updateUrlParams(key: UrlParamKey, value: string | NumberRange, isChecked?: boolean): void {
     const params = this.getUrlParams();
 
-    if (key === UrlParamKey.Page || UrlParamKey.Limit || UrlParamKey.Appearance) {
+    if (key === UrlParamKey.Page || key === UrlParamKey.Limit || key === UrlParamKey.Appearance || key === UrlParamKey.Sort) {
       if (typeof(value) === 'string') {
         this.updateSingleChoiceUrlParams(params, key, value);
       }
     }
 
-    if (key === UrlParamKey.Brand || UrlParamKey.Category) {
+    if (key === UrlParamKey.Brand || key === UrlParamKey.Category) {
       if (isChecked !== undefined && typeof(value) === 'string') {
         this.updateMultipleChoiceUrlParams(params, key, value, isChecked);
       }
