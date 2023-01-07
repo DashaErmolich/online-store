@@ -3,7 +3,7 @@ import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT, paginationLimitSearchParam, activePageSearchParam } from '../../constants/constants';
-import { ProductCard } from '../cart-product-cards/cart-product-card';
+import { NewCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
 import { CartSummaryPromoCode } from '../promo-code/promo-code';
@@ -203,27 +203,32 @@ export class CartPage extends AbstractPage {
     document.querySelector('.card-columns')?.remove();
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
-    const cartProducts: SimpleCard[] = appStorage.getCartProducts()
-    const cardDeck = document.createElement('section');
-    cardDeck.className = 'card-columns col-md-8';
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns');
+    const cardDeck = appDrawer.getSimpleElement('div', 'row row-cols-1 g-4');
+    cardDeckContainer.append(cardDeck)
+    //const cardDeck = document.createElement('section');
+    //cardDeck.className = 'card-columns col-md-8';
 
     let i = paginationActivePageRange.start;
 
     while (i < paginationActivePageRange.end) {
       const card: SimpleCard = cartProducts[i];
       if (card) {
-        const cartProduct = new ProductCard(card, i + 1);
-        cardDeck.append(cartProduct.getCartCardContent())
+        //const cartProduct = new ProductCard(card, i + 1);
+        //cardDeck.append(cartProduct.getCartCardContent())
+        const cartProduct = new NewCard(card, i + 1);
+        cardDeck.append(cartProduct.getRowCardContent());
 
       }
       i++;
     }
     if (paginationContainer && !parentElement) {
-      paginationContainer.prepend(cardDeck);
+      paginationContainer.prepend(cardDeckContainer);
     }
     
     if (parentElement) {
-      parentElement.prepend(cardDeck);
+      parentElement.prepend(cardDeckContainer);
     }
   }
 

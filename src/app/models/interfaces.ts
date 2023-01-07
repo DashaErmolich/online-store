@@ -141,7 +141,7 @@ export interface MainPageCardElement extends ProductCardElement {
   linkToProductPage: HTMLElement,
 }
 
-export interface CartPageCardElement extends ProductCardElement {
+export interface CartPageCardElementActions {
   addQtyButton: HTMLElement,
   removeQtyButton: HTMLElement,
 }
