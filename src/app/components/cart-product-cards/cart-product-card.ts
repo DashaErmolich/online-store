@@ -135,8 +135,8 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-3'),
-      discount: appDrawer.getProductDiscount(this.card.discountPercentage),
+      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
+      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
       category: appDrawer.getSimpleElement('p', '', this.card.category),
       brand: appDrawer.getSimpleElement('p', '', this.card.brand),
       description: appDrawer.getProductDetailsDescription(this.card.description),
@@ -151,10 +151,10 @@ export class MainPageProductCard {
   public getTableCardContent(): HTMLElement {
     const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
-    const cardBody = appDrawer.getSimpleElement('div', 'card-body');
+    const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.stock, this.cardElement.rating);
+    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
 
     if (this.isProductInCart(this.card)) {
       this.cardElement.addToCartButton.classList.add('d-none')
@@ -180,20 +180,17 @@ export class MainPageProductCard {
 
     const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0');
 
-    const cardImageWrapper = appDrawer.getSimpleElement('div', 'card-image-wrapper_custom');
     const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100 col-4');
-    stretchedLinkWrap.append(cardImageWrapper, this.cardElement.linkToProductPage);
+    stretchedLinkWrap.append(this.cardElement.image, this.cardElement.linkToProductPage);
 
     const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-8');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
 
-    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom h-100';
-    cardImageWrapper.append(this.cardElement.image);
-
+    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
 
     this.cardElement.stock.className = 'mb-2';
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
     cardBodyWrapper.append(cardBody);
 
     if (this.isProductInCart(this.card)) {

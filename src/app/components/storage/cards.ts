@@ -1,7 +1,8 @@
 import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
 import { appRouter } from '../router/router';
-import { UrlParamKey, CardsAppearance } from '../../enums/enums';
+import { UrlParamKey, CardsAppearance, CardsSortBy } from '../../enums/enums';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
+import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 
 export class Cards {
   cards: SimpleCard[];
@@ -22,14 +23,67 @@ export class Cards {
     });
     //TODO: fill filter properties from query string
     this.properties = {
-      sortProperty: '',
-      searchProperty: '',
+      sortProperty: this.getProductsSortValue(UrlParamKey.Sort),
+      searchProperty: this.getProductsSearchValue(UrlParamKey.Search),
       filterProperty: {
-        categoryProperties: [],
-        brandProperties: []
+        categoryProperties: this.getProductsFilterValues(UrlParamKey.Category),
+        brandProperties: this.getProductsFilterValues(UrlParamKey.Brand),
       }
     }
   }
+
+  private getProductsSortValue(key: UrlParamKey): CardsSortBy {
+    const possibleValues: string[] = Object.values(CardsSortBy);
+    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Title);
+    
+    if (!possibleValues.includes(value)) {
+      appRouter.updateUrlParams(key, value);
+    }
+
+    if (value === CardsSortBy.Price) {
+      return CardsSortBy.Price;
+    } else if (value === CardsSortBy.Rating) {
+      return CardsSortBy.Rating;
+    } else {
+      return CardsSortBy.Title;
+    }
+
+  }
+
+  private getProductsSearchValue(key: UrlParamKey): string {
+    const value = appRouter.getUrlParamsValue(key);
+    if (value) {
+      return value
+    } else {
+      return '';
+    }
+  }
+
+  private getValidStringValueFromUrl(urlParamsKey: UrlParamKey, possibleValues: string[], defaultValue: string): string {
+    const value: string | undefined = appRouter.getUrlParamsValue(urlParamsKey);
+    let myValue: string = defaultValue;
+    
+    if (value && !Number(value) && possibleValues.includes(value)) {
+      myValue = value;
+    }
+
+    return myValue;
+  }
+
+  private getProductsFilterValues(key: UrlParamKey): string[] {
+    const categoryProperties = appRouter.getUrlParamsValue(key);
+    if (categoryProperties) {
+      return categoryProperties.split(FILTERS_VALUES_SEPARATOR);
+    } else {
+      return [];
+    }
+  }
+
+  public updateProductsFilters(): void {
+    this.properties.filterProperty.brandProperties = this.getProductsFilterValues(UrlParamKey.Brand);
+    this.properties.filterProperty.categoryProperties = this.getProductsFilterValues(UrlParamKey.Category);
+  }
+
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.classList.add('filters__window');
@@ -59,6 +113,7 @@ export class Cards {
     wrapper.append(filtersWrapper);
 
   }
+
   generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance): void { //generate radio buttons
     const formWrapper = document.createElement('div');
     formWrapper.classList.add('form-check');
@@ -86,6 +141,7 @@ export class Cards {
     formWrapper.append(formLabel);
     wrapper.append(formWrapper);
   }
+  
   generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
     const filterUnit = document.createElement('div');
     filterUnit.classList.add(`filters__${type}`);
@@ -103,35 +159,55 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
+
+      if (this.properties.filterProperty.categoryProperties.includes(formInput.id) || this.properties.filterProperty.brandProperties.includes(formInput.id)) {
+        formInput.checked = true;
+      } else {
+        formInput.checked = false;
+      }
+
       formInput.addEventListener('click', () => { // fiters logic here
         const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        
         if (formInput.checked) {
+
           console.log (element + ' checked');
+
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            appRouter.updateUrlParams(UrlParamKey.Category, formInput.id, true);
+
             this.properties.filterProperty.categoryProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
-          }
-          else {
+          } else {
+            appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, true);
+
             this.properties.filterProperty.brandProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
           }
         }
+
         if (!formInput.checked) {
           console.log (element + ' not checked now');
+
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+
+            appRouter.updateUrlParams(UrlParamKey.Category, formInput.id, false);
+
             this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
-          }
-          else {
+          } else {
+            appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, false);
+
             this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
           }
         }
       })
+
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
@@ -145,16 +221,18 @@ export class Cards {
     wrapper.append(filterUnit);
   }
 
-  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+  sortBy(cards: SimpleCard[], property: CardsSortBy) {
     cards.sort(byField(property));
-    function byField (field: 'title' | 'price' | 'rating') {
+    function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title) {
       return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
     }
   }
-  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+
+  generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
     if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
-  }   
+  }
+
   createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
     const productCard = new MainPageProductCard(elem, this.cardsAppearance);
     let card: HTMLElement;
@@ -184,7 +262,6 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
-    //card.append(cardBtnField);
     wrapper.append(card);
   }
   
