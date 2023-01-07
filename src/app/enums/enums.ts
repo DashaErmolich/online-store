@@ -11,4 +11,18 @@ export enum UrlParamKey {
   Brand = 'brand',
   Price = 'price',
   Stock = 'stock',
+  Appearance = 'appearance',
+  Sort = 'sort',
+  Search = 'search',
+}
+
+export enum CardsAppearance {
+  Table = 'table',
+  Row = 'row',
+}
+
+export enum CardsSortBy {
+  Title = 'title',
+  Price = 'price',
+  Rating = 'rating',
 }

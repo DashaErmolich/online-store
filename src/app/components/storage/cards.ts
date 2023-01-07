@@ -1,30 +1,89 @@
-import { FilterProperties, MainFilterProperties, SimpleCard } from "../../models/interfaces";
-import { appStorage } from '../storage/app-storage';
+import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
+import { appRouter } from '../router/router';
+import { UrlParamKey, CardsAppearance, CardsSortBy } from '../../enums/enums';
+import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
+import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 
 export class Cards {
   cards: SimpleCard[];
   categories: string[];
   brands: string[];
+  cardsAppearance: string;
   properties: MainFilterProperties;
 
-  constructor (cards: SimpleCard[]) { 
+  constructor (cards: SimpleCard[], cardsAppearance: string) { 
     this.cards = cards;
     this.categories = [];
     this.brands = [];
+    this.cardsAppearance = cardsAppearance;
+    
     cards.forEach(element => {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
     });
     //TODO: fill filter properties from query string
     this.properties = {
-      sortProperty: '',
-      searchProperty: '',
+      sortProperty: this.getProductsSortValue(UrlParamKey.Sort),
+      searchProperty: this.getProductsSearchValue(UrlParamKey.Search),
       filterProperty: {
-        categoryProperties: [],
-        brandProperties: []
+        categoryProperties: this.getProductsFilterValues(UrlParamKey.Category),
+        brandProperties: this.getProductsFilterValues(UrlParamKey.Brand),
       }
     }
   }
+
+  private getProductsSortValue(key: UrlParamKey): CardsSortBy {
+    const possibleValues: string[] = Object.values(CardsSortBy);
+    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Title);
+    
+    if (!possibleValues.includes(value)) {
+      appRouter.updateUrlParams(key, value);
+    }
+
+    if (value === CardsSortBy.Price) {
+      return CardsSortBy.Price;
+    } else if (value === CardsSortBy.Rating) {
+      return CardsSortBy.Rating;
+    } else {
+      return CardsSortBy.Title;
+    }
+
+  }
+
+  private getProductsSearchValue(key: UrlParamKey): string {
+    const value = appRouter.getUrlParamsValue(key);
+    if (value) {
+      return value
+    } else {
+      return '';
+    }
+  }
+
+  private getValidStringValueFromUrl(urlParamsKey: UrlParamKey, possibleValues: string[], defaultValue: string): string {
+    const value: string | undefined = appRouter.getUrlParamsValue(urlParamsKey);
+    let myValue: string = defaultValue;
+    
+    if (value && !Number(value) && possibleValues.includes(value)) {
+      myValue = value;
+    }
+
+    return myValue;
+  }
+
+  private getProductsFilterValues(key: UrlParamKey): string[] {
+    const categoryProperties = appRouter.getUrlParamsValue(key);
+    if (categoryProperties) {
+      return categoryProperties.split(FILTERS_VALUES_SEPARATOR);
+    } else {
+      return [];
+    }
+  }
+
+  public updateProductsFilters(): void {
+    this.properties.filterProperty.brandProperties = this.getProductsFilterValues(UrlParamKey.Brand);
+    this.properties.filterProperty.categoryProperties = this.getProductsFilterValues(UrlParamKey.Category);
+  }
+
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.classList.add('filters__window');
@@ -33,8 +92,12 @@ export class Cards {
     appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Row');
-    this.generateAppearanceCheckers(appearanceCheckers, 'Table');
+    
+    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+    cardsAppearances.forEach((appearance) => {
+      this.generateAppearanceCheckers(appearanceCheckers, appearance);
+    })
+
     appearanceWrapper.append(appearanceCheckers);
 
     const filtersWrapper = document.createElement('div');
@@ -50,7 +113,8 @@ export class Cards {
     wrapper.append(filtersWrapper);
 
   }
-  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: 'Table' | 'Row'):void { //generate radio buttons
+
+  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance): void { //generate radio buttons
     const formWrapper = document.createElement('div');
     formWrapper.classList.add('form-check');
 
@@ -59,30 +123,14 @@ export class Cards {
     formInput.type = 'radio';
     formInput.name = 'appearanceRadio';
     formInput.id = `appearanceRadio${appearance}`;
-    if (localStorage.getItem('main-current-state') === appearance) formInput.checked = true;
+
+    if (this.cardsAppearance === appearance) {
+      formInput.checked = true;
+    }
+    
     formInput.addEventListener('change', () => {
-      if (formInput.checked) {
-        const cardsWrapper = document.querySelector('.cards-wrapper');
-        const singleCards = document.querySelectorAll('.mainCard');
-        if (appearance === 'Row') {
-          cardsWrapper?.classList.add('cards-wrapper-row');
-          cardsWrapper?.classList.remove('cards-wrapper-table');
-          singleCards.forEach(singleCardWrapper => {
-            singleCardWrapper?.classList.add('mainCard-row');
-            singleCardWrapper?.classList.remove('mainCard-table');
-          });
-          
-        }
-        else {
-          cardsWrapper?.classList.add('cards-wrapper-table');
-          cardsWrapper?.classList.remove('cards-wrapper-row');
-          singleCards.forEach(singleCardWrapper => {
-            singleCardWrapper?.classList.add('mainCard-table');
-            singleCardWrapper?.classList.remove('mainCard-row');
-          });
-        }
-        localStorage.setItem('main-current-state', appearance);
-      }
+      this.listenCardsAppearanceCheckBoxes(formInput, appearance);
+        
     })
     formWrapper.append(formInput);
 
@@ -93,6 +141,7 @@ export class Cards {
     formWrapper.append(formLabel);
     wrapper.append(formWrapper);
   }
+  
   generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
     const filterUnit = document.createElement('div');
     filterUnit.classList.add(`filters__${type}`);
@@ -110,35 +159,55 @@ export class Cards {
       formInput.classList.add('form-check-input');
       formInput.type = 'checkbox';
       formInput.id = `${element.replace(/ /g,'')}`;
+
+      if (this.properties.filterProperty.categoryProperties.includes(formInput.id) || this.properties.filterProperty.brandProperties.includes(formInput.id)) {
+        formInput.checked = true;
+      } else {
+        formInput.checked = false;
+      }
+
       formInput.addEventListener('click', () => { // fiters logic here
         const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        
         if (formInput.checked) {
+
           console.log (element + ' checked');
+
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            appRouter.updateUrlParams(UrlParamKey.Category, formInput.id, true);
+
             this.properties.filterProperty.categoryProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
-          }
-          else {
+          } else {
+            appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, true);
+
             this.properties.filterProperty.brandProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
           }
         }
+
         if (!formInput.checked) {
           console.log (element + ' not checked now');
+
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+
+            appRouter.updateUrlParams(UrlParamKey.Category, formInput.id, false);
+
             this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
-          }
-          else {
+          } else {
+            appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, false);
+
             this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
           }
         }
       })
+
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
@@ -151,81 +220,34 @@ export class Cards {
     });
     wrapper.append(filterUnit);
   }
-  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+
+  sortBy(cards: SimpleCard[], property: CardsSortBy) {
     cards.sort(byField(property));
-    function byField (field: 'title' | 'price' | 'rating') {
+    function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title) {
       return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
     }
   }
-  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+
+  generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
     if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
-  }   
+  }
+
   createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
-    const card = document.createElement('div');
-    card.classList.add('mainCard');
-    if (localStorage.getItem('main-current-state') === 'Table') card.classList.add('mainCard-table'); //loading stance from storage
-    if (localStorage.getItem('main-current-state') === 'Row') card.classList.add('mainCard-row');
+    const productCard = new MainPageProductCard(elem, this.cardsAppearance);
+    let card: HTMLElement;
 
-    const cardH3 = document.createElement('h3');
-    card.classList.add('card__title');
-    cardH3.textContent = elem.title;
-    card.append(cardH3);
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      card = productCard.getRowCardContent()
+    } else {
+      card = productCard.getTableCardContent();
+    }
 
-    const cardDescrField = document.createElement('div');
-    cardDescrField.classList.add('card__description-field');
-
-    const cardCategory = document.createElement('p');
-    cardCategory.textContent = elem.category;
-    cardCategory.classList.add('card__category');
-    cardDescrField.append(cardCategory);
-
-    const cardBrand = document.createElement('p');
-    cardBrand.textContent = elem.brand;
-    cardBrand.classList.add('card__brand');
-    cardDescrField.append(cardBrand);
-
-    const cardPrice = document.createElement('p');
-    cardPrice.textContent = elem.price + ' $';
-    cardPrice.classList.add('card__price');
-    cardDescrField.append(cardPrice);
-
-    const cardDiscount = document.createElement('p');
-    cardDiscount.textContent = elem.discountPercentage + ' $';
-    cardDiscount.classList.add('card__discount');
-    cardDescrField.append(cardDiscount);
-
-    const cardRating = document.createElement('p');
-    cardRating.textContent = elem.rating + ' $';
-    cardRating.classList.add('card__rating');
-    cardDescrField.append(cardRating);
-
-    const cardStock = document.createElement('p');
-    cardStock.textContent = elem.stock + '';
-    cardStock.classList.add('card__Stock');
-    cardDescrField.append(cardStock);
-
-    card.append(cardDescrField);
-
-    const cardBtnField = document.createElement ('div');
-    cardBtnField.classList.add('card__buttons-field');
-
-    const toCardBtn = document.createElement ('button');
-    toCardBtn.classList.add('card__btn');
-    toCardBtn.classList.add('card__to-cart-btn'); 
-    toCardBtn.textContent = 'Add to cart';
-    toCardBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const target = e.target as HTMLElement;
-      if (target) {
-        appStorage.addProductToCart(elem);
-      }
-    })
-    cardBtnField.append(toCardBtn);
-
-    //search
-    if (searchProp && !cardH3.textContent.startsWith(searchProp)) card.classList.add('d-none');
-    else card.classList.remove('d-none');
+    if (searchProp && !productCard.card.title.startsWith(searchProp)) {
+      card.classList.add('d-none');
+    } else {
+      card.classList.remove('d-none');
+    }
 
     //filter
     if (filterProp.categoryProperties.length > 0) {
@@ -240,13 +262,34 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
-    card.append(cardBtnField);
     wrapper.append(card);
   }
-  removeCards ():void {
+  
+  removeCards():void {
     const cardsWrap = document.querySelector('.cards-wrapper');
     while(cardsWrap?.firstChild) {
       cardsWrap.removeChild(cardsWrap.firstChild);
+    }
+  }
+  
+  private listenCardsAppearanceCheckBoxes(formInput: HTMLInputElement, appearance: CardsAppearance): void {
+    if (formInput.checked) {
+      const cardsWrapper = document.querySelector('.cards-wrapper');
+
+      if (cardsWrapper instanceof HTMLDivElement) {
+
+        if (appearance === CardsAppearance.Row) {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';   
+        } else {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+        }
+
+        this.removeCards();
+        this.generateCards(cardsWrapper);
+        appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
+      }
     }
   }
 }

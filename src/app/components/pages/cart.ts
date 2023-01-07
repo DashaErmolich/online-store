@@ -1,9 +1,8 @@
 import { AbstractPage } from '../../abstracts/abstracts';
-import { UrlParamKey } from '../../enums/enums';
 import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
-import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
+import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT, paginationLimitSearchParam, activePageSearchParam } from '../../constants/constants';
 import { ProductCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
@@ -18,19 +17,27 @@ export class CartPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
     this.cartSettings = {
       productsQty: appStorage.getCartProductsCardsQty(),
-      paginationLimit: appRouter.getPaginationLimitValue(),
-      activePage: appRouter.getPageNumber(),
+      paginationLimit: this.getPaginationLimitValue(),
+      activePage: this.getActivePageNumber(),
     };
   }
 
+  private getPaginationLimitValue(): number {
+    return this.getValidNumberValueFromUrl(paginationLimitSearchParam.key, paginationLimitSearchParam.defaultValue);
+  }
+
+  private getActivePageNumber(): number {
+    return this.getValidNumberValueFromUrl(activePageSearchParam.key, activePageSearchParam.defaultValue);
+  }
+
   private listenPaginationButtons(): void {
-    appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
+    appRouter.updateUrlParams(activePageSearchParam.key, String(this.cartSettings.activePage));
     this.handleActiveButton();
     this.drawPaginationPage();
   }
 
   private listenPaginationInput(): void {
-    appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+    appRouter.updateUrlParams(paginationLimitSearchParam.key, String(this.cartSettings.paginationLimit));
     this.updatePagination();
     this.drawPaginationPage();
   }
@@ -44,6 +51,7 @@ export class CartPage extends AbstractPage {
   }
 
   public getPageContent(): HTMLElement {
+    this.updateCartSettings();
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
 
@@ -70,14 +78,14 @@ export class CartPage extends AbstractPage {
   private validateActivePage(pagesQty: number) {
     if (this.cartSettings.activePage > pagesQty) {
       this.cartSettings.activePage = pagesQty;
-      appRouter.updateUrlParams(UrlParamKey.Page, String(this.cartSettings.activePage));
+      appRouter.updateUrlParams(activePageSearchParam.key, String(this.cartSettings.activePage));
     }
   }
 
   private validatePaginationLimit() {
     if (this.cartSettings.paginationLimit > PAGINATION_LIMIT_MAX) {
       this.cartSettings.paginationLimit = PAGINATION_LIMIT_MAX;
-      appRouter.updateUrlParams(UrlParamKey.Limit, String(this.cartSettings.paginationLimit));
+      appRouter.updateUrlParams(paginationLimitSearchParam.key, String(this.cartSettings.paginationLimit));
     }
   }
 
@@ -444,14 +452,14 @@ export class CartPage extends AbstractPage {
     }
   }
 
-  private setCartSettings(): void {
+  private updateCartSettings(): void {
     this.cartSettings.productsQty = appStorage.getCartProductsCardsQty();
-    this.cartSettings.paginationLimit = appRouter.getPaginationLimitValue();
-    this.cartSettings.activePage = appRouter.getPageNumber();
+    this.cartSettings.paginationLimit = this.getPaginationLimitValue();
+    this.cartSettings.activePage = this.getActivePageNumber();
   }
 
-  public setCartState(): void {
-    this.setCartSettings();
+  public updateCartState(): void {
+    this.updateCartSettings();
     this.setCartIcon(this.getCartTotalProductQty());
     this.setHeaderCartTotalSum();
   }

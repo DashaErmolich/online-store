@@ -75,6 +75,5 @@ export const appStorage: AppStorage = {
     localStorage.removeItem('cart-products');
     localStorage.removeItem('promo-codes');
   },
-  
 }
 

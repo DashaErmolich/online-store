@@ -1,5 +1,5 @@
 import { AbstractPage } from '../../abstracts/abstracts';
-import { PageComponents, SimpleCard } from '../../models/interfaces';
+import { PageComponents, SimpleCard, ProductPageSettings } from '../../models/interfaces';
 import { appRouter, cartPage } from '../router/router';
 import { possibleCards } from '../../../assets/samples/possible-cards';
 import { appDrawer } from '../drawer/drawer';
@@ -7,22 +7,30 @@ import { appStorage } from '../storage/app-storage';
 import { RouterPath } from '../../enums/enums';
 
 export class ProductPage extends AbstractPage {
+  private productPageSettings: ProductPageSettings;
+
   constructor() {
     super();
     this.setPageTitle('Product Info');
+    this.productPageSettings = {
+      productIndex: this.getCurrentProductIndex()
+    }
+  }
+
+  private getCurrentProductIndex(): number {
+    return appRouter.getProductIndex();
   }
   
   getPageContent(): PageComponents['content'] {
-    cartPage.setCartState();
+    cartPage.updateCartState();
 
     const contentContainer = appDrawer.getSimpleElement('div', 'row');
 
     const productDescriptionContainer = appDrawer.getSimpleElement('section', 'col-md-9');
     const productSummaryContainer = appDrawer.getSimpleElement('aside', 'col-md-3');
 
-    const productIndex: number = appRouter.getProductIndex();
-    const card: SimpleCard = possibleCards.products[productIndex - 1];
-    console.log(card);
+    //const productIndex: number = appRouter.getProductIndex();
+    const card: SimpleCard = possibleCards.products[this.productPageSettings.productIndex - 1];
 
     if (card) {
       this.drawBreadcrumb(contentContainer, card);
@@ -33,15 +41,15 @@ export class ProductPage extends AbstractPage {
   
       contentContainer.append(productDescriptionContainer, productSummaryContainer);
     } else {
-      this.showNotFoundMessage(contentContainer, productIndex);
+      this.showNotFoundMessage(contentContainer);
     }
 
     return contentContainer;
   }
 
-  private showNotFoundMessage(parentElement: HTMLElement, productIndex: number): void {
+  private showNotFoundMessage(parentElement: HTMLElement): void {
     const notFoundContainer = appDrawer.getSimpleElement('div', 'text-center');
-    const notFoundMessage = appDrawer.getOopsErrorMessage(` Product number ${productIndex} not found.`);
+    const notFoundMessage = appDrawer.getOopsErrorMessage(` Product number ${this.productPageSettings.productIndex} not found.`);
     const goHomeButton = appDrawer.getGoHomeButton();
     goHomeButton.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
@@ -114,7 +122,7 @@ export class ProductPage extends AbstractPage {
 
     button.addEventListener('click', () => {
       appStorage.addProductToCart(card);
-      cartPage.setCartState();
+      cartPage.updateCartState();
       this.drawProductSummary(parentElement, card);
       button.remove();
       buyProductNowButton.remove();
@@ -128,7 +136,7 @@ export class ProductPage extends AbstractPage {
     
     button.addEventListener('click', () => {
       appStorage.removeProductFromCart(card);
-      cartPage.setCartState();
+      cartPage.updateCartState();
       this.drawProductSummary(parentElement, card);
       button.remove();
       buyProductNowButton.remove();
@@ -163,6 +171,8 @@ export class ProductPage extends AbstractPage {
       openBtn.click();
     }
   }
-}
 
-export const productPage = new ProductPage();
+  public setProductIndex(value: number): void {
+    this.productPageSettings.productIndex = value;
+  }
+}
