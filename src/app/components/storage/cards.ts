@@ -273,7 +273,7 @@ export class Cards {
       card = productCard.getTableCardContent();
     }
 
-    if (searchProp && !productCard.card.title.startsWith(searchProp)) {
+    if (searchProp && !productCard.card.title.toLowerCase().startsWith(searchProp.toLowerCase())) {
       card.classList.add('d-none');
     } else {
       card.classList.remove('d-none');
