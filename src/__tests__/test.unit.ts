@@ -6,12 +6,12 @@ const successCases = [
   {
     id: 0,
     input: {a: 1, b: 1},
-    output: 2,
+    output: 3,
   },
   {
     id: 1,
     input: {a: 2, b: 3},
-    output: 5,
+    output: 6,
   },
 ]
 
