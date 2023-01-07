@@ -6,6 +6,8 @@ import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 import { MainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
 import { ProductPage } from '../pages/product-details';
+import { ProductsFilter } from '../filter/filter';
+import { possibleCards } from 'src/assets/samples/possible-cards';
 
 class MyNavigo extends Navigo {
 
@@ -187,6 +189,7 @@ export const appRouter = new MyNavigo('/');
 export const mainPage = new MainPage();
 export const cartPage = new CartPage();
 export const productPage = new ProductPage();
+export const productsFilter = new ProductsFilter(possibleCards.products);
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: mainPage },

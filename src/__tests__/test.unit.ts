@@ -1,23 +1,22 @@
-import type * as TestFunctions from '../sum'
+import { UrlParamKey } from '../app/enums/enums';
+import { ProductsFilter } from '../app/components/filter/filter';
+import { testProductsCards } from '../assets/test/test-products-cards/test-products-cards';
 
-const { sum } = jest.requireActual<typeof TestFunctions>('../sum.ts');
+describe('Filter correct handle products data', () => {
+  test('Check is an object in instance of filter class', () => {
+    const filter = new ProductsFilter(testProductsCards.products);
+    expect(filter).toBeInstanceOf(ProductsFilter);
+  });
 
-const successCases = [
-  {
-    id: 0,
-    input: {a: 1, b: 1},
-    output: 3,
-  },
-  {
-    id: 1,
-    input: {a: 2, b: 3},
-    output: 6,
-  },
-]
+  test('Check is a function correctly filter data', () => {
+    const expected = ['Apple'];
+    const filter = new ProductsFilter(testProductsCards.products);
+    expect(filter.getFilterValuesList(UrlParamKey.Brand)).toEqual(expect.arrayContaining(expected));
+  });
 
-describe('Test sum function', () => {
-  it.each(successCases)('success case $id', ({ input, output }) => {
-    const { a, b } = input;
-    expect(sum(a, b)).toBe(output);
+  test('Check is correct number range', () => {
+    const expected = false;
+    const filter = new ProductsFilter(testProductsCards.products);
+    expect(filter.isValidFilterRange(UrlParamKey.Price, {min: 100, max: 90})).toBe(expected);
   })
 })

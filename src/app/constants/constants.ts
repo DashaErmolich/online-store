@@ -1,10 +1,11 @@
-import { productsFilter } from '../components/filter/filter';
+
 import { UrlParamKey, CardsAppearance } from '../enums/enums';
 import { FormInput, CreditCard, MyNumberValueUrlSearchParam, MyStringValueUrlSearchParam } from '../models/interfaces';
 import CREDIT_CARD_NUMBER_DEFAULT_ICON from 'appIcons/credit-card-logo.svg';
 import CREDIT_CARD_NUMBER_VISA_ICON from 'appIcons/visa-logo.svg';
 import CREDIT_CARD_NUMBER_MASTERCARD_ICON from 'appIcons/mc-logo.svg';
 import CREDIT_CARD_NUMBER_JCB_ICON from 'appIcons/JCB-logo.svg';
+import { productsFilter } from '../components/router/router';
 
 export const PAGINATION_LIMIT_DEFAULT = 5;
 export const PAGINATION_LIMIT_MIN = 1;
