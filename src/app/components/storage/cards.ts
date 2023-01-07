@@ -237,6 +237,7 @@ export class Cards {
         return count;
       }
     });
+    console.log('filters gen');
     wrapper.append(filterUnit);
   }
 
