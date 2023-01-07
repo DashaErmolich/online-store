@@ -1,5 +1,5 @@
 import { AbstractPage } from '../abstracts/abstracts';
-import { UrlParamKey } from '../enums/enums';
+import { UrlParamKey, CardsSortBy } from '../enums/enums';
 
 export interface PageComponents {
   title: string,
@@ -151,7 +151,8 @@ export interface ProductPageCardElement extends ProductCardElement, MainPageCard
 }
 
 export interface MainFilterProperties {
-  sortProperty: 'title' | 'price' | 'rating' | '';
+  //sortProperty: 'title' | 'price' | 'rating' | '';
+  sortProperty: CardsSortBy,
   searchProperty: string;
   filterProperty: FilterProperties;
 }
