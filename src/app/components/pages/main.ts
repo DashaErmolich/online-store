@@ -127,6 +127,7 @@ export class MainPage extends AbstractPage {
     const resetBtn = appDrawer.getSimpleButton('Reset all filters', 'btn btn-danger');
 
     resetBtn.addEventListener('click', () => {
+      this.cards.removeCards();
       appRouter.navigate(RouterPath.Main);
       appRouter.handlePageContent(this.getPageContent());
     })
