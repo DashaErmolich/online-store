@@ -1,34 +1,218 @@
-import { SimpleCard } from "../../models/interfaces";
+import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
+import { appRouter } from '../router/router';
+import { UrlParamKey, CardsAppearance } from '../../enums/enums';
+import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 
-export class Card {
-  // id: number;
-  // title: string;
-  // description: string;
-  // price: number;
-  // discountPercentage: number;
-  // rating: number;
-  // stock: number;
-  // brand: string;
-  // category: string;
-  // thumbnail: string;
-  // images: string[];
-  card: SimpleCard;
-  static totalCards = 0;
+export class Cards {
+  cards: SimpleCard[];
+  categories: string[];
+  brands: string[];
+  cardsAppearance: string;
+  properties: MainFilterProperties;
 
-  constructor (card: SimpleCard) {
-    // this.id = takenCard.id;
-    // this.title = takenCard.title;
-    // this.description = takenCard.description;
-    // this.price = takenCard.price;
-    // this.discountPercentage = takenCard.discountPercentage;
-    // this.rating = takenCard.rating;
-    // this.stock = takenCard.stock;
-    // this.brand = takenCard.brand;
-    // this.category = takenCard.category;
-    // this.thumbnail = takenCard.thumbnail;
-    // this.images = takenCard.images;
-    this.card = card;
-    Card.totalCards++;
+  constructor (cards: SimpleCard[], cardsAppearance: string) { 
+    this.cards = cards;
+    this.categories = [];
+    this.brands = [];
+    this.cardsAppearance = cardsAppearance;
+    
+    cards.forEach(element => {
+      if (!this.categories.includes(element.category)) this.categories.push(element.category);
+      if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
+    });
+    //TODO: fill filter properties from query string
+    this.properties = {
+      sortProperty: '',
+      searchProperty: '',
+      filterProperty: {
+        categoryProperties: [],
+        brandProperties: []
+      }
+    }
+  }
+  generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
+    const appearanceWrapper = document.createElement('div');
+    appearanceWrapper.classList.add('filters__window');
+    const appearanceTitle = document.createElement('h3');
+    appearanceTitle.innerText = 'Appearance:';
+    appearanceWrapper.append(appearanceTitle);
+    const appearanceCheckers = document.createElement('div');
+    appearanceCheckers.classList.add('filters__window-checkers');
+    
+    const cardsAppearances: CardsAppearance[] = Object.values(CardsAppearance);
+    cardsAppearances.forEach((appearance) => {
+      this.generateAppearanceCheckers(appearanceCheckers, appearance);
+    })
+
+    appearanceWrapper.append(appearanceCheckers);
+
+    const filtersWrapper = document.createElement('div');
+    filtersWrapper.classList.add('filters__filters');
+    const filtersTitle = document.createElement('h3');
+    filtersTitle.innerText = 'Filters:';
+    filtersWrapper.append(filtersTitle);
+
+    this.generateFiltersAndCategories(filtersWrapper, 'category', this.categories);
+    this.generateFiltersAndCategories(filtersWrapper, 'brand', this.brands);
+
+    wrapper.append(appearanceWrapper);
+    wrapper.append(filtersWrapper);
+
+  }
+  generateAppearanceCheckers(wrapper: HTMLDivElement, appearance: CardsAppearance): void { //generate radio buttons
+    const formWrapper = document.createElement('div');
+    formWrapper.classList.add('form-check');
+
+    const formInput = document.createElement('input');
+    formInput.classList.add('form-check-input');
+    formInput.type = 'radio';
+    formInput.name = 'appearanceRadio';
+    formInput.id = `appearanceRadio${appearance}`;
+
+    if (this.cardsAppearance === appearance) {
+      formInput.checked = true;
+    }
+    
+    formInput.addEventListener('change', () => {
+      this.listenCardsAppearanceCheckBoxes(formInput, appearance);
+        
+    })
+    formWrapper.append(formInput);
+
+    const formLabel = document.createElement('label');
+    formLabel.classList.add('form-check-label');
+    formLabel.setAttribute('for', `appearanceRadio${appearance}`);
+    formLabel.innerText = appearance;
+    formWrapper.append(formLabel);
+    wrapper.append(formWrapper);
+  }
+  generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
+    const filterUnit = document.createElement('div');
+    filterUnit.classList.add(`filters__${type}`);
+
+    const unitTitle = document.createElement('h6');
+    unitTitle.classList.add('filters__category-title');
+    unitTitle.innerText = type.charAt(0).toUpperCase() + type.slice(1);
+    filterUnit.append(unitTitle);
+
+    content.forEach(element => {
+      const formUnit = document.createElement('div');
+      formUnit.classList.add('form-check');
+
+      const formInput = document.createElement('input');
+      formInput.classList.add('form-check-input');
+      formInput.type = 'checkbox';
+      formInput.id = `${element.replace(/ /g,'')}`;
+      formInput.addEventListener('click', () => { // fiters logic here
+        const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
+        if (formInput.checked) {
+          console.log (element + ' checked');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.push(element);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+        if (!formInput.checked) {
+          console.log (element + ' not checked now');
+          if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
+            this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+          else {
+            this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
+            this.removeCards();
+            this.generateCards(cardsW);
+          }
+        }
+      })
+      formUnit.append(formInput);
+
+      const formLabel = document.createElement('label');
+      formLabel.classList.add('form-check-label');
+      formLabel.setAttribute('for', `${element.replace(/ /g,'')}`);
+      formLabel.innerText = element;
+      formUnit.append(formLabel);
+
+      filterUnit.append(formUnit);
+    });
+    wrapper.append(filterUnit);
+  }
+
+  sortBy(cards: SimpleCard[], property: 'title' | 'price' | 'rating') {
+    cards.sort(byField(property));
+    function byField (field: 'title' | 'price' | 'rating') {
+      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+    }
+  }
+  generateCards (wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+    if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
+    this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
+  }   
+  createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
+    const productCard = new MainPageProductCard(elem, this.cardsAppearance);
+    let card: HTMLElement;
+
+    if (this.cardsAppearance === CardsAppearance.Row) {
+      card = productCard.getRowCardContent()
+    } else {
+      card = productCard.getTableCardContent();
+    }
+
+    if (searchProp && !productCard.card.title.startsWith(searchProp)) {
+      card.classList.add('d-none');
+    } else {
+      card.classList.remove('d-none');
+    }
+
+    //filter
+    if (filterProp.categoryProperties.length > 0) {
+      console.log('filterProp.categoryProperties');
+      filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0) {
+      console.log('filterProp.brandProperties');
+      filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+    if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {
+      filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+
+    //card.append(cardBtnField);
+    wrapper.append(card);
   }
   
+  removeCards():void {
+    const cardsWrap = document.querySelector('.cards-wrapper');
+    while(cardsWrap?.firstChild) {
+      cardsWrap.removeChild(cardsWrap.firstChild);
+    }
+  }
+  
+  private listenCardsAppearanceCheckBoxes(formInput: HTMLInputElement, appearance: CardsAppearance): void {
+    if (formInput.checked) {
+      const cardsWrapper = document.querySelector('.cards-wrapper');
+
+      if (cardsWrapper instanceof HTMLDivElement) {
+
+        if (appearance === CardsAppearance.Row) {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 g-4';   
+        } else {
+          this.cardsAppearance = appearance;
+          cardsWrapper.className = 'cards-wrapper row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+        }
+
+        this.removeCards();
+        this.generateCards(cardsWrapper);
+        appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
+      }
+    }
+  }
 }

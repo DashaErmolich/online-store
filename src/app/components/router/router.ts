@@ -2,10 +2,10 @@ import Navigo from 'navigo';
 import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes, NumberRange } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
-import { PAGINATION_LIMIT_DEFAULT, ACTIVE_PAGE_DEFAULT, FILTERS_VALUES_SEPARATOR, PRICE_RANGE_DEFAULT, STOCK_RANGE_DEFAULT } from '../../constants/constants';
-import { mainPage } from '../pages/main';
+import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
+import { MainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
-import { productPage } from '../pages/products';
+import { ProductPage } from '../pages/product-details';
 
 class MyNavigo extends Navigo {
 
@@ -20,7 +20,7 @@ class MyNavigo extends Navigo {
   public updateUrlParams(key: UrlParamKey, value: string | NumberRange, isChecked?: boolean): void {
     const params = this.getUrlParams();
 
-    if (key === UrlParamKey.Page || UrlParamKey.Limit) {
+    if (key === UrlParamKey.Page || UrlParamKey.Limit || UrlParamKey.Appearance) {
       if (typeof(value) === 'string') {
         this.updateSingleChoiceUrlParams(params, key, value);
       }
@@ -42,29 +42,29 @@ class MyNavigo extends Navigo {
     window.history.replaceState({}, '', `${window.location.pathname}?` + params);
   }
 
-  public getPaginationLimitValue(): number {
-    return this.getSingleChoiceUrlParamsValue(UrlParamKey.Limit, PAGINATION_LIMIT_DEFAULT);
-  }
+  // public getPaginationLimitValue(): number {
+  //   return this.getSingleChoiceUrlParamsValue(UrlParamKey.Limit, PAGINATION_LIMIT_DEFAULT);
+  // }
 
-  public getPageNumber(): number {
-    return this.getSingleChoiceUrlParamsValue(UrlParamKey.Page, ACTIVE_PAGE_DEFAULT);
-  }
+  // public getPageNumber(): number {
+  //   return this.getSingleChoiceUrlParamsValue(UrlParamKey.Page, ACTIVE_PAGE_DEFAULT);
+  // }
 
-  public getProductBrands(): string[] {
-    return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Brand);
-  }
+  // public getProductBrands(): string[] {
+  //   return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Brand);
+  // }
 
-  public getProductCategories(): string[] {
-    return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Category);
-  }
+  // public getProductCategories(): string[] {
+  //   return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Category);
+  // }
 
-  public getPriceRange(): NumberRange {
-    return this.getRangeUrlParamsValue(UrlParamKey.Price, PRICE_RANGE_DEFAULT);
-  }
+  // public getPriceRange(): NumberRange {
+  //   return this.getRangeUrlParamsValue(UrlParamKey.Price, PRICE_RANGE_DEFAULT);
+  // }
 
-  public getStockRange(): NumberRange {
-    return this.getRangeUrlParamsValue(UrlParamKey.Stock, STOCK_RANGE_DEFAULT);
-  }
+  // public getStockRange(): NumberRange {
+  //   return this.getRangeUrlParamsValue(UrlParamKey.Stock, STOCK_RANGE_DEFAULT);
+  // }
 
   private getUrlParams(): URLSearchParams {
     const url: Location = window.location;
@@ -117,56 +117,76 @@ class MyNavigo extends Navigo {
     }
   }
 
-  private getSingleChoiceUrlParamsValue(filter: UrlParamKey.Limit | UrlParamKey.Page, defaultValue: number): number {
+  public getUrlParamsValue(key: UrlParamKey): string | undefined {
     const params = this.getUrlParams();
-    let filterValue: number = defaultValue;
-
-    if (params.has(filter)) {
-      const value = Number(params.get(filter));
+    if (params.has(key)) {
+      const value = params.get(key);
       if (value) {
-        filterValue = value;
-      } else {
-        this.updateUrlParams(filter, String(filterValue))
+        return value;
       }
     }
-    return filterValue;
   }
 
-  private getRangeUrlParamsValue(filter: UrlParamKey.Price | UrlParamKey.Stock, defaultRange: NumberRange): NumberRange {
-    const params = this.getUrlParams();
-    let filterValue: NumberRange = defaultRange;
+  // private getSingleChoiceUrlParamsValue(filter: UrlParamKey.Limit | UrlParamKey.Page, defaultValue: number): number {
+  //   const params = this.getUrlParams();
+  //   let filterValue: number = defaultValue;
 
-    if (params.has(filter)) {
-      const value = params.get(filter);
-      if (value) {
-        filterValue = {
-          min: Number(value.split(FILTERS_VALUES_SEPARATOR)[0]),
-          max: Number(value.split(FILTERS_VALUES_SEPARATOR)[1]),
-        }
+  //   if (params.has(filter)) {
+  //     const value = Number(params.get(filter));
+  //     if (value) {
+  //       filterValue = value;
+  //     } else {
+  //       this.updateUrlParams(filter, String(filterValue))
+  //     }
+  //   }
+  //   return filterValue;
+  // }
 
-      } else {
-        this.updateUrlParams(filter, defaultRange);
-      }
-    }
-    return filterValue;
-  }
+  // private getRangeUrlParamsValue(filter: UrlParamKey.Price | UrlParamKey.Stock, defaultRange: NumberRange): NumberRange {
+  //   const params = this.getUrlParams();
+  //   let filterValue: NumberRange = defaultRange;
 
-  private getMultipleChoiceUrlParamsValues(filter: UrlParamKey.Brand | UrlParamKey.Category): string[] {
-    const params = this.getUrlParams();
-    let filterValues: string[] = [];
+  //   if (params.has(filter)) {
+  //     const value = params.get(filter);
+  //     if (value) {
+  //       filterValue = {
+  //         min: Number(value.split(FILTERS_VALUES_SEPARATOR)[0]),
+  //         max: Number(value.split(FILTERS_VALUES_SEPARATOR)[1]),
+  //       }
+
+  //     } else {
+  //       this.updateUrlParams(filter, defaultRange);
+  //     }
+  //   }
+  //   return filterValue;
+  // }
+
+  // private getMultipleChoiceUrlParamsValues(filter: UrlParamKey.Brand | UrlParamKey.Category): string[] {
+  //   const params = this.getUrlParams();
+  //   let filterValues: string[] = [];
     
-    if (params.has(filter)) {
-      const value = params.get(filter);
-      if (value) {
-        filterValues = value.split(FILTERS_VALUES_SEPARATOR);
-      }
-    }
-    return filterValues;
+  //   if (params.has(filter)) {
+  //     const value = params.get(filter);
+  //     if (value) {
+  //       filterValues = value.split(FILTERS_VALUES_SEPARATOR);
+  //     }
+  //   }
+  //   return filterValues;
+  // }
+
+  public getProductIndex(): number {
+    const url: Location = window.location;
+    const pathName = url.pathname;
+    const productIndex = pathName.split('/').pop();
+    return Number(productIndex)
   }
+
 }
 
 export const appRouter = new MyNavigo('/');
+export const mainPage = new MainPage();
 export const cartPage = new CartPage();
+export const productPage = new ProductPage();
 
 const routes: Routes[] = [
   { path: RouterPath.Main, page: mainPage },

@@ -1,7 +1,7 @@
 export enum RouterPath {
   Main = '/',
   Cart = '/cart',
-  Products = '/products',
+  Products = '/products/:id',
 }
 
 export enum UrlParamKey {
@@ -11,4 +11,10 @@ export enum UrlParamKey {
   Brand = 'brand',
   Price = 'price',
   Stock = 'stock',
+  Appearance = 'appearance',
+}
+
+export enum CardsAppearance {
+  Table = 'table',
+  Row = 'row',
 }
