@@ -274,8 +274,6 @@ export class MainPageProductCard {
       title: appDrawer.getProductCardTitle('h5', this.card.title),
       price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
       discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
-      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
-      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
       category: appDrawer.getSimpleElement('p', '', this.card.category),
       brand: appDrawer.getSimpleElement('p', '', this.card.brand),
       description: appDrawer.getProductDetailsDescription(this.card.description),
@@ -291,7 +289,6 @@ export class MainPageProductCard {
     const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
-    const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
   
     cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
@@ -304,7 +301,6 @@ export class MainPageProductCard {
     }
 
     const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100');
-    const cardImageWrapper = appDrawer.getSimpleElement('div', 'card-image-wrapper_custom w-100');
     const cardImageWrapper = appDrawer.getSimpleElement('div', 'card-image-wrapper_custom w-100');
     this.cardElement.image.className = 'card-img-top card-image_custom';
     cardImageWrapper.append(this.cardElement.image);
@@ -327,7 +323,6 @@ export class MainPageProductCard {
     cardImageWrapper.append(this.cardElement.image)
     stretchedLinkWrap.append(cardImageWrapper, this.cardElement.linkToProductPage);
 
-    const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-8');
     const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-8');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
 
