@@ -1,13 +1,13 @@
 import { AbstractPage } from '../../abstracts/abstracts';
 import { CardsAppearance, UrlParamKey, CardsSortBy } from '../../enums/enums';
-import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
+import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR, PRICE_RANGE_DEFAULT, STOCK_RANGE_DEFAULT } from '../../constants/constants';
 import { appRouter, cartPage } from '../router/router';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
-import { SimpleCard } from '../../models/interfaces';
+import { SimpleCard, NumberRange } from '../../models/interfaces';
 import { appDrawer } from '../drawer/drawer';
 import { productsFilter } from '../filter/filter';
 import { possibleCards2 } from '../../../assets/samples/possible-cards2';
-import { appStorage } from '../storage/app-storage';
+import { DualHRangeBar } from 'dual-range-bar'
 
 export class MyMain extends AbstractPage {
 
@@ -23,9 +23,9 @@ export class MyMain extends AbstractPage {
       productsBrands: this.getProductsFilterValues(UrlParamKey.Brand),
       searchProperty: this.getProductsSearchValue(UrlParamKey.Search),
       sortProperty: this.getProductsSortValue(UrlParamKey.Sort),
+      priceRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Price, PRICE_RANGE_DEFAULT),
+      stockRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock, STOCK_RANGE_DEFAULT),
     };
-
-
   }
 
   private getCardsAppearance(): string {
@@ -77,6 +77,7 @@ export class MyMain extends AbstractPage {
 
   public getPageContent(): HTMLElement {
     cartPage.updateCartState();
+    this.updateCardsToRender();
 
     const content = document.createElement('div');
     content.className = 'row';
@@ -103,9 +104,15 @@ export class MyMain extends AbstractPage {
     totalQty.id = 'find-products-qty';
     totalQty.innerHTML = `Products quantity: ${this.mainPageSettings.productsCards.length}`;
 
-    contentWrapper.append(totalQty)
+    contentWrapper.append(totalQty);
+    
+    const mainRangesWrapper = document.createElement('div');
+    mainRangesWrapper.id = 'main-ranges-wrapper';
+
+    contentWrapper.append(mainRangesWrapper)
     contentWrapper.append(cardsWrapper);
 
+    this.drawRanges(mainRangesWrapper);
     this.drawCards(cardsWrapper);
     this.drawFilters(filtersWrapper);
 
@@ -126,40 +133,63 @@ export class MyMain extends AbstractPage {
   }
 
   private getCards(): SimpleCard[] {
-    return appStorage.getMainPageProducts();
+    return possibleCards2.products;
   }
 
   private updateCardsToRender(): void {
     this.mainPageSettings.productsCategories = this.getProductsFilterValues(UrlParamKey.Category);
     this.mainPageSettings.productsBrands = this.getProductsFilterValues(UrlParamKey.Brand);
+    this.mainPageSettings.priceRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Price, PRICE_RANGE_DEFAULT),
+    this.mainPageSettings.stockRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock, STOCK_RANGE_DEFAULT),
     this.mainPageSettings.productsCards = [];
 
-    let result: SimpleCard[] = []
-    let result2: SimpleCard[] = [];
+    let brandsResult: SimpleCard[] = []
+    let categoryResult: SimpleCard[] = [];
+    let priceResult: SimpleCard[] = [];
+    let stockResult: SimpleCard[] = [];
 
     if (this.mainPageSettings.productsBrands.length) {
       possibleCards2.products.forEach((card: SimpleCard) => {
         if (this.mainPageSettings.productsBrands.includes(card.brand)) {
-          result.push(card);
+          brandsResult.push(card);
         }
       })
     } else {
-      result = possibleCards2.products;
+      brandsResult = possibleCards2.products;
     }
 
     if (this.mainPageSettings.productsCategories.length) {
-      result.forEach((card: SimpleCard) => {
+      brandsResult.forEach((card: SimpleCard) => {
         if (this.mainPageSettings.productsCategories.includes(card.category)) {
-          result2.push(card);
+          categoryResult.push(card);
         }
       })
     } else {
-      result2 = result;
+      categoryResult = brandsResult;
     }
 
-    this.mainPageSettings.productsCards = result2;
-    appStorage.setMainPageProducts(this.mainPageSettings.productsCards)
-    //console.log(this.mainPageSettings.productsCards)
+    if (this.mainPageSettings.priceRange) {
+      categoryResult.forEach((card: SimpleCard) => {
+        if (this.mainPageSettings.priceRange.min <= card.price && this.mainPageSettings.priceRange.max >= card.price) {
+          priceResult.push(card);
+        }
+      })
+    } else {
+      priceResult = categoryResult;
+    }
+
+    if (this.mainPageSettings.stockRange) {
+      priceResult.forEach((card: SimpleCard) => {
+        if (this.mainPageSettings.stockRange.min <= card.stock && this.mainPageSettings.stockRange.max >= card.stock) {
+          stockResult.push(card);
+        }
+      })
+    } else {
+      stockResult = priceResult;
+    }
+
+    this.mainPageSettings.productsCards = stockResult;
+    //appStorage.setMainPageProducts(this.mainPageSettings.productsCards)
 
   }
 
@@ -200,9 +230,11 @@ export class MyMain extends AbstractPage {
         } else {
           appRouter.updateUrlParams(UrlParamKey.Category, checkbox.id, checkbox.checked);
         }
+
         this.renderNewCards();
         this.renderNewFilters();
         this.setProductsQty();
+        this.renderNewRanges();
       })
 
       parentElement.append(checkbox, label);
@@ -241,5 +273,81 @@ export class MyMain extends AbstractPage {
       wrapper.innerHTML = '';
       this.drawFilters(wrapper);
     }
+  }
+
+
+  private drawRanges(parentElement: HTMLElement): void {
+    const rangePriceWrap = document.createElement('ul');
+    rangePriceWrap.className = 'position-relative w-100 my-3 list-group';
+    rangePriceWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', 'Price range'))
+
+    const rangeStockWrap = document.createElement('ul');
+    rangeStockWrap.className = 'position-relative w-100 my-3 list-group';
+    rangeStockWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', 'Stock range'))
+
+    const priceRange = this.getRange(rangePriceWrap, 'price-range', UrlParamKey.Price, this.mainPageSettings.priceRange);
+    const stockRange = this.getRange(rangeStockWrap, 'stock-range', UrlParamKey.Stock, this.mainPageSettings.stockRange);
+  
+
+    parentElement.append(priceRange, stockRange);
+  }
+
+  private getRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, activeRange: NumberRange): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'drbar-container list-group-item';
+    container.id = id;
+    const leftSide = Math.round(productsFilter.getFilterRange(filter).min);
+    const rightSide = Math.round(productsFilter.getFilterRange(filter).max);
+    const currentMin = Math.round(activeRange.min);
+    const currentMax = Math.round(activeRange.max);
+
+    const dualRange = new DualHRangeBar(container, {
+      lowerBound: leftSide,
+      lower: currentMin,
+      upperBound: rightSide,
+      upper: currentMax,
+    });
+    const values = appDrawer.getSimpleElement('div', 'list-group-item')
+
+    const minVal = appDrawer.getSimpleElement('p', '', `${dualRange.lower}`);
+    minVal.id = `${filter}-range-min`;
+    const maxVal = appDrawer.getSimpleElement('p', '', `${dualRange.upper}`);
+    maxVal.id = `${filter}-range-max`;
+
+    dualRange.addEventListener('update', () => {
+      const min = document.querySelector(`#${filter}-range-min`);
+      if (min) {
+        min.innerHTML = `${Math.round(dualRange.lower)}`;
+      }
+
+      const max = document.querySelector(`#${filter}-range-max`);
+      if (max) {
+        max.innerHTML = `${Math.round(dualRange.upper)}`;
+      }
+
+      appRouter.updateUrlParams(filter, {min: Math.round(dualRange.lower), max: Math.round(dualRange.upper)});
+      this.renderNewCards();
+      this.renderNewFilters();
+      this.setProductsQty();
+
+    })
+
+    values.append(minVal, maxVal);
+
+    parentElement.append(container, values);
+    return parentElement;
+  }
+
+  private renderNewRanges(): void {
+    this.updateCardsToRender();
+    const wrapper = document.getElementById('main-ranges-wrapper');
+    if (wrapper) {
+      wrapper.innerHTML = '';
+      this.drawRanges(wrapper);
+    }
+  }
+
+  private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock): NumberRange {
+    return productsFilter.getFilterRange(key, this.mainPageSettings.productsCards);
   }
 }

@@ -10,8 +10,8 @@ export const productsFilter = {
     return Array.from(uniqueValues).sort();
   },
 
-  getFilterRange(filter: UrlParamKey.Price | UrlParamKey.Stock): NumberRange {
-    const values: number[] = possibleCards2.products.map((product: SimpleCard) => product[filter]);
+  getFilterRange(filter: UrlParamKey.Price | UrlParamKey.Stock, array: SimpleCard[] = possibleCards2.products): NumberRange {
+    const values: number[] = array.map((product: SimpleCard) => product[filter]);
     return {
       min: Math.min(...values),
       max: Math.max(...values),
