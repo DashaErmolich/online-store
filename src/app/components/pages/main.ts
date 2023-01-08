@@ -66,9 +66,13 @@ export class MainPage extends AbstractPage {
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
     sortingWrapper.classList.add('sorting-wrapper');
-    const nameSort = document.createElement('span');
-    nameSort.innerText = 'sort by name';
+    sortingWrapper.classList.add('btn-group');
+    sortingWrapper.setAttribute('role', 'group');
+    const nameSort = document.createElement('button');
+    nameSort.innerText = 'Sort by Name';
     nameSort.classList.add('sort-item');
+    nameSort.classList.add('btn')
+    nameSort.classList.add('btn-outline-secondary')
     nameSort.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.Title);
       this.cards.removeCards();
@@ -98,7 +102,11 @@ export class MainPage extends AbstractPage {
     sortingWrapper.append(priceSort);
     sortingWrapper.append(ratingSort);
 
-    this.drawPageStateButtons(contentWrapper);
+    const sortingButtonsGroup = appDrawer.getSimpleElement('div', 'btn-group');
+    sortingButtonsGroup.setAttribute('role', 'group');
+    
+
+    this.drawPageStateButtons(contentWrapper, sortingButtonsGroup);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
@@ -117,14 +125,15 @@ export class MainPage extends AbstractPage {
     return content;
   }
 
-  private drawPageStateButtons(parentElement: HTMLElement): void {
+  private drawPageStateButtons(parentElement: HTMLElement, container: HTMLElement): void {
     const resetSearchParamsButton = this.getResetFiltersButton();
     const copySearchParamsButton = this.getCopyFiltersButton();
-    parentElement.append(resetSearchParamsButton, copySearchParamsButton);
+    container.append(resetSearchParamsButton, copySearchParamsButton);
+    parentElement.append(container);
   }
 
   private getResetFiltersButton(): HTMLElement {
-    const resetBtn = appDrawer.getSimpleButton('Reset all filters', 'btn btn-danger');
+    const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-primary');
 
     resetBtn.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
@@ -135,7 +144,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy filters', 'btn btn-success');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
 
     copyBtn.addEventListener('click', async () => {
       try {

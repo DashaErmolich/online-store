@@ -4,8 +4,8 @@ import { possibleCards2 } from '../../../assets/samples/possible-cards2';
 
 export const productsFilter = {
 
-  getFilterValuesList(filter: UrlParamKey.Brand | UrlParamKey.Category): string[] {
-    const valuesList = possibleCards2.products.map((product: SimpleCard) => product[filter]);
+  getFilterValuesList(filter: UrlParamKey.Brand | UrlParamKey.Category, array: SimpleCard[] = possibleCards2.products): string[] {
+    const valuesList = array.map((product: SimpleCard) => product[filter]);
     const uniqueValues = new Set(valuesList);
     return Array.from(uniqueValues).sort();
   },

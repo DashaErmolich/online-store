@@ -1,5 +1,4 @@
 import { AbstractPage } from '../../abstracts/abstracts';
-import { appStorage } from '../storage/app-storage';
 import { CardsAppearance, UrlParamKey, CardsSortBy } from '../../enums/enums';
 import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 import { appRouter, cartPage } from '../router/router';
@@ -8,6 +7,7 @@ import { SimpleCard } from '../../models/interfaces';
 import { appDrawer } from '../drawer/drawer';
 import { productsFilter } from '../filter/filter';
 import { possibleCards2 } from '../../../assets/samples/possible-cards2';
+import { appStorage } from '../storage/app-storage';
 
 export class MyMain extends AbstractPage {
 
@@ -17,7 +17,7 @@ export class MyMain extends AbstractPage {
     super();
     this.setPageTitle('Online Shop');
     this.mainPageSettings = {
-      productsCards: appStorage.getMainPageProducts(),
+      productsCards: this.getCards(),
       cardsAppearance: this.getCardsAppearance(),
       productsCategories: this.getProductsFilterValues(UrlParamKey.Category),
       productsBrands: this.getProductsFilterValues(UrlParamKey.Brand),
@@ -75,7 +75,7 @@ export class MyMain extends AbstractPage {
     }
   }
 
-  getPageContent(): HTMLElement {
+  public getPageContent(): HTMLElement {
     cartPage.updateCartState();
     console.log(this.mainPageSettings.productsCards)
 
@@ -88,7 +88,7 @@ export class MyMain extends AbstractPage {
     contentWrapper.classList.add('col-9');
 
     const filtersWrapper = document.createElement('div');
-    filtersWrapper.classList.add('filters-wrapper');
+    filtersWrapper.id = 'main-filters-wrapper';
     filtersWrapper.classList.add('col'); 
 
     const cardsWrapper = document.createElement('div');
@@ -111,10 +111,9 @@ export class MyMain extends AbstractPage {
   }
 
   private drawCards(parentElement: HTMLElement): void {
-    this.mainPageSettings.productsCards = appStorage.getMainPageProducts();
     let i = 0;
     const productsQty = this.mainPageSettings.productsCards.length;
-    while (i < productsQty - 1) {
+    while (i < productsQty) {
       const card = new MainPageProductCard(this.mainPageSettings.productsCards[i], this.mainPageSettings.cardsAppearance);
       if (card) {
         parentElement.append(card.getTableCardContent());
@@ -123,49 +122,41 @@ export class MyMain extends AbstractPage {
     }
   }
 
-  private updateCards(): void {
+  private getCards(): SimpleCard[] {
+    return appStorage.getMainPageProducts();
+  }
+
+  private updateCardsToRender(): void {
     this.mainPageSettings.productsCategories = this.getProductsFilterValues(UrlParamKey.Category);
     this.mainPageSettings.productsBrands = this.getProductsFilterValues(UrlParamKey.Brand);
     this.mainPageSettings.productsCards = [];
 
-    const all: SimpleCard[] = []
-    const cat: SimpleCard[] = []
-    const br: SimpleCard[] = []
+    let result: SimpleCard[] = []
+    let result2: SimpleCard[] = [];
 
-    possibleCards2.products.forEach((card: SimpleCard) => {
-      if (this.mainPageSettings.productsBrands.includes(card.brand)) {
-        br.push(card);
-      }
-
-      if (this.mainPageSettings.productsCategories.includes(card.category)) {
-        this.mainPageSettings.productsCards.push(card)
-        cat.push(card);
-      }
-
-    })
-
-    if (!all.length) {
-      // eslint-disable-next-line no-debugger
-      debugger
-      appStorage.setMainPageProducts(br.concat(cat));
+    if (this.mainPageSettings.productsBrands.length) {
+      possibleCards2.products.forEach((card: SimpleCard) => {
+        if (this.mainPageSettings.productsBrands.includes(card.brand)) {
+          result.push(card);
+        }
+      })
     } else {
-      br.forEach((a) => {
-        if (cat.includes(a)) {
-          all.push(a)
-        }
-      })
-  
-      cat.forEach((a) => {
-        if (br.includes(a)) {
-          all.push(a)
-        }
-      })
-      appStorage.setMainPageProducts(all);
+      result = possibleCards2.products;
     }
 
-    // eslint-disable-next-line no-debugger
-    debugger
+    if (this.mainPageSettings.productsCategories.length) {
+      result.forEach((card: SimpleCard) => {
+        if (this.mainPageSettings.productsCategories.includes(card.category)) {
+          result2.push(card);
+        }
+      })
+    } else {
+      result2 = result;
+    }
 
+    this.mainPageSettings.productsCards = result2;
+    appStorage.setMainPageProducts(this.mainPageSettings.productsCards)
+    //console.log(this.mainPageSettings.productsCards)
 
   }
 
@@ -182,7 +173,7 @@ export class MyMain extends AbstractPage {
     parentElement.append(categoriesWrapper, brandsWrapper)
   }
 
-  private drawCheckBoxes(parentElement: HTMLElement, allValues: string[], activeValues: string[], category: UrlParamKey): void {
+  private drawCheckBoxes(parentElement: HTMLElement, allValues: string[], activeValues: string[], category: UrlParamKey.Brand | UrlParamKey.Category): void {
     let i = 0;
 
     while (i < allValues.length) {
@@ -192,7 +183,10 @@ export class MyMain extends AbstractPage {
       checkbox.id = currentId;
       checkbox.name = category;
       const label = document.createElement('label');
-      label.innerHTML = `${allValues[i]}`;
+      label.className = 'd-block';
+      const totalProducts = this.getTotalQty(allValues[i]);
+      const productsOnPageQty = this.getActiveQty(allValues[i]);
+      label.innerHTML = `${allValues[i]} ${productsOnPageQty}/${totalProducts}`;
       label.htmlFor = currentId;
 
       activeValues.includes(allValues[i]) ? checkbox.checked = true : false;
@@ -203,7 +197,6 @@ export class MyMain extends AbstractPage {
         } else {
           appRouter.updateUrlParams(UrlParamKey.Category, checkbox.id, checkbox.checked);
         }
-        this.updateCards();
         this.renderNewCards();
         this.renderNewFilters();
       })
@@ -213,7 +206,16 @@ export class MyMain extends AbstractPage {
     }
   }
 
+  private getTotalQty(item: string): number {
+    return possibleCards2.products.filter((a: SimpleCard) => Object.values(a).includes(item)).length;
+  }
+
+  private getActiveQty(item: string): number {
+    return this.mainPageSettings.productsCards.filter((a: SimpleCard) => Object.values(a).includes(item)).length;
+  }
+
   private renderNewCards() {
+    this.updateCardsToRender();
     const wrapper = document.getElementById('main-cards-wrapper');
     if (wrapper) {
       wrapper.innerHTML = '';
@@ -222,6 +224,7 @@ export class MyMain extends AbstractPage {
   }
 
   private renderNewFilters() {
+    this.updateCardsToRender();
     const wrapper = document.getElementById('main-filters-wrapper');
     if (wrapper) {
       wrapper.innerHTML = '';
