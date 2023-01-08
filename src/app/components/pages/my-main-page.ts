@@ -77,9 +77,7 @@ export class MyMain extends AbstractPage {
 
   public getPageContent(): HTMLElement {
     cartPage.updateCartState();
-    console.log(this.mainPageSettings.productsCards)
 
-    this.setPageTitle('Online Shop');
     const content = document.createElement('div');
     content.className = 'row';
 
@@ -101,6 +99,11 @@ export class MyMain extends AbstractPage {
       cardsWrapper.className = 'row row-cols-1 g-4';
     }
 
+    const totalQty = appDrawer.getSimpleElement('p', 'mb-3');
+    totalQty.id = 'find-products-qty';
+    totalQty.innerHTML = `Products quantity: ${this.mainPageSettings.productsCards.length}`;
+
+    contentWrapper.append(totalQty)
     contentWrapper.append(cardsWrapper);
 
     this.drawCards(cardsWrapper);
@@ -199,10 +202,18 @@ export class MyMain extends AbstractPage {
         }
         this.renderNewCards();
         this.renderNewFilters();
+        this.setProductsQty();
       })
 
       parentElement.append(checkbox, label);
       i++;
+    }
+  }
+
+  private setProductsQty(): void {
+    const totalQty = document.getElementById('find-products-qty');
+    if (totalQty) {
+      totalQty.innerHTML = `Products quantity: ${this.mainPageSettings.productsCards.length}`;
     }
   }
 
