@@ -38,8 +38,6 @@ export class Cards {
     const possibleValues: string[] = Object.values(CardsSortBy);
     const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
     console.log(value);
-    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
-    console.log(value);
     
     if (!possibleValues.includes(value)) {
       appRouter.updateUrlParams(key, value);
@@ -254,14 +252,6 @@ export class Cards {
       formUnit.append(formCounters);
 
       filterUnit.append(formUnit);
-
-      function countPages (arr: SimpleCard[]):number {
-        let count = 0;
-        arr.forEach(el => {
-          if (el[type] === element) count += 1;
-        });
-        return count;
-      }
 
       function countPages (arr: SimpleCard[]):number {
         let count = 0;

@@ -167,6 +167,7 @@ export class MainPage extends AbstractPage {
     sortingWrapper.append(ratingSortWrapper);
     sortingWrapper.append(ratingSortWrapperDesc);
 
+    this.drawPageStateButtons(sortingWrapper);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
@@ -192,9 +193,12 @@ export class MainPage extends AbstractPage {
   }
 
   private drawPageStateButtons(parentElement: HTMLElement): void {
+    const drawWrapper = document.createElement('div');
+    drawWrapper.classList.add('inline-b');
     const resetSearchParamsButton = this.getResetFiltersButton();
     const copySearchParamsButton = this.getCopyFiltersButton();
-    parentElement.append(resetSearchParamsButton, copySearchParamsButton);
+    drawWrapper.append(resetSearchParamsButton, copySearchParamsButton);
+    parentElement.append(drawWrapper);
   }
 
   private getResetFiltersButton(): HTMLElement {
@@ -210,7 +214,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-secondary');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
 
     copyBtn.addEventListener('click', async () => {
       try {
