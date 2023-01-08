@@ -7,7 +7,7 @@ import { MainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
 import { ProductPage } from '../pages/product-details';
 import { ProductsFilter } from '../filter/filter';
-import { possibleCards } from 'src/assets/samples/possible-cards';
+import { possibleCards } from '../../../assets/samples/possible-cards';
 
 class MyNavigo extends Navigo {
 
