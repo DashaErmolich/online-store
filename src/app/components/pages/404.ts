@@ -1,6 +1,6 @@
 import { AbstractPage } from '../../abstracts/abstracts';
 import { PageComponents } from '../../models/interfaces';
-import { appRouter } from '../router/router';
+import { appRouter, cartPage } from '../router/router';
 import { RouterPath } from '../../enums/enums';
 
 export class NotFoundPage extends AbstractPage {
@@ -11,6 +11,7 @@ export class NotFoundPage extends AbstractPage {
   }
 
   getPageContent(): PageComponents['content'] {
+    cartPage.updateCartState();
     const container = document.createElement('div');
     container.className = 'd-flex align-items-center justify-content-center';
     

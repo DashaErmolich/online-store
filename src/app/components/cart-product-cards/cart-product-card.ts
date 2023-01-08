@@ -1,5 +1,5 @@
-import { PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
-import { SimpleCard, MainPageCardElement } from '../../models/interfaces';
+import { CURRENCY_ICON_CLASS_NAME, PRODUCT_CART_QTY_DEFAULT } from '../../constants/constants';
+import { SimpleCard, MainPageCardElement, ProductCardElement, CartPageCardElementActions } from '../../models/interfaces';
 import { appStorage } from '../storage/app-storage';
 import { cartPage, productPage } from '../router/router';
 import { appDrawer } from '../drawer/drawer';
@@ -119,8 +119,145 @@ export class ProductCard {
     appStorage.removeProductFromCart(this.card);
     cartPage.updatePage();
   }
+}
 
+class BasicProductCard {
+  card: SimpleCard;
+  cardElement: ProductCardElement;
 
+  constructor(card: SimpleCard) {
+    this.card = card;
+
+    this.cardElement = {
+      image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
+      title: appDrawer.getProductCardTitle('h5', this.card.title),
+      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
+      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
+      category: appDrawer.getSimpleElement('p', '', this.card.category),
+      brand: appDrawer.getSimpleElement('p', '', this.card.brand),
+      description: appDrawer.getProductDetailsDescription(this.card.description),
+      rating: appDrawer.getProductRating(this.card.rating, 'text-muted'),
+      stock: appDrawer.getProductStockQty(this.card.stock, 'text-muted'),
+    }
+  }
+}
+
+export class NewCard extends BasicProductCard {
+  index: number;
+  action: CartPageCardElementActions;
+
+  constructor(card: SimpleCard, index: number) {
+    super(card);
+    this.index = index;
+    this.action = {
+      addQtyButton: this.getAddQtyButton(),
+      removeQtyButton: this.getRemoveQtyButton(),
+    }
+  }
+
+  private getAddQtyButton(): HTMLElement {
+    const cardAddItemButton = document.createElement('button');
+    cardAddItemButton.className = 'bi bi-plus-circle page-link fs-4 cart-add-product-button';
+    cardAddItemButton.addEventListener('click', () => {
+      this.listenAddProductButton();
+    })
+    return cardAddItemButton;
+  }
+
+  private getRemoveQtyButton(): HTMLElement {
+    const cardRemoveItemButton = document.createElement('button');
+    cardRemoveItemButton.className = 'bi bi-dash-circle page-link fs-4 cart-remove-product-button';
+    cardRemoveItemButton.addEventListener('click', () => {
+      this.listenRemoveProductButton();
+    })
+    return cardRemoveItemButton;
+  }
+
+  public getRowCardContent(): HTMLElement {
+    const container = appDrawer.getSimpleElement('article', 'col overflow-hidden');
+    const card = appDrawer.getSimpleElement('div', 'card h-100');
+
+    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0 card-image-wrapper_custom_cart');
+
+    const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100 col-4');
+    const cardImageWrapper = appDrawer.getSimpleElement('div', 'w-100 h-100');
+    cardImageWrapper.append(this.cardElement.image);
+    stretchedLinkWrap.append(cardImageWrapper, this.getLinkToProducts(this.card.id));
+
+    const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-8');
+    const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
+
+    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
+    this.cardElement.stock.className = 'mb-2';
+
+    this.cardElement.title.innerHTML = `${this.index} - ${this.card.title}`;
+    this.cardElement.price = appDrawer.getSimpleElement('span', `badge bg-light text-dark ${CURRENCY_ICON_CLASS_NAME} position-absolute top-0 end-0 fs-5 m-1`, `${this.card.price}`);
+    this.cardElement.title.append(this.cardElement.price);
+
+    this.cardElement.description = appDrawer.getSimpleElement('div', 'mb-2 two-line-text');
+    this.cardElement.description.innerHTML = this.card.description;
+
+    const productFilters = appDrawer.getProductDetailsBreadcrumb('Store', this.card.category, this.card.brand);
+
+    const buttonsGroup = appDrawer.getSimpleElement('ul', 'list-group list-group-horizontal position-absolute bottom-0 end-0 fs-5 m-1');
+    const productQtyWrap =  appDrawer.getSimpleElement('li', 'list-group-item flex-fill',);
+    const productQty = appDrawer.getSimpleElement('span', '', `${this.card.qty || PRODUCT_CART_QTY_DEFAULT}`);
+    productQtyWrap.append(productQty);
+    const addBtnWrap = appDrawer.getSimpleElement('li', 'list-group-item text-primary flex-fill');
+    addBtnWrap.append(this.action.addQtyButton);
+    const removeBtnWrap = appDrawer.getSimpleElement('li', 'list-group-item text-danger flex-fill');
+    removeBtnWrap.append(this.action.removeQtyButton);
+    buttonsGroup.append(removeBtnWrap, productQtyWrap, addBtnWrap)
+  
+    cardBody.append(this.cardElement.title, productFilters, this.cardElement.description, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
+    cardBodyWrapper.append(cardBody);
+
+    cardContentWrapper.append(stretchedLinkWrap, cardBodyWrapper);
+    card.append(cardContentWrapper, buttonsGroup);
+    container.append(card);
+
+    return container;
+  }
+
+  listenAddProductButton() {
+    if (!this.card.qty) {
+      this.card.qty = 1;
+    }
+    const stockQty = this.card.stock;
+    if (this.card.qty < stockQty) {
+      this.card.qty++;
+      appStorage.setCartProductQty(this.card, this.card.qty);
+    }
+    cartPage.updatePage();
+  }
+
+  listenRemoveProductButton() {
+    if (!this.card.qty || this.card.qty === 1) {
+      this.card.qty = 1;
+      appStorage.removeProductFromCart(this.card);
+    }
+    if (this.card.qty >= 2) {
+      this.card.qty--;
+      appStorage.setCartProductQty(this.card, this.card.qty);
+    }
+    cartPage.updatePage();
+  }
+
+  listenDeleteProductButton() {
+    appStorage.removeProductFromCart(this.card);
+    cartPage.updatePage();
+  }
+
+  private getLinkToProducts(id: number) {
+    const path: string[] = RouterPath.Products.split('/');
+    path[path.length - 1] = `${id}`;
+    const link = appDrawer.getNavigoLink('', path.join('/'));
+    link.classList.add('stretched-link');
+    link.addEventListener('click', () => {
+      productPage.setProductIndex(id);
+    })
+    return link;
+  }
 }
 
 export class MainPageProductCard {
@@ -135,7 +272,7 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
+      price: appDrawer.getProductPrice(this.card.price, 'mb-2 fs-4 tw-bold'),
       discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
       category: appDrawer.getSimpleElement('p', '', this.card.category),
       brand: appDrawer.getSimpleElement('p', '', this.card.brand),
@@ -154,6 +291,7 @@ export class MainPageProductCard {
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
   
+    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
     cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
 
     if (this.isProductInCart(this.card)) {
@@ -178,19 +316,25 @@ export class MainPageProductCard {
     const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
 
-    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0');
+    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0 card-image-wrapper_custom');
 
     const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100 col-4');
-    stretchedLinkWrap.append(this.cardElement.image, this.cardElement.linkToProductPage);
+    const cardImageWrapper = appDrawer.getSimpleElement('div', 'w-100 h-100');
+    cardImageWrapper.append(this.cardElement.image)
+    stretchedLinkWrap.append(cardImageWrapper, this.cardElement.linkToProductPage);
 
     const cardBodyWrapper = appDrawer.getSimpleElement('div', 'col-8');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
 
     this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
+    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
 
     this.cardElement.stock.className = 'mb-2';
+
+    const productFilters = appDrawer.getProductDetailsBreadcrumbWithoutLink(this.card.category, this.card.brand);
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    cardBody.append(this.cardElement.price, this.cardElement.title, productFilters, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    //cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
     cardBodyWrapper.append(cardBody);
 
     if (this.isProductInCart(this.card)) {
@@ -199,6 +343,7 @@ export class MainPageProductCard {
       this.cardElement.removeFromCartButton.classList.add('d-none');
     }
 
+    cardContentWrapper.append(stretchedLinkWrap, cardBodyWrapper);
     cardContentWrapper.append(stretchedLinkWrap, cardBodyWrapper);
     card.append(cardContentWrapper);
     container.append(card)
@@ -212,6 +357,7 @@ export class MainPageProductCard {
     if (this.cardsAppearance === CardsAppearance.Row) {
       button = appDrawer.getSimpleButton('', 'btn btn-link bi bi-bag-plus fs-3 position-absolute top-0 end-0 add-product-button');
     } else {
+      button = appDrawer.getSimpleButton(' Add to cart', 'btn btn-light bi bi-bag-plus text-primary text-uppercase rounded-0 bg-transparent add-product-button');
       button = appDrawer.getSimpleButton(' Add to cart', 'btn btn-light bi bi-bag-plus text-primary text-uppercase rounded-0 bg-transparent add-product-button');
     }
 
@@ -242,6 +388,7 @@ export class MainPageProductCard {
     if (this.cardsAppearance === CardsAppearance.Row) {
       button = appDrawer.getSimpleButton('', 'btn btn-link bi bi bi-bag-x-fill text-danger fs-3 position-absolute top-0 end-0 remove-product-button');
     } else {
+      button = appDrawer.getSimpleButton(' Remove from cart', 'btn btn-light bi bi bi-bag-x-fill text-danger text-uppercase rounded-0 bg-transparent remove-product-button');
       button = appDrawer.getSimpleButton(' Remove from cart', 'btn btn-light bi bi bi-bag-x-fill text-danger text-uppercase rounded-0 bg-transparent remove-product-button');
     }
     

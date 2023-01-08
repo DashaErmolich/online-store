@@ -38,9 +38,6 @@ export class MainPage extends AbstractPage {
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
-    content.innerHTML = ` 
-    <h1>Online Shop</h1>
-    `;
     if (!localStorage.getItem('main-current-state')) localStorage.setItem('main-current-state', 'Table'); // table state at first page loading
     
     const mainWrapper = document.createElement('div');
@@ -65,10 +62,12 @@ export class MainPage extends AbstractPage {
     this.cards.generateCards(cardsWrapper);
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
-    sortingWrapper.classList.add('sorting-wrapper');
-    const nameSort = document.createElement('span');
-    nameSort.innerText = 'sort by name';
-    nameSort.classList.add('sort-item');
+    this.drawPageStateButtons(sortingWrapper);
+    sortingWrapper.className = 'sorting-wrapper btn-group btn-group-sm mb-3 w-100';
+    sortingWrapper.setAttribute('role', 'group')
+    const nameSort = document.createElement('button');
+    nameSort.innerText = 'Sort by Name';
+    nameSort.className = 'sort-item btn btn-outline-secondary';
     nameSort.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.Title);
       this.cards.removeCards();
@@ -76,18 +75,18 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
       //appRouter.updateUrlParams(UrlParamKey.)
     })
-    const priceSort = document.createElement('span');
-    priceSort.innerText = 'sort by price';
-    priceSort.classList.add('sort-item');
+    const priceSort = document.createElement('button');
+    priceSort.innerText = 'Sort by Price';
+    priceSort.className = 'sort-item btn btn-outline-secondary';
     priceSort.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.Price);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.Price;
       this.cards.generateCards(cardsWrapper);
     })
-    const ratingSort = document.createElement('span');
-    ratingSort.innerText = 'sort by rating';
-    ratingSort.classList.add('sort-item');
+    const ratingSort = document.createElement('button');
+    ratingSort.innerText = 'Sort by Rating';
+    ratingSort.className = 'sort-item btn btn-outline-secondary';
     ratingSort.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.Rating);
       this.cards.removeCards();
@@ -98,7 +97,6 @@ export class MainPage extends AbstractPage {
     sortingWrapper.append(priceSort);
     sortingWrapper.append(ratingSort);
 
-    this.drawPageStateButtons(contentWrapper);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
@@ -130,7 +128,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getResetFiltersButton(): HTMLElement {
-    const resetBtn = appDrawer.getSimpleButton('Reset all filters', 'btn btn-danger');
+    const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-secondary');
 
     resetBtn.addEventListener('click', () => {
       this.cards.removeCards();
@@ -142,7 +140,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy filters', 'btn btn-success');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-secondary');
 
     copyBtn.addEventListener('click', async () => {
       try {
