@@ -48,13 +48,6 @@
   flex-direction: column;
   padding-bottom: 10px;
 }
-.cards-wrapper {
-  // display: flex;
-  // flex-wrap: wrap;
-  // flex-grow: 2;
-  // flex-shrink: 2;
-  // gap: 1%;
-}
 
 .cards-wrapper-table {
   flex-direction: row;
@@ -100,4 +93,14 @@
 }
 .filtered {
   display: none !important; 
+}
+.form-check-counter {
+  float: right;
+  padding-right: 4%;
+  @media screen and (max-width: 992px) {
+    float: none;
+  }
+}
+.form-check-label {
+  max-width: 84%;
 }

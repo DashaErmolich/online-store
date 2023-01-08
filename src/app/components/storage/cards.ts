@@ -6,6 +6,7 @@ import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 
 export class Cards {
   cards: SimpleCard[];
+  cardsOnScreen: SimpleCard[];
   categories: string[];
   brands: string[];
   cardsAppearance: string;
@@ -13,6 +14,7 @@ export class Cards {
 
   constructor (cards: SimpleCard[], cardsAppearance: string) { 
     this.cards = cards;
+    this.cardsOnScreen = [];
     this.categories = [];
     this.brands = [];
     this.cardsAppearance = cardsAppearance;
@@ -154,6 +156,7 @@ export class Cards {
     content.forEach(element => {
       const formUnit = document.createElement('div');
       formUnit.classList.add('form-check');
+      formUnit.classList.add('form-check-filters');
 
       const formInput = document.createElement('input');
       formInput.classList.add('form-check-input');
@@ -216,8 +219,22 @@ export class Cards {
       formLabel.innerText = element;
       formUnit.append(formLabel);
 
+      const formCounters = document.createElement('p'); //  counters initialisation here
+      formCounters.classList.add('form-check-counter');
+      let currTypeCards = 0;
+      this.cardsOnScreen.forEach(el => {
+        if (el[type] === element) currTypeCards += 1;
+      });
+      let maxTypeCards = 0;
+      this.cards.forEach(el => {
+        if (el[type] === element) maxTypeCards += 1;
+      });
+      formCounters.innerText = `(${currTypeCards}/${maxTypeCards})`;
+      formUnit.append(formCounters);
+
       filterUnit.append(formUnit);
     });
+    console.log('filters gen');
     wrapper.append(filterUnit);
   }
 
@@ -231,6 +248,18 @@ export class Cards {
   generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
     if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
+
+    // REALLY, REALLY BAD counters logic. Must make optimized one
+    const filtersOnScreen = document.querySelectorAll('.form-check-filters') as NodeListOf<HTMLDivElement>;
+    console.log('reach counters fill');
+    filtersOnScreen.forEach(filt => {
+      let currCards = 0;
+      this.cardsOnScreen.forEach(card => {
+        if (card.category === (filt.firstElementChild?.nextElementSibling as HTMLLabelElement).innerText ||
+        card.brand === (filt.firstElementChild?.nextElementSibling as HTMLLabelElement).innerText) currCards += 1;
+      });
+      (filt.lastElementChild as HTMLParagraphElement).innerText = '(' + currCards + (filt.lastElementChild as HTMLParagraphElement).innerText.slice(2);
+    });
   }
 
   createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
@@ -262,10 +291,13 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
+    if (!card.classList.contains('filtered') && !card.classList.contains('d-none')) this.cardsOnScreen.push(elem);
+
     wrapper.append(card);
   }
   
   removeCards():void {
+    this.cardsOnScreen = [];
     const cardsWrap = document.querySelector('.cards-wrapper');
     while(cardsWrap?.firstChild) {
       cardsWrap.removeChild(cardsWrap.firstChild);
