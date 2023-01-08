@@ -1,6 +1,6 @@
 import { AbstractPage } from '../../abstracts/abstracts';
 import { CardsAppearance, UrlParamKey, CardsSortBy } from '../../enums/enums';
-import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR, PRICE_RANGE_DEFAULT, STOCK_RANGE_DEFAULT } from '../../constants/constants';
+import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 import { appRouter, cartPage } from '../router/router';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 import { SimpleCard, NumberRange } from '../../models/interfaces';
@@ -23,8 +23,8 @@ export class MyMain extends AbstractPage {
       productsBrands: this.getProductsFilterValues(UrlParamKey.Brand),
       searchProperty: this.getProductsSearchValue(UrlParamKey.Search),
       sortProperty: this.getProductsSortValue(UrlParamKey.Sort),
-      priceRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Price, PRICE_RANGE_DEFAULT),
-      stockRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock, STOCK_RANGE_DEFAULT),
+      priceRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Price),
+      stockRange: this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock),
     };
   }
 
@@ -139,8 +139,8 @@ export class MyMain extends AbstractPage {
   private updateCardsToRender(): void {
     this.mainPageSettings.productsCategories = this.getProductsFilterValues(UrlParamKey.Category);
     this.mainPageSettings.productsBrands = this.getProductsFilterValues(UrlParamKey.Brand);
-    this.mainPageSettings.priceRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Price, PRICE_RANGE_DEFAULT),
-    this.mainPageSettings.stockRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock, STOCK_RANGE_DEFAULT),
+    this.mainPageSettings.priceRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Price),
+    this.mainPageSettings.stockRange = this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock),
     this.mainPageSettings.productsCards = [];
 
     let brandsResult: SimpleCard[] = []
@@ -168,20 +168,32 @@ export class MyMain extends AbstractPage {
       categoryResult = brandsResult;
     }
 
+    if (this.mainPageSettings.priceRange === null) {
+      this.mainPageSettings.priceRange = this.getCurrentNumberRange(UrlParamKey.Price, categoryResult);
+    }
+
     if (this.mainPageSettings.priceRange) {
       categoryResult.forEach((card: SimpleCard) => {
-        if (this.mainPageSettings.priceRange.min <= card.price && this.mainPageSettings.priceRange.max >= card.price) {
-          priceResult.push(card);
+        if (this.mainPageSettings.priceRange) {
+          if (this.mainPageSettings.priceRange.min <= card.price && this.mainPageSettings.priceRange.max >= card.price) {
+            priceResult.push(card);
+          }
         }
       })
     } else {
       priceResult = categoryResult;
     }
 
+    if (this.mainPageSettings.stockRange === null) {
+      this.mainPageSettings.stockRange = this.getCurrentNumberRange(UrlParamKey.Stock, priceResult)
+    }
+
     if (this.mainPageSettings.stockRange) {
       priceResult.forEach((card: SimpleCard) => {
-        if (this.mainPageSettings.stockRange.min <= card.stock && this.mainPageSettings.stockRange.max >= card.stock) {
-          stockResult.push(card);
+        if (this.mainPageSettings.stockRange) {
+          if (this.mainPageSettings.stockRange.min <= card.stock && this.mainPageSettings.stockRange.max >= card.stock) {
+            stockResult.push(card);
+          }
         }
       })
     } else {
@@ -285,11 +297,21 @@ export class MyMain extends AbstractPage {
     rangeStockWrap.className = 'position-relative w-100 my-3 list-group';
     rangeStockWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', 'Stock range'))
 
-    const priceRange = this.getRange(rangePriceWrap, 'price-range', UrlParamKey.Price, this.mainPageSettings.priceRange);
-    const stockRange = this.getRange(rangeStockWrap, 'stock-range', UrlParamKey.Stock, this.mainPageSettings.stockRange);
-  
+    let priceRange;
 
-    parentElement.append(priceRange, stockRange);
+    if (this.mainPageSettings.priceRange) {
+      priceRange = this.getRange(rangePriceWrap, 'price-range', UrlParamKey.Price, this.mainPageSettings.priceRange);
+    }
+
+    let stockRange;
+
+    if (this.mainPageSettings.stockRange) {
+      stockRange = this.getRange(rangeStockWrap, 'stock-range', UrlParamKey.Stock, this.mainPageSettings.stockRange);
+    }
+
+    if (priceRange && stockRange) {
+      parentElement.append(priceRange, stockRange);
+    }
   }
 
   private getRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, activeRange: NumberRange): HTMLElement {
@@ -306,6 +328,7 @@ export class MyMain extends AbstractPage {
       lower: currentMin,
       upperBound: rightSide,
       upper: currentMax,
+      minSpan: 1,
     });
     const values = appDrawer.getSimpleElement('div', 'list-group-item')
 
@@ -347,7 +370,7 @@ export class MyMain extends AbstractPage {
     }
   }
 
-  private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock): NumberRange {
-    return productsFilter.getFilterRange(key, this.mainPageSettings.productsCards);
+  private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock, arr: SimpleCard[]): NumberRange {
+    return productsFilter.getFilterRange(key, arr);
   }
 }
