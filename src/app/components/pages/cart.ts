@@ -8,6 +8,9 @@ import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
 import { CartSummaryPromoCode } from '../promo-code/promo-code';
 import { PurchaseModal } from '../purchase-modal/purchase-modal';
+import cartBgImage from 'appIcons/bag.svg';
+import { RouterPath } from '../../enums/enums';
+
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -46,33 +49,54 @@ export class CartPage extends AbstractPage {
     const pagesQty: number = this.getPagesQty();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      this.handlePagination(pageContent, pagesQty);
+      if (pagesQty > 0) {
+        this.handlePagination(pageContent, pagesQty);
+      } else {
+        pageContent.innerHTML = '';
+        pageContent.append(this.getEmptyCart());
+      }
+
     }
   }
 
   public getPageContent(): HTMLElement {
     this.updateCartSettings();
+    this.updatePage();
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
+    const rowContainer = document.createElement('div');
 
     if (pagesQty > 0) {
       this.handlePagination(pageContentContainer, pagesQty);
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-      const rowContainer = document.createElement('div');
       rowContainer.className = 'row';
       rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
-      this.setCartIcon(this.getCartTotalProductQty())
+      this.setCartIcon(this.getCartTotalProductQty());
       pageContentContainer.append(rowContainer);
+      return pageContentContainer;
     } else {
-      const message = document.createElement('span');
-      message.innerText = 'Cart is empty now';
-      pageContentContainer.append(message);
+      return this.getEmptyCart();
     }
 
-    return pageContentContainer;
+
+  }
+
+  public getEmptyCart(): HTMLElement {
+    const wrapper = appDrawer.getSimpleElement('div', 'd-flex flex-column align-items-center');
+    const message = appDrawer.getSimpleElement('h2', 'mb-4')
+    message.innerText = 'Cart is empty now';
+    const goHomeButton = appDrawer.getGoHomeButton();
+    goHomeButton.addEventListener('click', () => {
+      appRouter.navigate(RouterPath.Main);
+    })
+    goHomeButton.innerHTML = 'Continue shopping';
+    const img = appDrawer.getProductCardImage('img', cartBgImage, 'w-50 mb-4');
+    wrapper.append(img, message, goHomeButton);
+    appRouter.updatePageLinks();
+    return wrapper;
   }
 
   private validateActivePage(pagesQty: number) {
@@ -231,6 +255,7 @@ export class CartPage extends AbstractPage {
       parentElement.prepend(cardDeckContainer);
     }
   }
+    
 
   private handleActiveButton() {
     const pageButtons = document.querySelectorAll('.page-link');
@@ -456,7 +481,7 @@ export class CartPage extends AbstractPage {
   private setCartIcon(cartProductsQty: number): void {
     const cartIconQty = document.getElementById('cart-total-items');
     if (cartIconQty) {
-      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '';
+      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '0';
     }
   }
 
