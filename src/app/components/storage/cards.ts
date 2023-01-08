@@ -1,6 +1,6 @@
 import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
 import { appRouter } from '../router/router';
-import { UrlParamKey, CardsAppearance, CardsSortBy } from '../../enums/enums';
+import { UrlParamKey, CardsAppearance, CardsSortBy, CardsSortPossibleFields } from '../../enums/enums';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 
@@ -43,14 +43,30 @@ export class Cards {
       appRouter.updateUrlParams(key, value);
     }
 
-    if (value === CardsSortBy.Price) {
-      return CardsSortBy.Price;
-    } else if (value === CardsSortBy.Rating) {
-      return CardsSortBy.Rating;
-    } else if (value === CardsSortBy.Title) {
-      return CardsSortBy.Title;
-    } else {
-      return CardsSortBy.Initial;
+    // if (value === CardsSortBy.Price) {
+    //   return CardsSortBy.Price;
+    // } else if (value === CardsSortBy.Rating) {
+    //   return CardsSortBy.Rating;
+    // } else if (value === CardsSortBy.Title) {
+    //   return CardsSortBy.Title;
+    // } else {
+    //   return CardsSortBy.Initial;
+    // }
+    switch (value) {
+      case CardsSortBy.PriceAsc:
+        return CardsSortBy.PriceAsc;
+      case CardsSortBy.PriceDesc:
+        return CardsSortBy.PriceDesc;
+      case CardsSortBy.TitleAsc:
+        return CardsSortBy.TitleAsc;
+      case CardsSortBy.TitleDesc:
+        return CardsSortBy.TitleDesc; 
+      case CardsSortBy.RatingAsc:
+        return CardsSortBy.RatingAsc;
+      case CardsSortBy.RatingDesc:
+        return CardsSortBy.RatingDesc;
+      default:
+        return CardsSortBy.Initial;
     }
 
   }
@@ -87,6 +103,7 @@ export class Cards {
   public updateProductsFilters(): void {
     this.properties.filterProperty.brandProperties = this.getProductsFilterValues(UrlParamKey.Brand);
     this.properties.filterProperty.categoryProperties = this.getProductsFilterValues(UrlParamKey.Category);
+    this.removeCards();
   }
 
   generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
@@ -242,9 +259,24 @@ export class Cards {
   }
 
   sortBy(cards: SimpleCard[], property: CardsSortBy) {
-    cards.sort(byField(property));
-    function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title | CardsSortBy.Initial) {
-      return (a: SimpleCard, b:SimpleCard) => a[field] >= b[field] ? 1 : -1;
+    console.log('taken string');
+    console.log(property);
+    const sortingField = property === CardsSortBy.Initial ? 'id' : property.split('-')[0];
+    const sortingMethod = property === CardsSortBy.Initial ? 'asc' : property.split('-')[1];
+    console.log('field:');
+    console.log(sortingField);
+    console.log('method');
+    console.log(sortingMethod);
+    if (sortingField === CardsSortPossibleFields.Initial ||
+    sortingField === CardsSortPossibleFields.Price ||
+    sortingField === CardsSortPossibleFields.Rating ||
+    sortingField === CardsSortPossibleFields.Title) {
+      cards.sort(byField(sortingField, sortingMethod))
+    }
+    
+    function byField (field: CardsSortPossibleFields, method: string) {
+      if (method === 'asc') return (a: SimpleCard, b:SimpleCard) => a[field] >= b[field] ? 1 : -1;
+      if (method === 'desc') return (a: SimpleCard, b:SimpleCard) => a[field] <= b[field] ? 1 : -1;
     }
   }
 
@@ -274,7 +306,12 @@ export class Cards {
       card = productCard.getTableCardContent();
     }
 
-    if (searchProp && !productCard.card.title.toLowerCase().startsWith(searchProp.toLowerCase())) {
+    if (searchProp && !productCard.card.title.toLowerCase().startsWith(searchProp.toLowerCase()) 
+    && !productCard.card.brand.toLowerCase().startsWith(searchProp.toLowerCase()) 
+    && !productCard.card.category.toLowerCase().startsWith(searchProp.toLowerCase())
+    && !productCard.card.price.toString().startsWith(searchProp.toLowerCase())
+    && !productCard.card.stock.toString().startsWith(searchProp.toLowerCase())
+    && !productCard.card.rating.toString().startsWith(searchProp.toLowerCase())) {
       card.classList.add('d-none');
     } else {
       card.classList.remove('d-none');

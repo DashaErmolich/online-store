@@ -2,6 +2,15 @@
   display: flex;
   gap: 10px;
 }
+.inline-b {
+  display: inline-block;
+}
+.sorting-inner-wrapper {
+  cursor: pointer;
+}
+.sorting-inner-wrapper:hover {
+  color: #000000;
+}
 .sort-item {
   padding-left: 20px;
   font-size: 1.15rem;
@@ -11,6 +20,12 @@
 }
 .sort-item:hover {
   color: #000000;
+}
+.sort-item-title {
+  padding-left: 10px;
+  font-size: 1.15rem;
+  color: #000000;
+  font-weight: 400;
 }
 .filters__window {
   background-color: rgb(255, 248, 235);

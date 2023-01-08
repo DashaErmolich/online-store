@@ -22,8 +22,21 @@ export enum CardsAppearance {
 }
 
 export enum CardsSortBy {
-  Title = 'title',
-  Price = 'price',
-  Rating = 'rating',
+  TitleAsc = 'title-asc',
+  TitleDesc = 'title-desc',
+  PriceAsc = 'price-asc',
+  PriceDesc = 'price-desc',
+  RatingAsc = 'rating-asc',
+  RatingDesc = 'rating-desc',
   Initial = 'id',
+}
+export enum CardsSortPossibleMethods {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+export enum CardsSortPossibleFields {
+  Title = 'title',
+  Initial = 'id',
+  Rating = 'rating',
+  Price = 'price'
 }
