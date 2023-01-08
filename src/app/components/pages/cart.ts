@@ -3,11 +3,14 @@ import { appStorage } from '../storage/app-storage';
 import { appRouter } from '../router/router';
 import { CartPageSettings, SimpleCard, PaginationCardIdxRange, PromoCode } from '../../models/interfaces';
 import { PAGINATION_LIMIT_MAX, PAGINATION_LIMIT_MIN, PAGINATION_LIMIT_STEP, PRODUCT_CART_QTY_DEFAULT, paginationLimitSearchParam, activePageSearchParam } from '../../constants/constants';
-import { ProductCard } from '../cart-product-cards/cart-product-card';
+import { NewCard } from '../cart-product-cards/cart-product-card';
 import { promoCodes } from '../../../assets/promo-codes/promo-codes';
 import { appDrawer } from '../drawer/drawer';
 import { CartSummaryPromoCode } from '../promo-code/promo-code';
 import { PurchaseModal } from '../purchase-modal/purchase-modal';
+import cartBgImage from 'appIcons/bag.svg';
+import { RouterPath } from '../../enums/enums';
+
 
 export class CartPage extends AbstractPage {
   cartSettings: CartPageSettings;
@@ -46,33 +49,55 @@ export class CartPage extends AbstractPage {
     const pagesQty: number = this.getPagesQty();
     const pageContent = document.getElementById('page-content');
     if (pageContent) {
-      this.handlePagination(pageContent, pagesQty);
+      if (pagesQty > 0) {
+        this.handlePagination(pageContent, pagesQty);
+      } else {
+        pageContent.innerHTML = '';
+        pageContent.append(this.getEmptyCart());
+      }
+
     }
   }
 
   public getPageContent(): HTMLElement {
     this.updateCartSettings();
+    this.updatePage();
+    document.getElementById('header-search-input')?.classList.toggle('d-none');
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
+    const rowContainer = document.createElement('div');
 
     if (pagesQty > 0) {
       this.handlePagination(pageContentContainer, pagesQty);
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-      const rowContainer = document.createElement('div');
       rowContainer.className = 'row';
       rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
-      this.setCartIcon(this.getCartTotalProductQty())
+      this.setCartIcon(this.getCartTotalProductQty());
       pageContentContainer.append(rowContainer);
+      return pageContentContainer;
     } else {
-      const message = document.createElement('span');
-      message.innerText = 'Cart is empty now';
-      pageContentContainer.append(message);
+      return this.getEmptyCart();
     }
 
-    return pageContentContainer;
+
+  }
+
+  public getEmptyCart(): HTMLElement {
+    const wrapper = appDrawer.getSimpleElement('div', 'd-flex flex-column align-items-center');
+    const message = appDrawer.getSimpleElement('h2', 'mb-4')
+    message.innerText = 'Cart is empty now';
+    const goHomeButton = appDrawer.getGoHomeButton();
+    goHomeButton.addEventListener('click', () => {
+      appRouter.navigate(RouterPath.Main);
+    })
+    goHomeButton.innerHTML = 'Continue shopping';
+    const img = appDrawer.getProductCardImage('img', cartBgImage, 'w-50 mb-4');
+    wrapper.append(img, message, goHomeButton);
+    appRouter.updatePageLinks();
+    return wrapper;
   }
 
   private validateActivePage(pagesQty: number) {
@@ -203,29 +228,35 @@ export class CartPage extends AbstractPage {
     document.querySelector('.card-columns')?.remove();
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
-    const cartProducts: SimpleCard[] = appStorage.getCartProducts()
-    const cardDeck = document.createElement('section');
-    cardDeck.className = 'card-columns col-9';
+    const cartProducts: SimpleCard[] = appStorage.getCartProducts();
+    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns mb-3');
+    const cardDeck = appDrawer.getSimpleElement('div', 'row row-cols-1 g-4');
+    cardDeckContainer.append(cardDeck)
+    //const cardDeck = document.createElement('section');
+    //cardDeck.className = 'card-columns col-md-8';
 
     let i = paginationActivePageRange.start;
 
     while (i < paginationActivePageRange.end) {
       const card: SimpleCard = cartProducts[i];
       if (card) {
-        const cartProduct = new ProductCard(card, i + 1);
-        cardDeck.append(cartProduct.getCartCardContent())
+        //const cartProduct = new ProductCard(card, i + 1);
+        //cardDeck.append(cartProduct.getCartCardContent())
+        const cartProduct = new NewCard(card, i + 1);
+        cardDeck.append(cartProduct.getRowCardContent());
 
       }
       i++;
     }
     if (paginationContainer && !parentElement) {
-      paginationContainer.prepend(cardDeck);
+      paginationContainer.prepend(cardDeckContainer);
     }
     
     if (parentElement) {
-      parentElement.prepend(cardDeck);
+      parentElement.prepend(cardDeckContainer);
     }
   }
+    
 
   private handleActiveButton() {
     const pageButtons = document.querySelectorAll('.page-link');
@@ -254,20 +285,28 @@ export class CartPage extends AbstractPage {
   private drawCartSummary(parentElement: HTMLElement): void {
     const cartSummaryContainer: HTMLElement = appDrawer.getCartSummaryContainer();
     const cartSummaryTitle: HTMLElement = appDrawer.getCartSummaryTitle();
+    const cartSummaryListGroup: HTMLElement = appDrawer.getSimpleElement('ul', 'list-group mb-3');
     const cartSummaryTotalProductsQty: HTMLElement = appDrawer.getCartSummaryProductsQty(this.getCartTotalProductQty());
     const cartSummaryTotalSum: HTMLElement = appDrawer.getCartSummaryTotalSum(this.getCartTotalSum());
-    cartSummaryContainer.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+    cartSummaryListGroup.append(cartSummaryTitle, cartSummaryTotalProductsQty, cartSummaryTotalSum);
+    cartSummaryContainer.append(cartSummaryListGroup);
 
     let appliedPromoCodesContainer: HTMLElement;
 
     if (this.isAppliedPromoCodes()) {
       cartSummaryTotalSum.classList.add('text-decoration-line-through');
       const cartSummaryTotalSumDiscount: HTMLElement = appDrawer.getCartSummaryTotalSumDiscount(this.getCartTotalSumDiscount());
+      
       appliedPromoCodesContainer = appDrawer.getAppliedPromoCodesContainer();
+      const appliedPromoCodesTitle: HTMLElement = appDrawer.getSimpleElement('li', 'list-group-item d-flex justify-content-center lh-sm align-items-start list-group-item-secondary text-center', 'Applied promo codes');
+      appliedPromoCodesContainer.append(appliedPromoCodesTitle);
       this.drawAppliedPromoCodes(appliedPromoCodesContainer);
-      cartSummaryContainer.append(cartSummaryTotalSumDiscount, appliedPromoCodesContainer);
+      
+      cartSummaryListGroup.append(cartSummaryTotalSumDiscount);
+      cartSummaryContainer.append(appliedPromoCodesContainer);
     }
 
+    const cartSummaryPromoCodeInputForm = appDrawer.getSimpleElement('form', '');
     const cartSummaryPromoCodeInput: HTMLInputElement = appDrawer.getCartSummaryPromoCodeInput();
     cartSummaryPromoCodeInput.addEventListener('input', () => {
       this.listenPromoCodeInput(cartSummaryContainer, cartSummaryPurchaseButton, cartSummaryPromoCodeInput.value);
@@ -276,7 +315,8 @@ export class CartPage extends AbstractPage {
     const cartSummaryPromoCodeNames: string = this.getAllPromoCodesNames();
     const cartSummaryPromoCodeInfo: HTMLElement = appDrawer.getCartSummaryPromoCodeInfo(cartSummaryPromoCodeNames);
 
-    const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
+    const cartSummaryPurchaseButton = appDrawer.getSimpleButton('Place order', 'btn btn-primary text-uppercase w-100 mb-3 mt-3');
+    //const cartSummaryPurchaseButton = appDrawer.getOrderCheckoutButton();
 
     cartSummaryPurchaseButton.setAttribute('data-bs-toggle', 'modal');
     cartSummaryPurchaseButton.setAttribute('data-bs-target', '#purchase-modal');
@@ -285,7 +325,8 @@ export class CartPage extends AbstractPage {
     const modal = new PurchaseModal();
     cartSummaryContainer.append(modal.getPurchaseModalContent());
     
-    cartSummaryContainer.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo, cartSummaryPurchaseButton);
+    cartSummaryPromoCodeInputForm.append(cartSummaryPromoCodeInput, cartSummaryPromoCodeInfo);
+    cartSummaryContainer.append(cartSummaryPromoCodeInputForm, cartSummaryPurchaseButton);
     this.setHeaderCartTotalSum();
     parentElement.append(cartSummaryContainer);
   }
@@ -324,9 +365,9 @@ export class CartPage extends AbstractPage {
     const appliedPromoCodes = appStorage.getCartPromoCodes();
 
     if (appliedPromoCodes.length) {
-
       let i = 0;
-      while(i < appliedPromoCodes.length) {
+
+      while (i < appliedPromoCodes.length) {
         const promoCode = new CartSummaryPromoCode(appliedPromoCodes[i]);
         parentElement.append(promoCode.getAppliedPromoCodeContent());
         i++
@@ -441,7 +482,7 @@ export class CartPage extends AbstractPage {
   private setCartIcon(cartProductsQty: number): void {
     const cartIconQty = document.getElementById('cart-total-items');
     if (cartIconQty) {
-      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '';
+      cartIconQty.innerHTML = cartProductsQty ? `${cartProductsQty}` : '0';
     }
   }
 

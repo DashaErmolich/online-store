@@ -38,6 +38,8 @@ export class Cards {
     const possibleValues: string[] = Object.values(CardsSortBy);
     const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
     console.log(value);
+    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
+    console.log(value);
     
     if (!possibleValues.includes(value)) {
       appRouter.updateUrlParams(key, value);
@@ -159,7 +161,13 @@ export class Cards {
     const formLabel = document.createElement('label');
     formLabel.classList.add('form-check-label');
     formLabel.setAttribute('for', `appearanceRadio${appearance}`);
-    formLabel.innerText = appearance;
+    formLabel.id = `radio-label-${appearance}`;
+    //formLabel.innerText = appearance;
+    // if (formLabel.id === 'radio-label-table') {
+    //   formLabel.className = 'bi bi-grid fs-3'
+    // } else {
+    //   formLabel.className = 'bi bi-view-list fs-3'
+    // }
     formWrapper.append(formLabel);
     wrapper.append(formWrapper);
   }
@@ -242,9 +250,18 @@ export class Cards {
       const formCounters = document.createElement('p'); //  counters initialisation here
       formCounters.classList.add('form-check-counter');
       formCounters.innerText = `(${countPages(this.cardsOnScreen)}/${countPages(this.cards)})`;
+      formCounters.innerText = `(${countPages(this.cardsOnScreen)}/${countPages(this.cards)})`;
       formUnit.append(formCounters);
 
       filterUnit.append(formUnit);
+
+      function countPages (arr: SimpleCard[]):number {
+        let count = 0;
+        arr.forEach(el => {
+          if (el[type] === element) count += 1;
+        });
+        return count;
+      }
 
       function countPages (arr: SimpleCard[]):number {
         let count = 0;
@@ -281,6 +298,7 @@ export class Cards {
   }
 
   generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
+    properties.sortProperty ? this.sortBy(this.cards, properties.sortProperty) : this.sortBy(this.cards, CardsSortBy.Initial)
     properties.sortProperty ? this.sortBy(this.cards, properties.sortProperty) : this.sortBy(this.cards, CardsSortBy.Initial)
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
 

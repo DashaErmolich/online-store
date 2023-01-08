@@ -3,16 +3,17 @@ import { FormInput, SimpleCard } from '../../models/interfaces';
 import { RouterPath } from '../../enums/enums';
 class Drawer {
   getCartSummaryTitle(): HTMLElement {
-    const cartSummaryTitle = document.createElement('h5');
-    cartSummaryTitle.innerHTML = 'Order Summary';
-    return cartSummaryTitle;
+    const cartSummaryTitleContainer = this.getSimpleElement('li', 'list-group-item d-flex justify-content-center lh-sm align-items-center list-group-item-secondary');
+    const cartSummaryTitle = this.getSimpleElement('h5', 'mb-0', 'Order Summary');
+    cartSummaryTitleContainer.append(cartSummaryTitle)
+    return cartSummaryTitleContainer;
   }
 
   getCartSummaryProductsQty(productsQty: number): HTMLElement {
-    const totalProductsQtyContainer = document.createElement('div');
-    const totalProductsQtyTitle = document.createElement('span');
-    totalProductsQtyTitle.innerHTML = 'Products: ';
-    const totalProductsQty = document.createElement('span');
+    const totalProductsQtyContainer = this.getSimpleElement('li', 'list-group-item d-flex justify-content-between lh-sm align-items-start');
+    const totalProductsQtyTitle = document.createElement('h6');
+    totalProductsQtyTitle.innerHTML = 'Products';
+    const totalProductsQty = this.getSimpleElement('span', 'badge bg-primary rounded-pill');
     totalProductsQty.id = 'cart-summary-products-qty';
     totalProductsQty.innerHTML = `${productsQty}`;
     totalProductsQtyContainer.append(totalProductsQtyTitle, totalProductsQty);
@@ -26,26 +27,24 @@ class Drawer {
   }
 
   getCartSummaryTotalSum(cartTotalSum: number): HTMLElement {
-    const cartSummaryTotalSumContainer = document.createElement('div');
-    const cartSummaryTotalSumTitle = document.createElement('span');
-    cartSummaryTotalSumTitle.innerHTML = 'Total: ';
-    const cartSummaryTotalSum = document.createElement('span');
+    const cartSummaryTotalSumContainer = this.getSimpleElement('li', 'list-group-item d-flex justify-content-between lh-sm align-items-start');
+    const cartSummaryTotalSumTitle = document.createElement('h6');
+    cartSummaryTotalSumTitle.innerHTML = 'Total';
+    const cartSummaryTotalSum = this.getSimpleElement('span', `${CURRENCY_ICON_CLASS_NAME} text-nowrap`);
     cartSummaryTotalSum.id = 'cart-summary-products-sum';
     cartSummaryTotalSum.innerHTML = `${cartTotalSum}`;
-    const icon = this.getCurrencyIcon();
-    cartSummaryTotalSumContainer.append(cartSummaryTotalSumTitle, cartSummaryTotalSum, icon);
+    cartSummaryTotalSumContainer.append(cartSummaryTotalSumTitle, cartSummaryTotalSum);
     return cartSummaryTotalSumContainer;
   }
 
   getCartSummaryTotalSumDiscount(cartTotalSumDiscount: number): HTMLElement {
-    const cartSummaryTotalSumDiscountContainer = document.createElement('div');
+    const cartSummaryTotalSumDiscountContainer = this.getSimpleElement('li', 'list-group-item d-flex justify-content-between lh-sm align-items-start fw-bold');
     const cartSummaryTotalSumDiscountTitle = document.createElement('span');
-    cartSummaryTotalSumDiscountTitle.innerHTML = 'Total with discount: ';
-    const cartSummaryTotalSumDiscount = document.createElement('span');
+    cartSummaryTotalSumDiscountTitle.innerHTML = 'Total with discount';
+    const cartSummaryTotalSumDiscount = this.getSimpleElement('span', `${CURRENCY_ICON_CLASS_NAME} text-nowrap`);
     cartSummaryTotalSumDiscount.id = 'cart-summary-products-sum-discount';
     cartSummaryTotalSumDiscount.innerHTML = `${cartTotalSumDiscount}`;
-    const icon = this.getCurrencyIcon();
-    cartSummaryTotalSumDiscountContainer.append(cartSummaryTotalSumDiscountTitle, cartSummaryTotalSumDiscount, icon);
+    cartSummaryTotalSumDiscountContainer.append(cartSummaryTotalSumDiscountTitle, cartSummaryTotalSumDiscount);
     return cartSummaryTotalSumDiscountContainer;
   } 
 
@@ -61,14 +60,14 @@ class Drawer {
   getCartSummaryPromoCodeInfo(promoCodesNames: string): HTMLElement {
     const cartSummaryPromoCodeInfo = document.createElement('div');
     cartSummaryPromoCodeInfo.innerHTML = `Promo for test: ${promoCodesNames}`;
-    cartSummaryPromoCodeInfo.className = 'text-muted';
+    cartSummaryPromoCodeInfo.className = 'text-muted fs-smaller lh-lg';
     return cartSummaryPromoCodeInfo;
   }
 
   getCartSummaryContainer(): HTMLElement {
     const cartSummaryContainer = document.createElement('aside');
     cartSummaryContainer.id = 'cart-summary-container';
-    cartSummaryContainer.className = 'col-3';
+    cartSummaryContainer.className = 'col';
     return cartSummaryContainer;
   }
 
@@ -80,20 +79,21 @@ class Drawer {
   }
 
   getPromoCodeTitle(promoCodeDescription: string, promoCodeDiscount: number): HTMLElement {
-    const promoCodeName = document.createElement('h6');
-    promoCodeName.innerHTML = `${promoCodeDescription} - ${promoCodeDiscount}%`;
-    return promoCodeName;
+    const promoCode = this.getSimpleElement('div', '');
+    const promoCodeName = this.getSimpleElement('h6', '', `${promoCodeDescription}`);
+    const promoCodeDiscountValue = this.getSimpleElement('span', 'text-muted', `-${promoCodeDiscount}%`);
+    promoCode.append(promoCodeName, promoCodeDiscountValue);
+    return promoCode;
   }
 
   getMatchPromoCodeCartSummaryContainer(): HTMLElement {
-    const possiblePromoCodeContainer = document.createElement('div');
+    const possiblePromoCodeContainer = this.getSimpleElement('div', 'list-group mb-3');
     possiblePromoCodeContainer.id = 'match-promo-code';
     return possiblePromoCodeContainer;
   }
 
   getAppliedPromoCodesContainer(): HTMLElement {
-    const appliedPromoCodesContainer = document.createElement('div');
-    appliedPromoCodesContainer.innerHTML = 'Applied promo codes:'
+    const appliedPromoCodesContainer = this.getSimpleElement('ul', 'list-group mb-3');
     appliedPromoCodesContainer.id = 'applied-promo-codes';
     return appliedPromoCodesContainer;
   }
@@ -456,6 +456,29 @@ class Drawer {
         item.innerHTML = breadcrumbs[i];
       }
 
+      list.append(item);
+      i++;
+    }
+    container.append(list)
+    return container;
+  }
+
+  getProductDetailsBreadcrumbWithoutLink(...filters: string[]): HTMLElement {
+    const container = this.getSimpleElement('nav', 'text-capitalize');
+    container.setAttribute('aria-label', 'breadcrumb');
+    container.setAttribute('style', `--bs-breadcrumb-divider: '•'`)
+    const list = this.getSimpleElement('ul', 'breadcrumb');
+
+    let i = 0;
+    const breadcrumbs = filters;
+
+    while (i < breadcrumbs.length) {
+      const item = this.getSimpleElement('li', 'breadcrumb-item active');
+      item.setAttribute('aria-current', 'page');
+      const link = this.getNavigoLink(breadcrumbs[i], RouterPath.Main);
+      link.classList.add('link-secondary');
+      item.append(link);
+      item.innerHTML = breadcrumbs[i];
       list.append(item);
       i++;
     }

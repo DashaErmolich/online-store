@@ -38,9 +38,6 @@ export class MainPage extends AbstractPage {
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
-    content.innerHTML = ` 
-    <h1>Online Shop</h1>
-    `;
     if (!localStorage.getItem('main-current-state')) localStorage.setItem('main-current-state', 'Table'); // table state at first page loading
     
     const mainWrapper = document.createElement('div');
@@ -170,7 +167,6 @@ export class MainPage extends AbstractPage {
     sortingWrapper.append(ratingSortWrapper);
     sortingWrapper.append(ratingSortWrapperDesc);
 
-    this.drawPageStateButtons(contentWrapper);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
@@ -202,7 +198,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getResetFiltersButton(): HTMLElement {
-    const resetBtn = appDrawer.getSimpleButton('Reset all filters', 'btn btn-danger');
+    const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-secondary');
 
     resetBtn.addEventListener('click', () => {
       this.cards.removeCards();
@@ -214,7 +210,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy filters', 'btn btn-success');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-secondary');
 
     copyBtn.addEventListener('click', async () => {
       try {
