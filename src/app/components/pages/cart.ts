@@ -62,6 +62,7 @@ export class CartPage extends AbstractPage {
   public getPageContent(): HTMLElement {
     this.updateCartSettings();
     this.updatePage();
+    document.getElementById('header-search-input')?.classList.toggle('d-none');
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
     const rowContainer = document.createElement('div');
@@ -228,7 +229,7 @@ export class CartPage extends AbstractPage {
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
     const cartProducts: SimpleCard[] = appStorage.getCartProducts();
-    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns');
+    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns mb-3');
     const cardDeck = appDrawer.getSimpleElement('div', 'row row-cols-1 g-4');
     cardDeckContainer.append(cardDeck)
     //const cardDeck = document.createElement('section');

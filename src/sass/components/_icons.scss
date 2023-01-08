@@ -13,8 +13,8 @@
 .filters__window-checkers {
   .form-check {
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: $size-cards-appearance;
+    height: $size-cards-appearance;
   }
 } 
 
@@ -26,8 +26,8 @@
   bottom: 0;
   right: 0;
   opacity: 0;
-  width: 40px;
-  height: 40px;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
   z-index: 2;
   margin: 0;
   cursor: pointer;
@@ -39,8 +39,8 @@
   left: 0;
   bottom: 0;
   right: 0;
-  width: 40px;
-  height: 40px;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
   z-index: 1;
   background: url(appIcons/grid.svg) no-repeat;
   background-size: contain;
@@ -53,8 +53,8 @@
   left: 0;
   bottom: 0;
   right: 0;
-  width: 40px;
-  height: 40px;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
   z-index: 1;
   background: url(appIcons/view-list.svg) no-repeat;
   background-size: contain;
@@ -66,8 +66,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 40px;
-  height: 40px;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
   z-index: 1;
   opacity: 1;
 }

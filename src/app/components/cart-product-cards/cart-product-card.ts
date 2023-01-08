@@ -272,7 +272,7 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'display-6 mb-2'),
+      price: appDrawer.getProductPrice(this.card.price, 'mb-2 fs-4 tw-bold'),
       discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
       category: appDrawer.getSimpleElement('p', '', this.card.category),
       brand: appDrawer.getSimpleElement('p', '', this.card.brand),
@@ -330,9 +330,11 @@ export class MainPageProductCard {
     this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
 
     this.cardElement.stock.className = 'mb-2';
+
+    const productFilters = appDrawer.getProductDetailsBreadcrumbWithoutLink(this.card.category, this.card.brand);
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    cardBody.append(this.cardElement.price, this.cardElement.title, productFilters, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    //cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
     cardBodyWrapper.append(cardBody);
 
     if (this.isProductInCart(this.card)) {

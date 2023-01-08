@@ -60,7 +60,7 @@ class Drawer {
   getCartSummaryPromoCodeInfo(promoCodesNames: string): HTMLElement {
     const cartSummaryPromoCodeInfo = document.createElement('div');
     cartSummaryPromoCodeInfo.innerHTML = `Promo for test: ${promoCodesNames}`;
-    cartSummaryPromoCodeInfo.className = 'text-muted fw-light fs-smaller lh-lg';
+    cartSummaryPromoCodeInfo.className = 'text-muted fs-smaller lh-lg';
     return cartSummaryPromoCodeInfo;
   }
 
@@ -456,6 +456,29 @@ class Drawer {
         item.innerHTML = breadcrumbs[i];
       }
 
+      list.append(item);
+      i++;
+    }
+    container.append(list)
+    return container;
+  }
+
+  getProductDetailsBreadcrumbWithoutLink(...filters: string[]): HTMLElement {
+    const container = this.getSimpleElement('nav', 'text-capitalize');
+    container.setAttribute('aria-label', 'breadcrumb');
+    container.setAttribute('style', `--bs-breadcrumb-divider: '•'`)
+    const list = this.getSimpleElement('ul', 'breadcrumb');
+
+    let i = 0;
+    const breadcrumbs = filters;
+
+    while (i < breadcrumbs.length) {
+      const item = this.getSimpleElement('li', 'breadcrumb-item active');
+      item.setAttribute('aria-current', 'page');
+      const link = this.getNavigoLink(breadcrumbs[i], RouterPath.Main);
+      link.classList.add('link-secondary');
+      item.append(link);
+      item.innerHTML = breadcrumbs[i];
       list.append(item);
       i++;
     }
