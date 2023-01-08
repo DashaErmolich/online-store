@@ -139,7 +139,13 @@ export class Cards {
     const formLabel = document.createElement('label');
     formLabel.classList.add('form-check-label');
     formLabel.setAttribute('for', `appearanceRadio${appearance}`);
-    formLabel.innerText = appearance;
+    formLabel.id = `radio-label-${appearance}`;
+    //formLabel.innerText = appearance;
+    // if (formLabel.id === 'radio-label-table') {
+    //   formLabel.className = 'bi bi-grid fs-3'
+    // } else {
+    //   formLabel.className = 'bi bi-view-list fs-3'
+    // }
     formWrapper.append(formLabel);
     wrapper.append(formWrapper);
   }
