@@ -3,9 +3,10 @@ import { RouterPath, UrlParamKey } from '../../enums/enums';
 import { Routes, NumberRange } from '../../models/interfaces';
 import { NotFoundPage } from '../pages/404';
 import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
-import { MainPage } from '../pages/main';
+//import { MainPage } from '../pages/main';
 import { CartPage } from '../pages/cart';
 import { ProductPage } from '../pages/product-details';
+import { MyMain } from '../pages/my-main-page';
 
 class MyNavigo extends Navigo {
 
@@ -184,7 +185,8 @@ class MyNavigo extends Navigo {
 }
 
 export const appRouter = new MyNavigo('/');
-export const mainPage = new MainPage();
+//export const mainPage = new MainPage();
+export const mainPage = new MyMain();
 export const cartPage = new CartPage();
 export const productPage = new ProductPage();
 

@@ -1,17 +1,17 @@
-import { possibleCards } from '../../../assets/samples/possible-cards';
 import { SimpleCard, NumberRange } from '../../models/interfaces';
 import { UrlParamKey } from '../../enums/enums';
+import { possibleCards2 } from '../../../assets/samples/possible-cards2';
 
 export const productsFilter = {
 
   getFilterValuesList(filter: UrlParamKey.Brand | UrlParamKey.Category): string[] {
-    const valuesList = possibleCards.products.map((product: SimpleCard) => product[filter]);
+    const valuesList = possibleCards2.products.map((product: SimpleCard) => product[filter]);
     const uniqueValues = new Set(valuesList);
     return Array.from(uniqueValues).sort();
   },
 
   getFilterRange(filter: UrlParamKey.Price | UrlParamKey.Stock): NumberRange {
-    const values: number[] = possibleCards.products.map((product: SimpleCard) => product[filter]);
+    const values: number[] = possibleCards2.products.map((product: SimpleCard) => product[filter]);
     return {
       min: Math.min(...values),
       max: Math.max(...values),
@@ -35,4 +35,9 @@ export const productsFilter = {
       return false;
     }
   },
+
+  getIndex(cards: SimpleCard[], itemId: number): number {
+    const index = cards.findIndex((card => itemId === card.id));
+    return index;
+  }
 }
