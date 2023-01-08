@@ -36,7 +36,8 @@ export class Cards {
 
   private getProductsSortValue(key: UrlParamKey): CardsSortBy {
     const possibleValues: string[] = Object.values(CardsSortBy);
-    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Title);
+    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
+    console.log(value);
     
     if (!possibleValues.includes(value)) {
       appRouter.updateUrlParams(key, value);
@@ -46,8 +47,10 @@ export class Cards {
       return CardsSortBy.Price;
     } else if (value === CardsSortBy.Rating) {
       return CardsSortBy.Rating;
-    } else {
+    } else if (value === CardsSortBy.Title) {
       return CardsSortBy.Title;
+    } else {
+      return CardsSortBy.Initial;
     }
 
   }
@@ -221,18 +224,18 @@ export class Cards {
 
       const formCounters = document.createElement('p'); //  counters initialisation here
       formCounters.classList.add('form-check-counter');
-      let currTypeCards = 0;
-      this.cardsOnScreen.forEach(el => {
-        if (el[type] === element) currTypeCards += 1;
-      });
-      let maxTypeCards = 0;
-      this.cards.forEach(el => {
-        if (el[type] === element) maxTypeCards += 1;
-      });
-      formCounters.innerText = `(${currTypeCards}/${maxTypeCards})`;
+      formCounters.innerText = `(${countPages(this.cardsOnScreen)}/${countPages(this.cards)})`;
       formUnit.append(formCounters);
 
       filterUnit.append(formUnit);
+
+      function countPages (arr: SimpleCard[]):number {
+        let count = 0;
+        arr.forEach(el => {
+          if (el[type] === element) count += 1;
+        });
+        return count;
+      }
     });
     console.log('filters gen');
     wrapper.append(filterUnit);
@@ -240,18 +243,17 @@ export class Cards {
 
   sortBy(cards: SimpleCard[], property: CardsSortBy) {
     cards.sort(byField(property));
-    function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title) {
-      return (a: SimpleCard, b:SimpleCard) => a[field] > b[field] ? 1 : -1;
+    function byField (field: CardsSortBy.Price | CardsSortBy.Rating | CardsSortBy.Title | CardsSortBy.Initial) {
+      return (a: SimpleCard, b:SimpleCard) => a[field] >= b[field] ? 1 : -1;
     }
   }
 
   generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
-    if (properties.sortProperty) this.sortBy(this.cards, properties.sortProperty);
+    properties.sortProperty ? this.sortBy(this.cards, properties.sortProperty) : this.sortBy(this.cards, CardsSortBy.Initial)
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
 
     // REALLY, REALLY BAD counters logic. Must make optimized one
     const filtersOnScreen = document.querySelectorAll('.form-check-filters') as NodeListOf<HTMLDivElement>;
-    console.log('reach counters fill');
     filtersOnScreen.forEach(filt => {
       let currCards = 0;
       this.cardsOnScreen.forEach(card => {
@@ -272,7 +274,7 @@ export class Cards {
       card = productCard.getTableCardContent();
     }
 
-    if (searchProp && !productCard.card.title.startsWith(searchProp)) {
+    if (searchProp && !productCard.card.title.toLowerCase().startsWith(searchProp.toLowerCase())) {
       card.classList.add('d-none');
     } else {
       card.classList.remove('d-none');
@@ -280,11 +282,9 @@ export class Cards {
 
     //filter
     if (filterProp.categoryProperties.length > 0) {
-      console.log('filterProp.categoryProperties');
       filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
     if (filterProp.brandProperties.length > 0) {
-      console.log('filterProp.brandProperties');
       filterProp.brandProperties.includes(elem.brand) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
     if (filterProp.brandProperties.length > 0 && filterProp.categoryProperties.length > 0) {

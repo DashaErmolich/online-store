@@ -25,4 +25,5 @@ export enum CardsSortBy {
   Title = 'title',
   Price = 'price',
   Rating = 'rating',
+  Initial = 'id',
 }

@@ -109,11 +109,17 @@ export class MainPage extends AbstractPage {
     appRouter.updatePageLinks();
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
-    searchBtn?.addEventListener('click', () => {
-      this.cards.removeCards();
-      this.cards.properties.searchProperty = searchField.value;
-      this.cards.generateCards(cardsWrapper);
+    searchField.addEventListener('input', () => {
+      doSearch(this.cards);
     })
+    searchBtn?.addEventListener('click', () => {
+      doSearch(this.cards);
+    })
+    function doSearch(obj: Cards) {
+      obj.removeCards();
+      obj.properties.searchProperty = searchField.value;
+      obj.generateCards(cardsWrapper);
+    }
     return content;
   }
 
@@ -127,6 +133,7 @@ export class MainPage extends AbstractPage {
     const resetBtn = appDrawer.getSimpleButton('Reset all filters', 'btn btn-danger');
 
     resetBtn.addEventListener('click', () => {
+      this.cards.removeCards();
       appRouter.navigate(RouterPath.Main);
       appRouter.handlePageContent(this.getPageContent());
     })
