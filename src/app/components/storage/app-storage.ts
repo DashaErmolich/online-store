@@ -1,5 +1,5 @@
 import { SimpleCard, PromoCode } from '../../models/interfaces';
-import { possibleCards2 } from '../../../assets/samples/possible-cards2';
+import { possibleCards } from '../../../assets/samples/possible-cards';
 
 export const appStorage = {
   getCartProducts(): SimpleCard[] {
@@ -83,7 +83,7 @@ export const appStorage = {
     if (data) {
       cartProducts = JSON.parse(data);
     } else {
-      cartProducts = possibleCards2.products;
+      cartProducts = possibleCards.products;
     }
     return cartProducts;
   },
@@ -92,7 +92,7 @@ export const appStorage = {
     if (data.length) {
       localStorage.setItem('main-products', JSON.stringify(data));
     } else {
-      localStorage.setItem('main-products', JSON.stringify(possibleCards2.products));
+      localStorage.setItem('main-products', JSON.stringify(possibleCards.products));
     }
 
   },

@@ -6,8 +6,8 @@ import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 import { SimpleCard, NumberRange } from '../../models/interfaces';
 import { appDrawer } from '../drawer/drawer';
 import { productsFilter } from '../filter/filter';
-import { possibleCards2 } from '../../../assets/samples/possible-cards2';
 import { DualHRangeBar } from 'dual-range-bar'
+import { possibleCards } from '../../../assets/samples/possible-cards';
 
 export class MyMain extends AbstractPage {
 
@@ -41,18 +41,18 @@ export class MyMain extends AbstractPage {
 
   private getProductsSortValue(key: UrlParamKey): CardsSortBy {
     const possibleValues: string[] = Object.values(CardsSortBy);
-    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Title);
+    const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.TitleAsc);
     
     if (!possibleValues.includes(value)) {
       appRouter.updateUrlParams(key, value);
     }
 
-    if (value === CardsSortBy.Price) {
-      return CardsSortBy.Price;
-    } else if (value === CardsSortBy.Rating) {
-      return CardsSortBy.Rating;
+    if (value === CardsSortBy.PriceAsc) {
+      return CardsSortBy.PriceAsc;
+    } else if (value === CardsSortBy.RatingAsc) {
+      return CardsSortBy.RatingAsc;
     } else {
-      return CardsSortBy.Title;
+      return CardsSortBy.Initial;
     }
 
   }
@@ -133,7 +133,7 @@ export class MyMain extends AbstractPage {
   }
 
   private getCards(): SimpleCard[] {
-    return possibleCards2.products;
+    return possibleCards.products;
   }
 
   private updateCardsToRender(): void {
@@ -149,13 +149,13 @@ export class MyMain extends AbstractPage {
     let stockResult: SimpleCard[] = [];
 
     if (this.mainPageSettings.productsBrands.length) {
-      possibleCards2.products.forEach((card: SimpleCard) => {
+      possibleCards.products.forEach((card: SimpleCard) => {
         if (this.mainPageSettings.productsBrands.includes(card.brand)) {
           brandsResult.push(card);
         }
       })
     } else {
-      brandsResult = possibleCards2.products;
+      brandsResult = possibleCards.products;
     }
 
     if (this.mainPageSettings.productsCategories.length) {
@@ -262,7 +262,7 @@ export class MyMain extends AbstractPage {
   }
 
   private getTotalQty(item: string): number {
-    return possibleCards2.products.filter((a: SimpleCard) => Object.values(a).includes(item)).length;
+    return possibleCards.products.filter((a: SimpleCard) => Object.values(a).includes(item)).length;
   }
 
   private getActiveQty(item: string): number {
