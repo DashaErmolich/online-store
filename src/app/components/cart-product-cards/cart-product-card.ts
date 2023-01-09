@@ -272,10 +272,10 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'mb-2 fs-4 tw-bold'),
-      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
-      category: appDrawer.getSimpleElement('p', '', this.card.category),
-      brand: appDrawer.getSimpleElement('p', '', this.card.brand),
+      price: appDrawer.getProductPrice(this.card.price, 'mb-1 fs-4 tw-bold'),
+      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-1'),
+      category: appDrawer.getSimpleElement('p', 'mb-1 text-capitalize', this.card.category),
+      brand: appDrawer.getSimpleElement('p', 'mb-1', this.card.brand),
       description: appDrawer.getProductDetailsDescription(this.card.description),
       rating: appDrawer.getProductRating(this.card.rating, 'text-muted'),
       stock: appDrawer.getProductStockQty(this.card.stock, 'text-muted'),
@@ -291,8 +291,9 @@ export class MainPageProductCard {
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
+    this.cardElement.description = appDrawer.getSimpleElement('div', 'mb-1 two-line-text text-muted');
+    this.cardElement.description.innerHTML = this.card.description;
+    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.brand, this.cardElement.category, this.cardElement.discount, this.cardElement.description);
 
     if (this.isProductInCart(this.card)) {
       this.cardElement.addToCartButton.classList.add('d-none')
