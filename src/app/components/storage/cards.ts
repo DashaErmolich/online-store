@@ -1,5 +1,5 @@
 import { SimpleCard, MainFilterProperties, FilterProperties, ProductFilterRange, NumberRange } from '../../models/interfaces';
-import { appRouter } from '../router/router';
+import { appRouter, mainPage } from '../router/router';
 import { UrlParamKey, CardsAppearance, CardsSortBy, CardsSortPossibleFields } from '../../enums/enums';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
@@ -28,7 +28,7 @@ export class Cards {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
       if (!this.brands.includes(element.brand)) this.brands.push(element.brand);
     });
-    //TODO: fill filter properties from query string
+
     this.properties = {
       sortProperty: this.getProductsSortValue(UrlParamKey.Sort),
       searchProperty: this.getProductsSearchValue(UrlParamKey.Search),
@@ -114,6 +114,7 @@ export class Cards {
   generateFiltersField(wrapper: HTMLElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.classList.add('filters__window');
+    appearanceWrapper.classList.add('mb-3');
     const appearanceTitle = document.createElement('h3');
     appearanceTitle.innerText = 'Appearance:';
     appearanceWrapper.append(appearanceTitle);
@@ -127,7 +128,15 @@ export class Cards {
 
     appearanceWrapper.append(appearanceCheckers);
 
+    const productsOnPageQtyWrapper = appDrawer.getSimpleElement('div', 'mb-3');
+    const productsOnPageQtyLabel = appDrawer.getSimpleElement('span', 'fs-5', 'Found: ');
+    const productsOnPageQty = appDrawer.getSimpleElement('span', 'fs-4');
+    productsOnPageQty.innerHTML = `${this.cardsOnScreen.length}`;
+    productsOnPageQty.id = 'main-products-qty';
+    productsOnPageQtyWrapper.append(productsOnPageQtyLabel, productsOnPageQty);
+
     const filtersWrapper = document.createElement('div');
+    filtersWrapper.id = 'main-products-filters'
     filtersWrapper.classList.add('filters__filters');
     const filtersTitle = document.createElement('h3');
     filtersTitle.innerText = 'Filters:';
@@ -135,10 +144,11 @@ export class Cards {
 
     this.generateFiltersAndCategories(filtersWrapper, 'category', this.categories);
     this.generateFiltersAndCategories(filtersWrapper, 'brand', this.brands);
-    this.generateFiltersRange(filtersWrapper, 'price-range', UrlParamKey.Price, this.filterRange.price);
-    this.generateFiltersRange(filtersWrapper, 'stock-range', UrlParamKey.Stock, this.filterRange.stock);
+
+    this.drawFilterRanges(filtersWrapper);
 
     wrapper.append(appearanceWrapper);
+    wrapper.append(productsOnPageQtyWrapper);
     wrapper.append(filtersWrapper);
 
   }
@@ -178,13 +188,15 @@ export class Cards {
   }
   
   generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
+    const filterWrapper = appDrawer.getSimpleElement('div', 'mb-3');
+
     const filterUnit = document.createElement('div');
-    filterUnit.className = `filters__${type} mb-3 overflow-scroll filter-category`;
+    filterUnit.className = `filters__${type} overflow-scroll filter-category`;
 
     const unitTitle = document.createElement('h6');
     unitTitle.classList.add('filters__category-title');
     unitTitle.innerText = type.charAt(0).toUpperCase() + type.slice(1);
-    filterUnit.append(unitTitle);
+    filterWrapper.append(unitTitle);
 
     content.forEach(element => {
       const formUnit = document.createElement('div');
@@ -204,7 +216,6 @@ export class Cards {
 
       formInput.addEventListener('click', () => { // fiters logic here
         const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
-        
         if (formInput.checked) {
 
           console.log (element + ' checked');
@@ -215,12 +226,14 @@ export class Cards {
             this.properties.filterProperty.categoryProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
+            this.drawNewFilterRanges();
           } else {
             appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, true);
 
             this.properties.filterProperty.brandProperties.push(element);
             this.removeCards();
             this.generateCards(cardsW);
+            this.drawNewFilterRanges();
           }
         }
 
@@ -234,12 +247,14 @@ export class Cards {
             this.properties.filterProperty.categoryProperties.splice(this.properties.filterProperty.categoryProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
+            this.drawNewFilterRanges();
           } else {
             appRouter.updateUrlParams(UrlParamKey.Brand, formInput.id, false);
 
             this.properties.filterProperty.brandProperties.splice(this.properties.filterProperty.brandProperties.indexOf(element), 1);
             this.removeCards();
             this.generateCards(cardsW);
+            this.drawNewFilterRanges();
           }
         }
       })
@@ -269,7 +284,8 @@ export class Cards {
       }
     });
     console.log('filters gen');
-    wrapper.append(filterUnit);
+    filterWrapper.append(filterUnit)
+    wrapper.append(filterWrapper);
   }
 
   sortBy(cards: SimpleCard[], property: CardsSortBy) {
@@ -294,10 +310,27 @@ export class Cards {
     }
   }
 
+  private renderCards(parentElement: HTMLElement): void {
+    this.cardsOnScreen.forEach((card: SimpleCard) => {
+      const productCard = new MainPageProductCard(card, this.cardsAppearance);
+      
+      let myCard: HTMLElement;
+  
+      if (this.cardsAppearance === CardsAppearance.Row) {
+        myCard = productCard.getRowCardContent()
+      } else {
+        myCard = productCard.getTableCardContent();
+      }
+      parentElement.append(myCard);
+    })
+  }
+
   generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
     properties.sortProperty ? this.sortBy(this.cards, properties.sortProperty) : this.sortBy(this.cards, CardsSortBy.Initial)
     properties.sortProperty ? this.sortBy(this.cards, properties.sortProperty) : this.sortBy(this.cards, CardsSortBy.Initial)
     this.cards.forEach(e => this.createCard(wrapper, e, properties.searchProperty, properties.filterProperty));
+    this.filterCardsByRanges();
+    this.renderCards(wrapper);
 
     // REALLY, REALLY BAD counters logic. Must make optimized one
     const filtersOnScreen = document.querySelectorAll('.form-check-filters') as NodeListOf<HTMLDivElement>;
@@ -309,7 +342,60 @@ export class Cards {
       });
       (filt.lastElementChild as HTMLParagraphElement).innerText = '(' + currCards + (filt.lastElementChild as HTMLParagraphElement).innerText.slice(2);
     });
+    this.updateProductsQty();
+    this.updateFilerRanges();
   }
+
+  private filterCardsByRanges(): void {
+    const currentCards: SimpleCard[] = this.cardsOnScreen;
+    let priceFilterCards: SimpleCard[] = [];
+    let stockFilterCards: SimpleCard[] = [];
+
+    this.filterRange.price = mainPage.getValidNumberRangeValueFromUrl(UrlParamKey.Price);
+    this.filterRange.stock = mainPage.getValidNumberRangeValueFromUrl(UrlParamKey.Stock);
+    
+    if (this.filterRange.price === null) {
+      this.filterRange.price = productsFilter.getFilterRange(UrlParamKey.Price, currentCards);
+    }
+
+    if (this.filterRange.price) {
+      currentCards.forEach((card: SimpleCard) => {
+        if (this.filterRange.price) {
+          if (this.filterRange.price.min <= card.price && this.filterRange.price.max >= card.price) {
+            priceFilterCards.push(card);
+          }
+        }
+      })
+    } else {
+      priceFilterCards = currentCards;
+    }
+
+    if (this.filterRange.stock === null) {
+      this.filterRange.stock = productsFilter.getFilterRange(UrlParamKey.Stock, priceFilterCards);
+    }
+
+    if (this.filterRange.stock) {
+      priceFilterCards.forEach((card: SimpleCard) => {
+        if (this.filterRange.stock) {
+          if (this.filterRange.stock.min <= card.stock && this.filterRange.stock.max >= card.stock) {
+            stockFilterCards.push(card);
+          }
+        }
+      })
+    } else {
+      stockFilterCards = priceFilterCards;
+    }
+
+    this.cardsOnScreen = stockFilterCards;
+  }
+
+  public updateProductsQty(): void {
+    const productsQty = document.getElementById('main-products-qty');
+    if (productsQty) {
+      productsQty.innerHTML = `${this.cardsOnScreen.length}`;
+    }
+  }
+  
 
   createCard (wrapper: HTMLDivElement, elem: SimpleCard, searchProp: string, filterProp: FilterProperties):void {  
     const productCard = new MainPageProductCard(elem, this.cardsAppearance);
@@ -343,19 +429,17 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
-    if (this.filterRange.price !== null && !card.classList.contains('filtered')) {
-      this.filterRange.price.min <= elem.price && this.filterRange.price.max >= elem.price ? card.classList.remove('filtered') : card.classList.add('filtered');
-    }
+    // if (this.filterRange.price !== null && !card.classList.contains('filtered')) {
+    //   this.filterRange.price.min <= elem.price && this.filterRange.price.max >= elem.price ? card.classList.remove('filtered') : card.classList.add('filtered');
+    // }
 
-    if (this.filterRange.stock !== null && !card.classList.contains('filtered')) {
-      this.filterRange.stock.min <= elem.stock && this.filterRange.stock.max >= elem.stock ? card.classList.remove('filtered') : card.classList.add('filtered');
-    } 
-
-
+    // if (this.filterRange.stock !== null && !card.classList.contains('filtered')) {
+    //   this.filterRange.stock.min <= elem.stock && this.filterRange.stock.max >= elem.stock ? card.classList.remove('filtered') : card.classList.add('filtered');
+    // } 
 
     if (!card.classList.contains('filtered') && !card.classList.contains('d-none')) this.cardsOnScreen.push(elem);
 
-    wrapper.append(card);
+    //wrapper.append(card);
   }
   
   removeCards():void {
@@ -387,21 +471,13 @@ export class Cards {
     }
   }
 
-  private generateFiltersRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, range: NumberRange | null): void {
+  private generateFiltersRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, range: NumberRange): void {
+    document.getElementById(`filters__${id}`)?.remove();
+
     const rangeWrap = document.createElement('ul');
     rangeWrap.className = 'position-relative w-100 my-3 list-group';
+    rangeWrap.id = `filters__${id}`
     rangeWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', id))
-
-    if (range === null) {
-      range = this.getCurrentNumberRange(filter, this.cardsOnScreen);
-      this.setFilterRangeValue(filter, range);
-      // if (filter === UrlParamKey.Price) {
-      //   this.filterRange.price = range;
-      // }
-      // if (filter === UrlParamKey.Stock) {
-      //   this.filterRange.stock = range;
-      // }
-    }
 
     const filterRangeElement = this.getRange(rangeWrap, id, filter, range);
 
@@ -450,18 +526,13 @@ export class Cards {
       }
 
       appRouter.updateUrlParams(filter, newRange);
-      this.setFilterRangeValue(filter, newRange);
+      //this.setFilterRangeValue(filter, newRange);
 
       const cardsWrapper = document.querySelector('.cards-wrapper');
       if (cardsWrapper instanceof HTMLDivElement) {
         this.removeCards();
         this.generateCards(cardsWrapper);
       }
-
-      //this.renderNewCards();
-      //this.renderNewFilters();
-      //this.setProductsQty();
-
     })
 
     values.append(minVal, maxVal);
@@ -470,16 +541,36 @@ export class Cards {
     return parentElement;
   }
 
-  private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock, arr: SimpleCard[]): NumberRange {
-    return productsFilter.getFilterRange(key, arr);
+
+  private drawFilterRanges(parentElement: HTMLElement): void {
+    if (this.filterRange.price !== null) {
+      this.generateFiltersRange(parentElement, 'price-range', UrlParamKey.Price, this.filterRange.price);
+    }
+
+    if (this.filterRange.stock !== null) {
+      this.generateFiltersRange(parentElement, 'stock-range', UrlParamKey.Stock, this.filterRange.stock);
+    }
+
   }
 
-  private setFilterRangeValue(filter: UrlParamKey.Price | UrlParamKey.Stock, newRange: NumberRange): void {
-    if (filter === UrlParamKey.Price) {
-      this.filterRange.price = newRange;
+  private drawNewFilterRanges(): void {
+    const filters = document.getElementById('main-products-filters');
+    if (filters) {
+      this.drawFilterRanges(filters);
     }
-    if (filter === UrlParamKey.Stock) {
-      this.filterRange.stock = newRange;
+  }
+
+  private updateFilerRanges(): void {
+    this.filterRange.price = mainPage.getValidNumberRangeValueFromUrl(UrlParamKey.Price);
+    
+    if (this.filterRange.price === null) {
+      this.filterRange.price = productsFilter.getFilterRange(UrlParamKey.Price, this.cardsOnScreen);
+    }
+
+    this.filterRange.stock = mainPage.getValidNumberRangeValueFromUrl(UrlParamKey.Stock);
+    
+    if (this.filterRange.stock === null) {
+      this.filterRange.stock = productsFilter.getFilterRange(UrlParamKey.Stock, this.cardsOnScreen);
     }
   }
 }

@@ -112,9 +112,9 @@ export class MyMain extends AbstractPage {
     contentWrapper.append(mainRangesWrapper)
     contentWrapper.append(cardsWrapper);
 
-    this.drawRanges(mainRangesWrapper);
     this.drawCards(cardsWrapper);
     this.drawFilters(filtersWrapper);
+    this.drawRanges(mainRangesWrapper);
 
     content.append(contentWrapper, filtersWrapper);
     return content;
