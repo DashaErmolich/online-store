@@ -215,6 +215,7 @@ export class MainPage extends AbstractPage {
 
   private getCopyFiltersButton(): HTMLElement {
     const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
 
     copyBtn.addEventListener('click', async () => {
       try {
