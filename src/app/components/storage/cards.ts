@@ -270,7 +270,6 @@ export class Cards {
       const formCounters = document.createElement('p'); //  counters initialisation here
       formCounters.classList.add('form-check-counter');
       formCounters.innerText = `(${countPages(this.cardsOnScreen)}/${countPages(this.cards)})`;
-      formCounters.innerText = `(${countPages(this.cardsOnScreen)}/${countPages(this.cards)})`;
       formUnit.append(formCounters);
 
       filterUnit.append(formUnit);
