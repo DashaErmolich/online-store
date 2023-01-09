@@ -23,6 +23,7 @@ export class ProductPage extends AbstractPage {
   
   getPageContent(): PageComponents['content'] {
     cartPage.updateCartState();
+    document.getElementById('header-search-input')?.classList.add('d-none');
 
     const contentContainer = appDrawer.getSimpleElement('div', 'row');
 

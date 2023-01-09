@@ -177,7 +177,7 @@ export class NewCard extends BasicProductCard {
     const container = appDrawer.getSimpleElement('article', 'col overflow-hidden');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
 
-    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0 card-image-wrapper_custom_cart');
+    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0');
 
     const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100 col-4');
     const cardImageWrapper = appDrawer.getSimpleElement('div', 'w-100 h-100');

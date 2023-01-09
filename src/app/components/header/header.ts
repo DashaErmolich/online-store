@@ -4,7 +4,7 @@ import { RouterPath } from '../../enums/enums';
 const cartPageLink = document.getElementById('cart-page-link');
 if (cartPageLink) {
   cartPageLink.addEventListener('click', () => {
-    document.getElementById('header-search-input')?.classList.toggle('d-none');
+    document.getElementById('header-search-input')?.classList.add('d-none');
     appRouter.navigate(RouterPath.Cart);
     appRouter.handlePageContent(cartPage.getPageContent());
   })
@@ -13,7 +13,7 @@ if (cartPageLink) {
 const mainPageLink = document.getElementById('main-page-link');
 if (mainPageLink) {
   mainPageLink.addEventListener('click', () => {
-    document.getElementById('header-search-input')?.classList.toggle('d-none');
+    document.getElementById('header-search-input')?.classList.remove('d-none');
     appRouter.navigate(RouterPath.Main);
     appRouter.handlePageContent(mainPage.getPageContent());
   })

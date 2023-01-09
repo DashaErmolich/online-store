@@ -62,7 +62,7 @@ export class CartPage extends AbstractPage {
   public getPageContent(): HTMLElement {
     this.updateCartSettings();
     this.updatePage();
-    document.getElementById('header-search-input')?.classList.toggle('d-none');
+    document.getElementById('header-search-input')?.classList.add('d-none');
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
     const rowContainer = document.createElement('div');
@@ -71,7 +71,7 @@ export class CartPage extends AbstractPage {
       this.handlePagination(pageContentContainer, pagesQty);
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-      rowContainer.className = 'row';
+      rowContainer.className = 'row flex-sm-wrap-reverse';
       rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
