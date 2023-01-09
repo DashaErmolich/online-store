@@ -62,7 +62,7 @@ export class CartPage extends AbstractPage {
   public getPageContent(): HTMLElement {
     this.updateCartSettings();
     this.updatePage();
-    document.getElementById('header-search-input')?.classList.toggle('d-none');
+    document.getElementById('header-search-input')?.classList.add('d-none');
     const pageContentContainer = document.createElement('div');
     const pagesQty: number = this.getPagesQty();
     const rowContainer = document.createElement('div');
