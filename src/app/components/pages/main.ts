@@ -189,6 +189,7 @@ export class MainPage extends AbstractPage {
       doSearch(this.cards);
     })
     function doSearch(obj: Cards) {
+      appRouter.updateUrlParams(UrlParamKey.Search, searchField.value);
       obj.removeCards();
       obj.properties.searchProperty = searchField.value;
       obj.generateCards(cardsWrapper);

@@ -20,7 +20,7 @@ class MyNavigo extends Navigo {
   public updateUrlParams(key: UrlParamKey, value: string | NumberRange, isChecked?: boolean): void {
     const params = this.getUrlParams();
 
-    if (key === UrlParamKey.Page || key === UrlParamKey.Limit || key === UrlParamKey.Appearance || key === UrlParamKey.Sort) {
+    if (key === UrlParamKey.Page || key === UrlParamKey.Limit || key === UrlParamKey.Appearance || key === UrlParamKey.Sort || key === UrlParamKey.Search) {
       if (typeof(value) === 'string') {
         this.updateSingleChoiceUrlParams(params, key, value);
       }
