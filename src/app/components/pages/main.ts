@@ -93,7 +93,7 @@ export class MainPage extends AbstractPage {
     this.cards.generateCards(cardsWrapper);
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
-    sortingWrapper.className = 'btn-group w-100 mb-3';
+    sortingWrapper.className = 'btn-group w-100 mb-3 d-flex flex-wrap';
     sortingWrapper.setAttribute('role', 'group')
 
     const nameSortWrapper = appDrawer.getSortButton('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
