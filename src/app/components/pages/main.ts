@@ -50,11 +50,13 @@ export class MainPage extends AbstractPage {
     const contentWrapper = document.createElement('section');
     contentWrapper.className = 'content-wrapper col-lg-9 order-2';
 
+    const filtersCollapseBtnWrapper = appDrawer.getSimpleElement('div', 'col');
     const filtersCollapseBtn = appDrawer.getSimpleElement('button', 'btn btn-outline-secondary mb-3', 'Show filters');
     filtersCollapseBtn.id = 'filters-collapse-button';
     filtersCollapseBtn.setAttribute('data-bs-toggle', 'collapse');
     filtersCollapseBtn.setAttribute('data-bs-target', '#filters-collapse');
     filtersCollapseBtn.setAttribute('aria-expanded', 'false');
+    filtersCollapseBtnWrapper.append(filtersCollapseBtn)
 
 
     filtersCollapseBtn.addEventListener('click', () => {

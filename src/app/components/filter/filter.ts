@@ -11,11 +11,17 @@ export const productsFilter = {
   },
 
   getFilterRange(filter: UrlParamKey.Price | UrlParamKey.Stock, array: SimpleCard[] = possibleCards.products): NumberRange {
-    const values: number[] = array.map((product: SimpleCard) => product[filter]);
+    let values: number[] = array.map((product: SimpleCard) => product[filter]);
+
+    if (!values.length) {
+      values = possibleCards.products.map((product: SimpleCard) => product[filter]);
+    }
+
     return {
       min: Math.min(...values),
       max: Math.max(...values),
     }
+
   },
 
   isValidFilterValue(filter: UrlParamKey.Brand | UrlParamKey.Category, value: string): boolean {

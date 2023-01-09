@@ -6,6 +6,7 @@ import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 import { appDrawer } from '../drawer/drawer';
 import { productsFilter } from '../filter/filter';
 import { DualHRangeBar } from 'dual-range-bar';
+import mainBgImage from 'appIcons/confused-travolta.svg';
 
 export class Cards {
   cards: SimpleCard[];
@@ -307,18 +308,33 @@ export class Cards {
   }
 
   private renderCards(parentElement: HTMLElement): void {
-    this.cardsOnScreen.forEach((card: SimpleCard) => {
-      const productCard = new MainPageProductCard(card, this.cardsAppearance);
-      
-      let myCard: HTMLElement;
-  
-      if (this.cardsAppearance === CardsAppearance.Row) {
-        myCard = productCard.getRowCardContent()
-      } else {
-        myCard = productCard.getTableCardContent();
-      }
-      parentElement.append(myCard);
-    })
+    if (this.cardsOnScreen.length) {
+      this.cardsOnScreen.forEach((card: SimpleCard) => {
+        const productCard = new MainPageProductCard(card, this.cardsAppearance);
+        
+        let myCard: HTMLElement;
+    
+        if (this.cardsAppearance === CardsAppearance.Row) {
+          myCard = productCard.getRowCardContent()
+        } else {
+          myCard = productCard.getTableCardContent();
+        }
+        parentElement.append(myCard);
+      })
+    } else {
+      const message = this.getNoProductCards();
+      parentElement.append(message);
+    }
+
+  }
+
+  public getNoProductCards(): HTMLElement {
+    const wrapper = appDrawer.getSimpleElement('div', 'd-flex flex-column align-items-center m-auto mt-5 w-100');
+    const message = appDrawer.getSimpleElement('h2', 'mb-4')
+    message.innerText = 'Nothing was found.';
+    const img = appDrawer.getProductCardImage('img', mainBgImage, 'w-25 mb-4');
+    wrapper.append(img, message);
+    return wrapper;
   }
 
   generateCards(wrapper: HTMLDivElement, properties = this.properties):void { //union of all sort properties
@@ -506,11 +522,11 @@ export class Cards {
 
     const values = appDrawer.getSimpleElement('div', 'row row-cols-3 text-center')
 
-    const minVal = appDrawer.getSimpleElement('span', 'col p-1', `${dualRange.lower}`);
+    const minVal = appDrawer.getSimpleElement('span', 'col p-1', `${Math.round(dualRange.lower)}`);
     minVal.id = `${filter}-range-min`;
     const separator = appDrawer.getSimpleElement('span', 'col p-1', `${FILTERS_VALUES_SEPARATOR}`);
     separator.classList.add('rotate-90-deg')
-    const maxVal = appDrawer.getSimpleElement('span', 'col p-1', `${dualRange.upper}`);
+    const maxVal = appDrawer.getSimpleElement('span', 'col p-1', `${Math.round(dualRange.upper)}`);
     maxVal.id = `${filter}-range-max`;
 
     dualRange.addEventListener('update', () => {
