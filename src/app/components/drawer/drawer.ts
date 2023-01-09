@@ -66,7 +66,7 @@ class Drawer {
 
   getCartSummaryContainer(): HTMLElement {
     const cartSummaryContainer = document.createElement('aside');
-    cartSummaryContainer.id = 'cart-summary-container';
+    cartSummaryContainer.id = 'cart-summary-container order-1';
     cartSummaryContainer.className = 'col';
     return cartSummaryContainer;
   }

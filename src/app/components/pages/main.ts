@@ -41,6 +41,7 @@ export class MainPage extends AbstractPage {
     this.cards.updateProductsFilters();
     this.mainPageSettings.cardsAppearance =  this.getCardsAppearance();
     this.cards.cardsAppearance =  this.getCardsAppearance();
+    this.setSearchInputValue();
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
@@ -52,8 +53,8 @@ export class MainPage extends AbstractPage {
     const contentWrapper = document.createElement('section');
     contentWrapper.className = 'content-wrapper col-lg-9 order-2';
 
-    const filtersCollapseBtnWrapper = appDrawer.getSimpleElement('div', 'col');
-    const filtersCollapseBtn = appDrawer.getSimpleElement('button', 'btn btn-outline-secondary mb-3', 'Show filters');
+    const filtersCollapseBtnWrapper = appDrawer.getSimpleElement('div', 'container');
+    const filtersCollapseBtn = appDrawer.getSimpleElement('button', 'btn btn-outline-secondary mb-3 w-100', 'Show filters');
     filtersCollapseBtn.id = 'filters-collapse-button';
     filtersCollapseBtn.setAttribute('data-bs-toggle', 'collapse');
     filtersCollapseBtn.setAttribute('data-bs-target', '#filters-collapse');
@@ -157,7 +158,7 @@ export class MainPage extends AbstractPage {
 
     contentWrapper.append(cardsWrapper);
     mainWrapper.append(contentWrapper);
-    mainWrapper.append(filtersCollapseBtn, filtersWrapper);
+    mainWrapper.append(filtersCollapseBtnWrapper, filtersWrapper);
     content.append(mainWrapper);
     //content.append(appDrawer.getSimpleButton(''))
     appRouter.updatePageLinks();
@@ -174,6 +175,7 @@ export class MainPage extends AbstractPage {
       obj.removeCards();
       obj.properties.searchProperty = searchField.value;
       obj.generateCards(cardsWrapper);
+      obj.drawNewFilterRanges();
     }
     this.listenResizeForCollapse();
     return content;
@@ -193,8 +195,17 @@ export class MainPage extends AbstractPage {
     const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-secondary');
 
     resetBtn.addEventListener('click', () => {
+      // eslint-disable-next-line no-debugger
+      // debugger
+      this.clearSearchInput();
       this.cards.removeCards();
       appRouter.navigate(RouterPath.Main);
+      // const cardsWrapper = document.querySelector('.cards-wrapper');
+      // if (cardsWrapper instanceof HTMLDivElement) {
+      //   this.cards.removeCards();
+      //   this.cards.generateCards(cardsWrapper);
+      //   this.cards.drawNewFilterRanges();
+      // }
       appRouter.handlePageContent(this.getPageContent());
     })
 
@@ -256,6 +267,21 @@ export class MainPage extends AbstractPage {
         document.getElementById('filters-collapse-button')?.classList.toggle('d-none');
       }
     })
+  }
+
+  private clearSearchInput(): void {
+    const searchInput = document.getElementById('products-search-input');
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.value = '';
+      this.cards.properties.searchProperty = searchInput.value;
+    }
+  }
+
+  private setSearchInputValue(): void {
+    const searchInput = document.getElementById('products-search-input');
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.value = this.cards.properties.searchProperty;
+    }
   }
 }
 

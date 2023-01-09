@@ -16,8 +16,8 @@
     <header class="header">
         <nav class="navbar navbar-expand-md p-sm-4">
             <div class="container">
-                <ul class="navbar-nav d-flex flex-row justify-content-between w-100 align-items-center">
-                    <li class="nav-item pr-2 pr-md-3">
+                <ul class="navbar-nav row row-cols-3 row-cols-lg-4 w-100">
+                    <li class="nav-item col order-1">
                         <a href="/" class="nav-link" data-navigo id="main-page-link">
                             <h1 class="header-logo m-0 text-dark">
                                 Online Shop
@@ -25,15 +25,15 @@
                         </a>
                         
                     </li>
-                    <li class="nav-item flex-grow-1 px-2 px-md-3" >
+                    <li class="nav-item col-12 order-4 order-lg-2 flex-grow-lg-1" >
                         <div class="input-group" id="header-search-input">
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" id="products-search-input">
                         </div>
                     </li>
-                    <li class="nav-item px-2 px-md-3">
+                    <li class="nav-item col order-3">
                         <span id="cart-total-money" class="bi bi-currency-dollar fs-5"></span>
                     </li>
-                    <li class="nav-item pl-2 pl-md-3">
+                    <li class="nav-item col order-2 order-lg-4">
                         <a href="/cart" class="nav-link" data-navigo id="cart-page-link">
                             <i class="bi bi-bag text-dark fs-2 position-relative"></i>
                             <span id="cart-total-items" class="badge bg-primary rounded-pill"></span>
