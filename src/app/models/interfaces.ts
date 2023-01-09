@@ -117,6 +117,12 @@ export interface MyStringValueUrlSearchParam extends MyBaseUrlSearchParam {
 
 export interface MainPageSettings {
   cardsAppearance: string,
+  filterRange: ProductFilterRange
+}
+
+export interface ProductFilterRange {
+  price: NumberRange | null,
+  stock: NumberRange | null,
 }
 
 export interface ProductPageSettings {

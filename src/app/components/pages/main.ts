@@ -17,8 +17,12 @@ export class MainPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
     this.mainPageSettings = {
       cardsAppearance: this.getCardsAppearance(),
+      filterRange: {
+        price: this.getValidNumberRangeValueFromUrl(UrlParamKey.Price),
+        stock: this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock),
+      }
     }
-    this.cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance);
+    this.cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance, this.mainPageSettings.filterRange);
   }
 
   private getCardsAppearance(): string {
@@ -43,11 +47,11 @@ export class MainPage extends AbstractPage {
     const mainWrapper = document.createElement('div');
     mainWrapper.classList.add('row');
 
-    const contentWrapper = document.createElement('div');
+    const contentWrapper = document.createElement('section');
     contentWrapper.classList.add('content-wrapper');
     contentWrapper.classList.add('col-9');
 
-    const filtersWrapper = document.createElement('div');
+    const filtersWrapper = document.createElement('aside');
     filtersWrapper.classList.add('filters-wrapper');
     filtersWrapper.classList.add('col'); 
 

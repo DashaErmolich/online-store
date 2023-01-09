@@ -1,8 +1,11 @@
-import { SimpleCard, MainFilterProperties, FilterProperties } from '../../models/interfaces';
+import { SimpleCard, MainFilterProperties, FilterProperties, ProductFilterRange, NumberRange } from '../../models/interfaces';
 import { appRouter } from '../router/router';
 import { UrlParamKey, CardsAppearance, CardsSortBy, CardsSortPossibleFields } from '../../enums/enums';
 import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
 import { FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
+import { appDrawer } from '../drawer/drawer';
+import { productsFilter } from '../filter/filter';
+import { DualHRangeBar } from 'dual-range-bar';
 
 export class Cards {
   cards: SimpleCard[];
@@ -10,14 +13,16 @@ export class Cards {
   categories: string[];
   brands: string[];
   cardsAppearance: string;
+  filterRange: ProductFilterRange;
   properties: MainFilterProperties;
 
-  constructor (cards: SimpleCard[], cardsAppearance: string) { 
+  constructor (cards: SimpleCard[], cardsAppearance: string, filterRange: ProductFilterRange) { 
     this.cards = cards;
     this.cardsOnScreen = [];
     this.categories = [];
     this.brands = [];
     this.cardsAppearance = cardsAppearance;
+    this.filterRange = filterRange;
     
     cards.forEach(element => {
       if (!this.categories.includes(element.category)) this.categories.push(element.category);
@@ -106,7 +111,7 @@ export class Cards {
     this.removeCards();
   }
 
-  generateFiltersField(wrapper: HTMLDivElement) { // generate appearance + filters
+  generateFiltersField(wrapper: HTMLElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.classList.add('filters__window');
     const appearanceTitle = document.createElement('h3');
@@ -130,6 +135,8 @@ export class Cards {
 
     this.generateFiltersAndCategories(filtersWrapper, 'category', this.categories);
     this.generateFiltersAndCategories(filtersWrapper, 'brand', this.brands);
+    this.generateFiltersRange(filtersWrapper, 'price-range', UrlParamKey.Price, this.filterRange.price);
+    this.generateFiltersRange(filtersWrapper, 'stock-range', UrlParamKey.Stock, this.filterRange.stock);
 
     wrapper.append(appearanceWrapper);
     wrapper.append(filtersWrapper);
@@ -172,7 +179,7 @@ export class Cards {
   
   generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
     const filterUnit = document.createElement('div');
-    filterUnit.classList.add(`filters__${type}`);
+    filterUnit.className = `filters__${type} mb-3 overflow-scroll filter-category`;
 
     const unitTitle = document.createElement('h6');
     unitTitle.classList.add('filters__category-title');
@@ -368,5 +375,74 @@ export class Cards {
         appRouter.updateUrlParams(UrlParamKey.Appearance, appearance);
       }
     }
+  }
+
+  private generateFiltersRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, range: NumberRange | null): void {
+    const rangeWrap = document.createElement('ul');
+    rangeWrap.className = 'position-relative w-100 my-3 list-group';
+    rangeWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', 'Price range'))
+
+    if (range === null) {
+      range = this.getCurrentNumberRange(filter, this.cardsOnScreen);
+    }
+
+    const filterRangeElement = this.getRange(rangeWrap, id, filter, range);
+
+    if (filterRangeElement) {
+      parentElement.append(filterRangeElement);
+    }
+  }
+
+  private getRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, activeRange: NumberRange): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'drbar-container list-group-item';
+    container.id = id;
+
+    const leftSide = Math.round(productsFilter.getFilterRange(filter).min);
+    const rightSide = Math.round(productsFilter.getFilterRange(filter).max);
+    const currentMin = Math.round(activeRange.min);
+    const currentMax = Math.round(activeRange.max);
+
+    const dualRange = new DualHRangeBar(container, {
+      lowerBound: leftSide,
+      lower: currentMin,
+      upperBound: rightSide,
+      upper: currentMax,
+      minSpan: 1,
+    });
+
+    const values = appDrawer.getSimpleElement('div', 'list-group-item')
+
+    const minVal = appDrawer.getSimpleElement('p', '', `${dualRange.lower}`);
+    minVal.id = `${filter}-range-min`;
+    const maxVal = appDrawer.getSimpleElement('p', '', `${dualRange.upper}`);
+    maxVal.id = `${filter}-range-max`;
+
+    dualRange.addEventListener('update', () => {
+      const min = document.querySelector(`#${filter}-range-min`);
+      if (min) {
+        min.innerHTML = `${Math.round(dualRange.lower)}`;
+      }
+
+      const max = document.querySelector(`#${filter}-range-max`);
+      if (max) {
+        max.innerHTML = `${Math.round(dualRange.upper)}`;
+      }
+
+      appRouter.updateUrlParams(filter, {min: Math.round(dualRange.lower), max: Math.round(dualRange.upper)});
+      //this.renderNewCards();
+      //this.renderNewFilters();
+      //this.setProductsQty();
+
+    })
+
+    values.append(minVal, maxVal);
+
+    parentElement.append(container, values);
+    return parentElement;
+  }
+
+  private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock, arr: SimpleCard[]): NumberRange {
+    return productsFilter.getFilterRange(key, arr);
   }
 }
