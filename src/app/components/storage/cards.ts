@@ -343,6 +343,16 @@ export class Cards {
       filterProp.brandProperties.includes(elem.brand) && filterProp.categoryProperties.includes(elem.category) ? card.classList.remove('filtered') : card.classList.add('filtered');
     }
 
+    if (this.filterRange.price !== null && !card.classList.contains('filtered')) {
+      this.filterRange.price.min <= elem.price && this.filterRange.price.max >= elem.price ? card.classList.remove('filtered') : card.classList.add('filtered');
+    }
+
+    if (this.filterRange.stock !== null && !card.classList.contains('filtered')) {
+      this.filterRange.stock.min <= elem.stock && this.filterRange.stock.max >= elem.stock ? card.classList.remove('filtered') : card.classList.add('filtered');
+    } 
+
+
+
     if (!card.classList.contains('filtered') && !card.classList.contains('d-none')) this.cardsOnScreen.push(elem);
 
     wrapper.append(card);
@@ -380,17 +390,22 @@ export class Cards {
   private generateFiltersRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, range: NumberRange | null): void {
     const rangeWrap = document.createElement('ul');
     rangeWrap.className = 'position-relative w-100 my-3 list-group';
-    rangeWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', 'Price range'))
+    rangeWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', id))
 
     if (range === null) {
       range = this.getCurrentNumberRange(filter, this.cardsOnScreen);
+      this.setFilterRangeValue(filter, range);
+      // if (filter === UrlParamKey.Price) {
+      //   this.filterRange.price = range;
+      // }
+      // if (filter === UrlParamKey.Stock) {
+      //   this.filterRange.stock = range;
+      // }
     }
 
     const filterRangeElement = this.getRange(rangeWrap, id, filter, range);
 
-    if (filterRangeElement) {
-      parentElement.append(filterRangeElement);
-    }
+    parentElement.append(filterRangeElement);
   }
 
   private getRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, activeRange: NumberRange): HTMLElement {
@@ -429,7 +444,20 @@ export class Cards {
         max.innerHTML = `${Math.round(dualRange.upper)}`;
       }
 
-      appRouter.updateUrlParams(filter, {min: Math.round(dualRange.lower), max: Math.round(dualRange.upper)});
+      const newRange = {
+        min: Math.round(dualRange.lower),
+        max: Math.round(dualRange.upper),
+      }
+
+      appRouter.updateUrlParams(filter, newRange);
+      this.setFilterRangeValue(filter, newRange);
+
+      const cardsWrapper = document.querySelector('.cards-wrapper');
+      if (cardsWrapper instanceof HTMLDivElement) {
+        this.removeCards();
+        this.generateCards(cardsWrapper);
+      }
+
       //this.renderNewCards();
       //this.renderNewFilters();
       //this.setProductsQty();
@@ -444,5 +472,14 @@ export class Cards {
 
   private getCurrentNumberRange(key: UrlParamKey.Price | UrlParamKey.Stock, arr: SimpleCard[]): NumberRange {
     return productsFilter.getFilterRange(key, arr);
+  }
+
+  private setFilterRangeValue(filter: UrlParamKey.Price | UrlParamKey.Stock, newRange: NumberRange): void {
+    if (filter === UrlParamKey.Price) {
+      this.filterRange.price = newRange;
+    }
+    if (filter === UrlParamKey.Stock) {
+      this.filterRange.stock = newRange;
+    }
   }
 }
