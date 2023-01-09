@@ -1,6 +1,7 @@
-import { SimpleCard, AppStorage, PromoCode } from '../../models/interfaces';
+import { SimpleCard, PromoCode } from '../../models/interfaces';
+import { possibleCards } from '../../../assets/samples/possible-cards';
 
-export const appStorage: AppStorage = {
+export const appStorage = {
   getCartProducts(): SimpleCard[] {
     const data = localStorage.getItem('cart-products');
     let cartProducts: SimpleCard[];
@@ -74,6 +75,26 @@ export const appStorage: AppStorage = {
   emptyCart(): void {
     localStorage.removeItem('cart-products');
     localStorage.removeItem('promo-codes');
+  },
+
+  getMainPageProducts(): SimpleCard[] {
+    const data = localStorage.getItem('main-products');
+    let cartProducts: SimpleCard[];
+    if (data) {
+      cartProducts = JSON.parse(data);
+    } else {
+      cartProducts = possibleCards.products;
+    }
+    return cartProducts;
+  },
+
+  setMainPageProducts(data: SimpleCard[]): void {
+    if (data.length) {
+      localStorage.setItem('main-products', JSON.stringify(data));
+    } else {
+      localStorage.setItem('main-products', JSON.stringify(possibleCards.products));
+    }
+
   },
 }
 

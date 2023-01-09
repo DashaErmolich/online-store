@@ -7,3 +7,12 @@ body {
 main {
   flex: 1;
 }
+
+.rotate-90-deg {
+  transform: rotate(90deg);
+}
+
+.header-logo {
+  font-family: 'Kanit', sans-serif;
+  //color: #0D6EFD;
+}

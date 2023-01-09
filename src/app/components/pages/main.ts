@@ -17,8 +17,12 @@ export class MainPage extends AbstractPage {
     this.setPageTitle('Shop Cart');
     this.mainPageSettings = {
       cardsAppearance: this.getCardsAppearance(),
+      filterRange: {
+        price: this.getValidNumberRangeValueFromUrl(UrlParamKey.Price),
+        stock: this.getValidNumberRangeValueFromUrl(UrlParamKey.Stock),
+      }
     }
-    this.cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance);
+    this.cards = new Cards(possibleCards.products, this.mainPageSettings.cardsAppearance, this.mainPageSettings.filterRange);
   }
 
   private getCardsAppearance(): string {
@@ -43,13 +47,37 @@ export class MainPage extends AbstractPage {
     const mainWrapper = document.createElement('div');
     mainWrapper.classList.add('row');
 
-    const contentWrapper = document.createElement('div');
-    contentWrapper.classList.add('content-wrapper');
-    contentWrapper.classList.add('col-9');
+    const contentWrapper = document.createElement('section');
+    contentWrapper.className = 'content-wrapper col-lg-9 order-2';
 
-    const filtersWrapper = document.createElement('div');
-    filtersWrapper.classList.add('filters-wrapper');
-    filtersWrapper.classList.add('col'); 
+    const filtersCollapseBtnWrapper = appDrawer.getSimpleElement('div', 'col');
+    const filtersCollapseBtn = appDrawer.getSimpleElement('button', 'btn btn-outline-secondary mb-3', 'Show filters');
+    filtersCollapseBtn.id = 'filters-collapse-button';
+    filtersCollapseBtn.setAttribute('data-bs-toggle', 'collapse');
+    filtersCollapseBtn.setAttribute('data-bs-target', '#filters-collapse');
+    filtersCollapseBtn.setAttribute('aria-expanded', 'false');
+    filtersCollapseBtnWrapper.append(filtersCollapseBtn)
+
+
+    filtersCollapseBtn.addEventListener('click', () => {
+      if (filtersCollapseBtn.innerHTML === 'Show filters') {
+        filtersCollapseBtn.innerHTML = 'Hide filters';
+      } else if (filtersCollapseBtn.innerHTML === 'Hide filters') {
+        filtersCollapseBtn.innerHTML = 'Show filters';
+      }
+    })
+
+    const filtersWrapper = document.createElement('aside');
+    filtersWrapper.className = 'filters-wrapper col order-1';
+    filtersWrapper.id = 'filters-collapse';
+
+    if (window.innerWidth <= 992) {
+      filtersCollapseBtn.classList.remove('d-none');
+      filtersWrapper.classList.add('collapse');
+    } else {
+      filtersCollapseBtn.classList.add('d-none')
+      filtersCollapseBtn.classList.remove('collapse')
+    }
 
     const cardsWrapper = document.createElement('div');
 
@@ -62,32 +90,18 @@ export class MainPage extends AbstractPage {
     this.cards.generateCards(cardsWrapper);
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
-    sortingWrapper.classList.add('sorting-wrapper');
+    sortingWrapper.className = 'btn-group w-100 mb-3';
+    sortingWrapper.setAttribute('role', 'group')
 
-    const titleSort = document.createElement('span');
-    titleSort.innerText = 'Sort by:';
-    titleSort.classList.add('sort-item-title');
-
-    const nameSortWrapper = document.createElement('div');
-    nameSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const nameSort = document.createElement('span');
-    nameSort.innerText = 'name';
-    nameSort.classList.add('sort-item');
+    const nameSortWrapper = appDrawer.getSortButton('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
     nameSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.TitleAsc;
       this.cards.generateCards(cardsWrapper);
-      //appRouter.updateUrlParams(UrlParamKey.)
     })
 
-    const nameSortWrapperDesc = document.createElement('div');
-    nameSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const nameSortDesc = document.createElement('span');
-    nameSortDesc.innerText = 'name';
-    nameSortDesc.classList.add('sort-item');
+    const nameSortWrapperDesc = appDrawer.getSortButton('name-up', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-up');
     nameSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleDesc);
       this.cards.removeCards();
@@ -95,24 +109,14 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const priceSortWrapper = document.createElement('div');
-    priceSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const priceSort = document.createElement('span');
-    priceSort.innerText = 'price';
-    priceSort.classList.add('sort-item');
+    const priceSortWrapper = appDrawer.getSortButton('price-up', 'Price', 'btn btn-outline-secondary bi bi-sort-up');
     priceSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.PriceAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const priceSortWrapperDesc = document.createElement('div');
-    priceSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const priceSortDesc = document.createElement('span');
-    priceSortDesc.innerText = 'price';
-    priceSortDesc.classList.add('sort-item');
+    const priceSortWrapperDesc = appDrawer.getSortButton('price-down', 'Price', 'btn btn-outline-secondary bi bi-sort-down');
     priceSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceDesc);
       this.cards.removeCards();
@@ -120,24 +124,14 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const ratingSortWrapper = document.createElement('div');
-    ratingSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const ratingSort = document.createElement('span');
-    ratingSort.innerText = 'rating';
-    ratingSort.classList.add('sort-item');
+    const ratingSortWrapper = appDrawer.getSortButton('rating-up', 'Rating', 'btn btn-outline-secondary bi bi-sort-up');
     ratingSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.RatingAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const ratingSortWrapperDesc = document.createElement('div');
-    ratingSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const ratingSortDesc = document.createElement('span');
-    ratingSortDesc.innerText = 'rating';
-    ratingSortDesc.classList.add('sort-item');
+    const ratingSortWrapperDesc = appDrawer.getSortButton('rating-down', 'Rating', 'btn btn-outline-secondary bi bi-sort-down');
     ratingSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingDesc);
       this.cards.removeCards();
@@ -145,36 +139,25 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    sortingWrapper.append(titleSort);
-    nameSortWrapper.append(nameSort);
-    nameSortWrapper.append(this.getSVGAsc('name'));
-    nameSortWrapperDesc.append(nameSortDesc);
-    nameSortWrapperDesc.append(this.getSVGDesc('name'));
     sortingWrapper.append(nameSortWrapper);
     sortingWrapper.append(nameSortWrapperDesc);
 
-    priceSortWrapper.append(priceSort);
-    priceSortWrapper.append(this.getSVGAsc('price'))
-    priceSortWrapperDesc.append(priceSortDesc);
-    priceSortWrapperDesc.append(this.getSVGDesc('price'));
     sortingWrapper.append(priceSortWrapper);
     sortingWrapper.append(priceSortWrapperDesc);
 
-    ratingSortWrapper.append(ratingSort);
-    ratingSortWrapper.append(this.getSVGAsc('rating'))
-    ratingSortWrapperDesc.append(ratingSortDesc);
-    ratingSortWrapperDesc.append(this.getSVGDesc('rating'));
     sortingWrapper.append(ratingSortWrapper);
     sortingWrapper.append(ratingSortWrapperDesc);
 
-    this.drawPageStateButtons(sortingWrapper);
+    this.drawPageStateButtons(filtersWrapper);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
+
     contentWrapper.append(cardsWrapper);
     mainWrapper.append(contentWrapper);
-    mainWrapper.append(filtersWrapper);
+    mainWrapper.append(filtersCollapseBtn, filtersWrapper);
     content.append(mainWrapper);
+    //content.append(appDrawer.getSimpleButton(''))
     appRouter.updatePageLinks();
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
@@ -185,16 +168,19 @@ export class MainPage extends AbstractPage {
       doSearch(this.cards);
     })
     function doSearch(obj: Cards) {
+      appRouter.updateUrlParams(UrlParamKey.Search, searchField.value);
       obj.removeCards();
       obj.properties.searchProperty = searchField.value;
       obj.generateCards(cardsWrapper);
     }
+    this.listenResizeForCollapse();
     return content;
   }
 
   private drawPageStateButtons(parentElement: HTMLElement): void {
     const drawWrapper = document.createElement('div');
-    drawWrapper.classList.add('inline-b');
+    drawWrapper.className = 'btn-group w-100 mb-3';
+    drawWrapper.setAttribute('role', 'group')
     const resetSearchParamsButton = this.getResetFiltersButton();
     const copySearchParamsButton = this.getCopyFiltersButton();
     drawWrapper.append(resetSearchParamsButton, copySearchParamsButton);
@@ -214,7 +200,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-secondary');
 
     copyBtn.addEventListener('click', async () => {
       try {
@@ -222,7 +208,7 @@ export class MainPage extends AbstractPage {
         await navigator.clipboard.writeText(location);
         copyBtn.innerHTML = 'Copied';
         window.setTimeout(() => {
-          copyBtn.innerHTML = 'Copy filters';
+          copyBtn.innerHTML = 'Copy link';
         }, 2000)
       } catch (error) {
         console.error(error);
@@ -253,6 +239,21 @@ export class MainPage extends AbstractPage {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 3H3V4H3.5V3ZM12.5 4C12.7761 4 13 3.77614 13 3.5C13 3.22386 12.7761 3 12.5 3V4ZM3.5 7H3V8H3.5V7ZM9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7V8ZM3.5 11H3V12H3.5V11ZM6.5 12C6.77614 12 7 11.7761 7 11.5C7 11.2239 6.77614 11 6.5 11V12ZM3.5 4H12.5V3H3.5V4ZM3.5 8H9.5V7H3.5V8ZM3.5 12H6.5V11H3.5V12Z" fill="#151528"></path></svg>
     `
     return svgDsc;
+  }
+
+  private listenResizeForCollapse(): void {
+    const collapseFilters = '(max-width: 992px)';
+    const mediaQueryList = window.matchMedia(collapseFilters);
+
+    mediaQueryList.addEventListener('change', (event) => {
+      if (event.matches) {
+        document.getElementById('filters-collapse')?.classList.toggle('collapse');
+        document.getElementById('filters-collapse-button')?.classList.toggle('d-none');
+      } else {
+        document.getElementById('filters-collapse')?.classList.toggle('collapse');
+        document.getElementById('filters-collapse-button')?.classList.toggle('d-none');
+      }
+    })
   }
 }
 

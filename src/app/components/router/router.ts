@@ -20,7 +20,7 @@ class MyNavigo extends Navigo {
   public updateUrlParams(key: UrlParamKey, value: string | NumberRange, isChecked?: boolean): void {
     const params = this.getUrlParams();
 
-    if (key === UrlParamKey.Page || key === UrlParamKey.Limit || key === UrlParamKey.Appearance || key === UrlParamKey.Sort) {
+    if (key === UrlParamKey.Page || key === UrlParamKey.Limit || key === UrlParamKey.Appearance || key === UrlParamKey.Sort || key === UrlParamKey.Search) {
       if (typeof(value) === 'string') {
         this.updateSingleChoiceUrlParams(params, key, value);
       }
@@ -41,30 +41,6 @@ class MyNavigo extends Navigo {
 
     window.history.replaceState({}, '', `${window.location.pathname}?` + params);
   }
-
-  // public getPaginationLimitValue(): number {
-  //   return this.getSingleChoiceUrlParamsValue(UrlParamKey.Limit, PAGINATION_LIMIT_DEFAULT);
-  // }
-
-  // public getPageNumber(): number {
-  //   return this.getSingleChoiceUrlParamsValue(UrlParamKey.Page, ACTIVE_PAGE_DEFAULT);
-  // }
-
-  // public getProductBrands(): string[] {
-  //   return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Brand);
-  // }
-
-  // public getProductCategories(): string[] {
-  //   return this.getMultipleChoiceUrlParamsValues(UrlParamKey.Category);
-  // }
-
-  // public getPriceRange(): NumberRange {
-  //   return this.getRangeUrlParamsValue(UrlParamKey.Price, PRICE_RANGE_DEFAULT);
-  // }
-
-  // public getStockRange(): NumberRange {
-  //   return this.getRangeUrlParamsValue(UrlParamKey.Stock, STOCK_RANGE_DEFAULT);
-  // }
 
   private getUrlParams(): URLSearchParams {
     const url: Location = window.location;
@@ -126,53 +102,6 @@ class MyNavigo extends Navigo {
       }
     }
   }
-
-  // private getSingleChoiceUrlParamsValue(filter: UrlParamKey.Limit | UrlParamKey.Page, defaultValue: number): number {
-  //   const params = this.getUrlParams();
-  //   let filterValue: number = defaultValue;
-
-  //   if (params.has(filter)) {
-  //     const value = Number(params.get(filter));
-  //     if (value) {
-  //       filterValue = value;
-  //     } else {
-  //       this.updateUrlParams(filter, String(filterValue))
-  //     }
-  //   }
-  //   return filterValue;
-  // }
-
-  // private getRangeUrlParamsValue(filter: UrlParamKey.Price | UrlParamKey.Stock, defaultRange: NumberRange): NumberRange {
-  //   const params = this.getUrlParams();
-  //   let filterValue: NumberRange = defaultRange;
-
-  //   if (params.has(filter)) {
-  //     const value = params.get(filter);
-  //     if (value) {
-  //       filterValue = {
-  //         min: Number(value.split(FILTERS_VALUES_SEPARATOR)[0]),
-  //         max: Number(value.split(FILTERS_VALUES_SEPARATOR)[1]),
-  //       }
-
-  //     } else {
-  //       this.updateUrlParams(filter, defaultRange);
-  //     }
-  //   }
-  //   return filterValue;
-  // }
-
-  // private getMultipleChoiceUrlParamsValues(filter: UrlParamKey.Brand | UrlParamKey.Category): string[] {
-  //   const params = this.getUrlParams();
-  //   let filterValues: string[] = [];
-    
-  //   if (params.has(filter)) {
-  //     const value = params.get(filter);
-  //     if (value) {
-  //       filterValues = value.split(FILTERS_VALUES_SEPARATOR);
-  //     }
-  //   }
-  //   return filterValues;
-  // }
 
   public getProductIndex(): number {
     const url: Location = window.location;

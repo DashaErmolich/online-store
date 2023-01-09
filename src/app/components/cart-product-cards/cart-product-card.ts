@@ -272,11 +272,11 @@ export class MainPageProductCard {
     this.cardElement = {
       image: appDrawer.getProductCardImage(this.card.title, this.card.thumbnail, ''),
       title: appDrawer.getProductCardTitle('h5', this.card.title),
-      price: appDrawer.getProductPrice(this.card.price, 'mb-2 fs-4 tw-bold'),
-      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-2'),
-      category: appDrawer.getSimpleElement('p', '', this.card.category),
-      brand: appDrawer.getSimpleElement('p', '', this.card.brand),
-      description: appDrawer.getProductDetailsDescription(this.card.description),
+      price: appDrawer.getProductPrice(this.card.price, 'mb-1 fs-4 tw-bold'),
+      discount: appDrawer.getProductDiscount(this.card.discountPercentage, 'mb-1'),
+      category: appDrawer.getSimpleElement('p', 'mb-1 text-capitalize', this.card.category),
+      brand: appDrawer.getSimpleElement('p', 'mb-1', this.card.brand),
+      description: appDrawer.getSimpleElement('div', 'mb-1 two-line-text text-muted', this.card.description),
       rating: appDrawer.getProductRating(this.card.rating, 'text-muted'),
       stock: appDrawer.getProductStockQty(this.card.stock, 'text-muted'),
       addToCartButton: this.getAddProductToCartButton(this.card),
@@ -290,9 +290,10 @@ export class MainPageProductCard {
     const card = appDrawer.getSimpleElement('div', 'card h-100');
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
     const cardFooter = appDrawer.getSimpleElement('div', 'card-footer d-flex flex-row justify-content-between');
+
+    const productFilters = appDrawer.getProductDetailsBreadcrumbWithoutLink(this.card.category, this.card.brand);
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
-    cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating);
+    cardBody.append(this.cardElement.price, this.cardElement.title, productFilters, this.cardElement.discount, this.cardElement.description);
 
     if (this.isProductInCart(this.card)) {
       this.cardElement.addToCartButton.classList.add('d-none')
@@ -316,7 +317,7 @@ export class MainPageProductCard {
     const container = appDrawer.getSimpleElement('article', 'col');
     const card = appDrawer.getSimpleElement('div', 'card h-100');
 
-    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0 card-image-wrapper_custom');
+    const cardContentWrapper = appDrawer.getSimpleElement('div', 'row g-0 ');
 
     const stretchedLinkWrap = appDrawer.getSimpleElement('p', 'position-relative h-100 col-4');
     const cardImageWrapper = appDrawer.getSimpleElement('div', 'w-100 h-100');
@@ -327,14 +328,12 @@ export class MainPageProductCard {
     const cardBody = appDrawer.getSimpleElement('div', 'card-body position-relative');
 
     this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
-    this.cardElement.image.className = 'img-fluid rounded-start card-image_custom';
 
     this.cardElement.stock.className = 'mb-2';
 
     const productFilters = appDrawer.getProductDetailsBreadcrumbWithoutLink(this.card.category, this.card.brand);
   
-    cardBody.append(this.cardElement.price, this.cardElement.title, productFilters, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
-    //cardBody.append(this.cardElement.price, this.cardElement.title, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
+    cardBody.append(this.cardElement.price, this.cardElement.title, productFilters, this.cardElement.description, this.cardElement.discount, this.cardElement.stock, this.cardElement.rating, this.cardElement.addToCartButton, this.cardElement.removeFromCartButton);
     cardBodyWrapper.append(cardBody);
 
     if (this.isProductInCart(this.card)) {

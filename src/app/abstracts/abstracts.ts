@@ -36,27 +36,15 @@ export class AbstractPage {
     return myValue;
   }
 
-  getValidNumberRangeValueFromUrl(urlParamsKey: UrlParamKey, defaultValue: NumberRange): NumberRange {
+  getValidNumberRangeValueFromUrl(urlParamsKey: UrlParamKey): NumberRange | null {
     const value: string | undefined = appRouter.getUrlParamsValue(urlParamsKey);
-    let myValue: NumberRange = defaultValue;
 
     if (value) {
-      let minValue = Number(value.split(FILTERS_VALUES_SEPARATOR)[0]);
-      let maxValue = Number(value.split(FILTERS_VALUES_SEPARATOR)[1]);
-
-      if (!minValue) {
-        minValue = defaultValue.min;
+      return {
+        min: Number(value.split(FILTERS_VALUES_SEPARATOR)[0]),
+        max: Number(value.split(FILTERS_VALUES_SEPARATOR)[1]),
       }
-      if (!maxValue) {
-        maxValue = defaultValue.max;
-      }
-
-      myValue = {
-        min: minValue,
-        max: maxValue,
-      }
-    }
-    return myValue;
+    } return null;
   }
 
 }
