@@ -114,9 +114,9 @@ export class Cards {
   generateFiltersField(wrapper: HTMLElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.className = 'filters__window mb-3 p-3';
-    const appearanceTitle = document.createElement('h3');
+    //const appearanceTitle = document.createElement('h3');
     //appearanceTitle.innerText = 'Appearance:';
-    appearanceWrapper.append(appearanceTitle);
+    //appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
     
@@ -198,8 +198,7 @@ export class Cards {
 
     content.forEach(element => {
       const formUnit = document.createElement('div');
-      formUnit.classList.add('form-check');
-      formUnit.classList.add('form-check-filters');
+      formUnit.className = 'form-check form-check-filters d-flex justify-content-between';
 
       const formInput = document.createElement('input');
       formInput.classList.add('form-check-input');
@@ -260,7 +259,7 @@ export class Cards {
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
-      formLabel.classList.add('form-check-label');
+      formLabel.className = 'form-check-label flex-grow-1 ps-1';
       formLabel.setAttribute('for', `${element.replace(/ /g,'')}`);
       formLabel.innerText = element;
       formUnit.append(formLabel);

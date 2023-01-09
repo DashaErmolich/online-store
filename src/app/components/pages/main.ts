@@ -48,12 +48,34 @@ export class MainPage extends AbstractPage {
     mainWrapper.classList.add('row');
 
     const contentWrapper = document.createElement('section');
-    contentWrapper.classList.add('content-wrapper');
-    contentWrapper.classList.add('col-9');
+    contentWrapper.className = 'content-wrapper col-lg-9 order-2';
+
+    const filtersCollapseBtn = appDrawer.getSimpleElement('button', 'btn btn-outline-secondary mb-3', 'Show filters');
+    filtersCollapseBtn.id = 'filters-collapse-button';
+    filtersCollapseBtn.setAttribute('data-bs-toggle', 'collapse');
+    filtersCollapseBtn.setAttribute('data-bs-target', '#filters-collapse');
+    filtersCollapseBtn.setAttribute('aria-expanded', 'false');
+
+
+    filtersCollapseBtn.addEventListener('click', () => {
+      if (filtersCollapseBtn.innerHTML === 'Show filters') {
+        filtersCollapseBtn.innerHTML = 'Hide filters';
+      } else if (filtersCollapseBtn.innerHTML === 'Hide filters') {
+        filtersCollapseBtn.innerHTML = 'Show filters';
+      }
+    })
 
     const filtersWrapper = document.createElement('aside');
-    filtersWrapper.classList.add('filters-wrapper');
-    filtersWrapper.classList.add('col'); 
+    filtersWrapper.className = 'filters-wrapper col order-1 collapse';
+    filtersWrapper.id = 'filters-collapse';
+
+    if (window.innerWidth < 992) {
+      filtersCollapseBtn.classList.remove('d-none');
+      filtersWrapper.classList.add('collapse');
+    } else {
+      filtersCollapseBtn.classList.add('d-none')
+      filtersCollapseBtn.classList.remove('collapse')
+    }
 
     const cardsWrapper = document.createElement('div');
 
@@ -131,8 +153,9 @@ export class MainPage extends AbstractPage {
 
     contentWrapper.append(cardsWrapper);
     mainWrapper.append(contentWrapper);
-    mainWrapper.append(filtersWrapper);
+    mainWrapper.append(filtersCollapseBtn, filtersWrapper);
     content.append(mainWrapper);
+    //content.append(appDrawer.getSimpleButton(''))
     appRouter.updatePageLinks();
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
@@ -148,6 +171,7 @@ export class MainPage extends AbstractPage {
       obj.properties.searchProperty = searchField.value;
       obj.generateCards(cardsWrapper);
     }
+    this.listenResizeForCollapse();
     return content;
   }
 
@@ -213,6 +237,21 @@ export class MainPage extends AbstractPage {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 3H3V4H3.5V3ZM12.5 4C12.7761 4 13 3.77614 13 3.5C13 3.22386 12.7761 3 12.5 3V4ZM3.5 7H3V8H3.5V7ZM9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7V8ZM3.5 11H3V12H3.5V11ZM6.5 12C6.77614 12 7 11.7761 7 11.5C7 11.2239 6.77614 11 6.5 11V12ZM3.5 4H12.5V3H3.5V4ZM3.5 8H9.5V7H3.5V8ZM3.5 12H6.5V11H3.5V12Z" fill="#151528"></path></svg>
     `
     return svgDsc;
+  }
+
+  private listenResizeForCollapse(): void {
+    const collapseFilters = '(max-width: 992px)';
+    const mediaQueryList = window.matchMedia(collapseFilters);
+
+    mediaQueryList.addEventListener('change', (event) => {
+      if (event.matches) {
+        document.getElementById('filters-collapse')?.classList.toggle('collapse');
+        document.getElementById('filters-collapse-button')?.classList.toggle('d-none');
+      } else {
+        document.getElementById('filters-collapse')?.classList.toggle('collapse');
+        document.getElementById('filters-collapse-button')?.classList.toggle('d-none');
+      }
+    })
   }
 }
 
