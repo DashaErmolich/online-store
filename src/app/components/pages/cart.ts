@@ -71,7 +71,7 @@ export class CartPage extends AbstractPage {
       this.handlePagination(pageContentContainer, pagesQty);
       this.validatePaginationLimit();
       this.drawPaginationInput(pageContentContainer, this.cartSettings.paginationLimit);
-      rowContainer.className = 'row';
+      rowContainer.className = 'row flex-sm-wrap-reverse';
       rowContainer.id = 'pagination-container';
       this.drawPaginationPage(rowContainer);
       this.drawCartSummary(rowContainer);
@@ -229,7 +229,7 @@ export class CartPage extends AbstractPage {
 
     const paginationActivePageRange: PaginationCardIdxRange = this.getActivePageRange();
     const cartProducts: SimpleCard[] = appStorage.getCartProducts();
-    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns mb-3 order-2');
+    const cardDeckContainer = appDrawer.getSimpleElement('section', 'col-md-8 card-columns mb-3');
     const cardDeck = appDrawer.getSimpleElement('div', 'row row-cols-1 g-4');
     cardDeckContainer.append(cardDeck)
     //const cardDeck = document.createElement('section');

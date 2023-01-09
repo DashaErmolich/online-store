@@ -279,8 +279,16 @@ export class MainPage extends AbstractPage {
 
   private setSearchInputValue(): void {
     const searchInput = document.getElementById('products-search-input');
+    const value = appRouter.getUrlParamsValue(UrlParamKey.Search);
+    let myValue;
+    if (!value) {
+      myValue = '';
+    } else {
+      myValue = value;
+    }
     if (searchInput instanceof HTMLInputElement) {
-      searchInput.value = this.cards.properties.searchProperty;
+      searchInput.value = myValue;
+      this.cards.properties.searchProperty = myValue;
     }
   }
 }
