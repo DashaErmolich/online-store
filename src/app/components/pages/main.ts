@@ -39,6 +39,8 @@ export class MainPage extends AbstractPage {
   getPageContent(): HTMLElement {
     cartPage.updateCartState();
     this.cards.updateProductsFilters();
+    this.mainPageSettings.cardsAppearance =  this.getCardsAppearance();
+    this.cards.cardsAppearance =  this.getCardsAppearance();
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
