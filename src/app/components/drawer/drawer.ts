@@ -71,10 +71,13 @@ class Drawer {
     return cartSummaryContainer;
   }
 
-  getSimpleButton(value: string, btnClass: string): HTMLElement {
+  getSimpleButton(value: string, btnClass: string, text?: string): HTMLElement {
     const button = document.createElement('button');
     button.innerHTML = value;
     button.className = btnClass;
+    if (text) {
+      button.innerHTML = text;
+    }
     return button;
   }
 
@@ -643,6 +646,21 @@ class Drawer {
       cardTitle.innerHTML = `${index} - ${text}`;
     }
     return cardTitle;
+  }
+
+  getSortButton(id: string, text: string, inputClass: string): HTMLElement {
+    const label = document.createElement('label');
+    label.className = `btn btn-outline-primary ${inputClass}`;
+    label.htmlFor = id;
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.className = 'btn-check';
+    input.name = 'products-sort';
+    input.id = id;
+    input.setAttribute('autocomplete', 'off');
+    label.innerHTML = text;
+    label.append(input);
+    return label;
   }
 }
 

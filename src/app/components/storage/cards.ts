@@ -113,10 +113,9 @@ export class Cards {
 
   generateFiltersField(wrapper: HTMLElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
-    appearanceWrapper.classList.add('filters__window');
-    appearanceWrapper.classList.add('mb-3');
+    appearanceWrapper.className = 'filters__window mb-3 p-3';
     const appearanceTitle = document.createElement('h3');
-    appearanceTitle.innerText = 'Appearance:';
+    //appearanceTitle.innerText = 'Appearance:';
     appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
@@ -128,18 +127,17 @@ export class Cards {
 
     appearanceWrapper.append(appearanceCheckers);
 
-    const productsOnPageQtyWrapper = appDrawer.getSimpleElement('div', 'mb-3');
-    const productsOnPageQtyLabel = appDrawer.getSimpleElement('span', 'fs-5', 'Found: ');
-    const productsOnPageQty = appDrawer.getSimpleElement('span', 'fs-4');
+    const productsOnPageQty = appDrawer.getSimpleElement('span', 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger');
     productsOnPageQty.innerHTML = `${this.cardsOnScreen.length}`;
     productsOnPageQty.id = 'main-products-qty';
-    productsOnPageQtyWrapper.append(productsOnPageQtyLabel, productsOnPageQty);
 
     const filtersWrapper = document.createElement('div');
     filtersWrapper.id = 'main-products-filters'
-    filtersWrapper.classList.add('filters__filters');
+    filtersWrapper.className = 'filters__filters p-3 mb-3';
     const filtersTitle = document.createElement('h3');
-    filtersTitle.innerText = 'Filters:';
+    filtersTitle.className = 'position-relative';
+    filtersTitle.innerText = 'Filters: ';
+    filtersTitle.append(productsOnPageQty)
     filtersWrapper.append(filtersTitle);
 
     this.generateFiltersAndCategories(filtersWrapper, 'category', this.categories);
@@ -148,7 +146,7 @@ export class Cards {
     this.drawFilterRanges(filtersWrapper);
 
     wrapper.append(appearanceWrapper);
-    wrapper.append(productsOnPageQtyWrapper);
+    //wrapper.append(productsOnPageQtyWrapper);
     wrapper.append(filtersWrapper);
 
   }
@@ -188,7 +186,7 @@ export class Cards {
   }
   
   generateFiltersAndCategories(wrapper: HTMLDivElement, type: 'category' | 'brand', content: string[]):void { //generate checkboxes
-    const filterWrapper = appDrawer.getSimpleElement('div', 'mb-3');
+    const filterWrapper = appDrawer.getSimpleElement('div', 'mb-4');
 
     const filterUnit = document.createElement('div');
     filterUnit.className = `filters__${type} overflow-scroll filter-category`;
@@ -473,10 +471,10 @@ export class Cards {
   private generateFiltersRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, range: NumberRange): void {
     document.getElementById(`filters__${id}`)?.remove();
 
-    const rangeWrap = document.createElement('ul');
-    rangeWrap.className = 'position-relative w-100 my-3 list-group';
+    const rangeWrap = document.createElement('div');
+    rangeWrap.className = 'mb-4';
     rangeWrap.id = `filters__${id}`
-    rangeWrap.append(appDrawer.getSimpleElement('p', 'list-group-item', id))
+    rangeWrap.append(appDrawer.getSimpleElement('h6', 'filters__category-title text-capitalize mb-3', id.split('-')[0]))
 
     const filterRangeElement = this.getRange(rangeWrap, id, filter, range);
 
@@ -484,8 +482,9 @@ export class Cards {
   }
 
   private getRange(parentElement: HTMLElement, id: string, filter: UrlParamKey.Price | UrlParamKey.Stock, activeRange: NumberRange): HTMLElement {
+    const rangeWrap = appDrawer.getSimpleElement('div', 'mb-3')
     const container = document.createElement('div');
-    container.className = 'drbar-container list-group-item';
+    container.className = 'drbar-container position-relative';
     container.id = id;
 
     const leftSide = Math.round(productsFilter.getFilterRange(filter).min);
@@ -499,13 +498,20 @@ export class Cards {
       upperBound: rightSide,
       upper: currentMax,
       minSpan: 1,
+      rangeColor: '#0D6EFD',
+      rangeActiveColor: '#0056E0',
+      bgColor: '#fff',
+      sliderColor: '#0040C3',
+      sliderActiveColor: '#002AA7',
     });
 
-    const values = appDrawer.getSimpleElement('div', 'list-group-item')
+    const values = appDrawer.getSimpleElement('div', 'row row-cols-3 text-center')
 
-    const minVal = appDrawer.getSimpleElement('p', '', `${dualRange.lower}`);
+    const minVal = appDrawer.getSimpleElement('span', 'col p-1', `${dualRange.lower}`);
     minVal.id = `${filter}-range-min`;
-    const maxVal = appDrawer.getSimpleElement('p', '', `${dualRange.upper}`);
+    const separator = appDrawer.getSimpleElement('span', 'col p-1', `${FILTERS_VALUES_SEPARATOR}`);
+    separator.classList.add('rotate-90-deg')
+    const maxVal = appDrawer.getSimpleElement('span', 'col p-1', `${dualRange.upper}`);
     maxVal.id = `${filter}-range-max`;
 
     dualRange.addEventListener('update', () => {
@@ -534,9 +540,9 @@ export class Cards {
       }
     })
 
-    values.append(minVal, maxVal);
-
-    parentElement.append(container, values);
+    values.append(minVal, separator, maxVal);
+    rangeWrap.append(container)
+    parentElement.append(rangeWrap, values);
     return parentElement;
   }
 

@@ -66,32 +66,18 @@ export class MainPage extends AbstractPage {
     this.cards.generateCards(cardsWrapper);
 
     const sortingWrapper = document.createElement('div'); // generate sorting line
-    sortingWrapper.classList.add('sorting-wrapper');
+    sortingWrapper.className = 'btn-group w-100 mb-3';
+    sortingWrapper.setAttribute('role', 'group')
 
-    const titleSort = document.createElement('span');
-    titleSort.innerText = 'Sort by:';
-    titleSort.classList.add('sort-item-title');
-
-    const nameSortWrapper = document.createElement('div');
-    nameSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const nameSort = document.createElement('span');
-    nameSort.innerText = 'name';
-    nameSort.classList.add('sort-item');
+    const nameSortWrapper = appDrawer.getSortButton('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
     nameSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.TitleAsc;
       this.cards.generateCards(cardsWrapper);
-      //appRouter.updateUrlParams(UrlParamKey.)
     })
 
-    const nameSortWrapperDesc = document.createElement('div');
-    nameSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const nameSortDesc = document.createElement('span');
-    nameSortDesc.innerText = 'name';
-    nameSortDesc.classList.add('sort-item');
+    const nameSortWrapperDesc = appDrawer.getSortButton('name-up', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-up');
     nameSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleDesc);
       this.cards.removeCards();
@@ -99,24 +85,14 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const priceSortWrapper = document.createElement('div');
-    priceSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const priceSort = document.createElement('span');
-    priceSort.innerText = 'price';
-    priceSort.classList.add('sort-item');
+    const priceSortWrapper = appDrawer.getSortButton('price-up', 'Price', 'btn btn-outline-secondary bi bi-sort-up');
     priceSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.PriceAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const priceSortWrapperDesc = document.createElement('div');
-    priceSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const priceSortDesc = document.createElement('span');
-    priceSortDesc.innerText = 'price';
-    priceSortDesc.classList.add('sort-item');
+    const priceSortWrapperDesc = appDrawer.getSortButton('price-down', 'Price', 'btn btn-outline-secondary bi bi-sort-down');
     priceSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceDesc);
       this.cards.removeCards();
@@ -124,24 +100,14 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const ratingSortWrapper = document.createElement('div');
-    ratingSortWrapper.classList.add('inline-b');
-    nameSortWrapper.classList.add('sorting-inner-wrapper');
-    const ratingSort = document.createElement('span');
-    ratingSort.innerText = 'rating';
-    ratingSort.classList.add('sort-item');
+    const ratingSortWrapper = appDrawer.getSortButton('rating-up', 'Rating', 'btn btn-outline-secondary bi bi-sort-up');
     ratingSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.RatingAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const ratingSortWrapperDesc = document.createElement('div');
-    ratingSortWrapperDesc.classList.add('inline-b');
-    nameSortWrapperDesc.classList.add('sorting-inner-wrapper');
-    const ratingSortDesc = document.createElement('span');
-    ratingSortDesc.innerText = 'rating';
-    ratingSortDesc.classList.add('sort-item');
+    const ratingSortWrapperDesc = appDrawer.getSortButton('rating-down', 'Rating', 'btn btn-outline-secondary bi bi-sort-down');
     ratingSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingDesc);
       this.cards.removeCards();
@@ -149,32 +115,20 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    sortingWrapper.append(titleSort);
-    nameSortWrapper.append(nameSort);
-    nameSortWrapper.append(this.getSVGAsc('name'));
-    nameSortWrapperDesc.append(nameSortDesc);
-    nameSortWrapperDesc.append(this.getSVGDesc('name'));
     sortingWrapper.append(nameSortWrapper);
     sortingWrapper.append(nameSortWrapperDesc);
 
-    priceSortWrapper.append(priceSort);
-    priceSortWrapper.append(this.getSVGAsc('price'))
-    priceSortWrapperDesc.append(priceSortDesc);
-    priceSortWrapperDesc.append(this.getSVGDesc('price'));
     sortingWrapper.append(priceSortWrapper);
     sortingWrapper.append(priceSortWrapperDesc);
 
-    ratingSortWrapper.append(ratingSort);
-    ratingSortWrapper.append(this.getSVGAsc('rating'))
-    ratingSortWrapperDesc.append(ratingSortDesc);
-    ratingSortWrapperDesc.append(this.getSVGDesc('rating'));
     sortingWrapper.append(ratingSortWrapper);
     sortingWrapper.append(ratingSortWrapperDesc);
 
-    this.drawPageStateButtons(sortingWrapper);
+    this.drawPageStateButtons(filtersWrapper);
     this.cards.generateFiltersField(filtersWrapper);
 
     contentWrapper.append(sortingWrapper);
+
     contentWrapper.append(cardsWrapper);
     mainWrapper.append(contentWrapper);
     mainWrapper.append(filtersWrapper);
@@ -199,7 +153,8 @@ export class MainPage extends AbstractPage {
 
   private drawPageStateButtons(parentElement: HTMLElement): void {
     const drawWrapper = document.createElement('div');
-    drawWrapper.classList.add('inline-b');
+    drawWrapper.className = 'btn-group w-100 mb-3';
+    drawWrapper.setAttribute('role', 'group')
     const resetSearchParamsButton = this.getResetFiltersButton();
     const copySearchParamsButton = this.getCopyFiltersButton();
     drawWrapper.append(resetSearchParamsButton, copySearchParamsButton);
@@ -219,7 +174,7 @@ export class MainPage extends AbstractPage {
   }
 
   private getCopyFiltersButton(): HTMLElement {
-    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-primary');
+    const copyBtn = appDrawer.getSimpleButton('Copy link', 'btn btn-outline-secondary');
 
     copyBtn.addEventListener('click', async () => {
       try {
@@ -227,7 +182,7 @@ export class MainPage extends AbstractPage {
         await navigator.clipboard.writeText(location);
         copyBtn.innerHTML = 'Copied';
         window.setTimeout(() => {
-          copyBtn.innerHTML = 'Copy filters';
+          copyBtn.innerHTML = 'Copy link';
         }, 2000)
       } catch (error) {
         console.error(error);

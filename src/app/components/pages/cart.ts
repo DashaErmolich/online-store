@@ -94,7 +94,7 @@ export class CartPage extends AbstractPage {
       appRouter.navigate(RouterPath.Main);
     })
     goHomeButton.innerHTML = 'Continue shopping';
-    const img = appDrawer.getProductCardImage('img', cartBgImage, 'w-50 mb-4');
+    const img = appDrawer.getProductCardImage('img', cartBgImage, 'w-25 mb-4');
     wrapper.append(img, message, goHomeButton);
     appRouter.updatePageLinks();
     return wrapper;
