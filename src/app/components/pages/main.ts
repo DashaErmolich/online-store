@@ -66,10 +66,10 @@ export class MainPage extends AbstractPage {
     })
 
     const filtersWrapper = document.createElement('aside');
-    filtersWrapper.className = 'filters-wrapper col order-1 collapse';
+    filtersWrapper.className = 'filters-wrapper col order-1';
     filtersWrapper.id = 'filters-collapse';
 
-    if (window.innerWidth < 992) {
+    if (window.innerWidth <= 992) {
       filtersCollapseBtn.classList.remove('d-none');
       filtersWrapper.classList.add('collapse');
     } else {
