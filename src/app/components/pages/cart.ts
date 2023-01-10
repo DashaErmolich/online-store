@@ -92,6 +92,7 @@ export class CartPage extends AbstractPage {
     const goHomeButton = appDrawer.getGoHomeButton();
     goHomeButton.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
+      document.getElementById('header-search-input')?.classList.remove('d-none');
     })
     goHomeButton.innerHTML = 'Continue shopping';
     const img = appDrawer.getProductCardImage('img', cartBgImage, 'w-25 mb-4');

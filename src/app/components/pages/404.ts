@@ -41,6 +41,7 @@ export class NotFoundPage extends AbstractPage {
     goHomeButton.innerHTML = 'Go Home';
     goHomeButton.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
+      document.getElementById('header-search-input')?.classList.remove('d-none');
     })
 
     content.append(title, contentFirstLine, contentSecondLine, goHomeButton)
