@@ -97,7 +97,8 @@ export class MainPage extends AbstractPage {
     sortingWrapper.className = 'btn-group w-100 mb-3 d-flex flex-wrap';
     sortingWrapper.setAttribute('role', 'group')
 
-    const nameSortWrapper = appDrawer.getSortButton('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
+    const nameSortWrapperLabel = appDrawer.getSortLabel('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
+    const nameSortWrapper = appDrawer.getSortButton('name-down');
     nameSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleAsc);
       this.cards.removeCards();
@@ -105,7 +106,8 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const nameSortWrapperDesc = appDrawer.getSortButton('name-up', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-up');
+    const nameSortWrapperDescLabel = appDrawer.getSortLabel('name-up', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-up');
+    const nameSortWrapperDesc = appDrawer.getSortButton('name-up');
     nameSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleDesc);
       this.cards.removeCards();
@@ -113,14 +115,17 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const priceSortWrapper = appDrawer.getSortButton('price-up', 'Price', 'btn btn-outline-secondary bi bi-sort-up');
+    const priceSortWrapperLabel = appDrawer.getSortLabel('price-up', 'Price', 'btn btn-outline-secondary bi bi-sort-up');
+    const priceSortWrapper = appDrawer.getSortButton('price-up');
     priceSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.PriceAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const priceSortWrapperDesc = appDrawer.getSortButton('price-down', 'Price', 'btn btn-outline-secondary bi bi-sort-down');
+
+    const priceSortWrapperDescLabel = appDrawer.getSortLabel('price-down', 'Price', 'btn btn-outline-secondary bi bi-sort-down');
+    const priceSortWrapperDesc = appDrawer.getSortButton('price-down');
     priceSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceDesc);
       this.cards.removeCards();
@@ -128,14 +133,17 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    const ratingSortWrapper = appDrawer.getSortButton('rating-up', 'Rating', 'btn btn-outline-secondary bi bi-sort-up');
+    const ratingSortWrapperLabel = appDrawer.getSortLabel('rating-up', 'Rating', 'btn btn-outline-secondary bi bi-sort-up');
+    const ratingSortWrapper = appDrawer.getSortButton('rating-up');
     ratingSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingAsc);
       this.cards.removeCards();
       this.cards.properties.sortProperty = CardsSortBy.RatingAsc;
       this.cards.generateCards(cardsWrapper);
     })
-    const ratingSortWrapperDesc = appDrawer.getSortButton('rating-down', 'Rating', 'btn btn-outline-secondary bi bi-sort-down');
+
+    const ratingSortWrapperDescLabel = appDrawer.getSortLabel('rating-down', 'Rating', 'btn btn-outline-secondary bi bi-sort-down');
+    const ratingSortWrapperDesc = appDrawer.getSortButton('rating-down');
     ratingSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingDesc);
       this.cards.removeCards();
@@ -143,14 +151,14 @@ export class MainPage extends AbstractPage {
       this.cards.generateCards(cardsWrapper);
     })
 
-    sortingWrapper.append(nameSortWrapper);
-    sortingWrapper.append(nameSortWrapperDesc);
+    sortingWrapper.append(nameSortWrapper, nameSortWrapperLabel);
+    sortingWrapper.append(nameSortWrapperDesc, nameSortWrapperDescLabel);
 
-    sortingWrapper.append(priceSortWrapper);
-    sortingWrapper.append(priceSortWrapperDesc);
+    sortingWrapper.append(priceSortWrapper, priceSortWrapperLabel);
+    sortingWrapper.append(priceSortWrapperDesc, priceSortWrapperDescLabel);
 
-    sortingWrapper.append(ratingSortWrapper);
-    sortingWrapper.append(ratingSortWrapperDesc);
+    sortingWrapper.append(ratingSortWrapper, ratingSortWrapperLabel);
+    sortingWrapper.append(ratingSortWrapperDesc, ratingSortWrapperDescLabel);
 
     this.drawPageStateButtons(filtersWrapper);
     this.cards.generateFiltersField(filtersWrapper);
