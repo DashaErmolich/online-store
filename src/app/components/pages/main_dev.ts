@@ -2,7 +2,7 @@ import { AbstractPage } from '../../abstracts/abstracts';
 import { CardsAppearance, UrlParamKey, CardsSortBy } from '../../enums/enums';
 import { cardsAppearanceSearchParam, FILTERS_VALUES_SEPARATOR } from '../../constants/constants';
 import { appRouter, cartPage } from '../router/router';
-import { MainPageProductCard } from '../cart-product-cards/cart-product-card';
+import { MainPageProductCard } from '../product-cards/product-card';
 import { SimpleCard, NumberRange } from '../../models/interfaces';
 import { appDrawer } from '../drawer/drawer';
 import { productsFilter } from '../filter/filter';

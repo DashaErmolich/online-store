@@ -142,7 +142,7 @@ class BasicProductCard {
   }
 }
 
-export class NewCard extends BasicProductCard {
+export class CartPageProductCart extends BasicProductCard {
   index: number;
   action: CartPageCardElementActions;
 
