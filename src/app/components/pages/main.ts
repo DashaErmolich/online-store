@@ -160,7 +160,6 @@ export class MainPage extends AbstractPage {
     mainWrapper.append(contentWrapper);
     mainWrapper.append(filtersCollapseBtnWrapper, filtersWrapper);
     content.append(mainWrapper);
-    //content.append(appDrawer.getSimpleButton(''))
     appRouter.updatePageLinks();
     const searchBtn = document.querySelector('.btn-outline-secondary');
     const searchField = document.querySelector('.form-control') as HTMLInputElement;
@@ -195,17 +194,10 @@ export class MainPage extends AbstractPage {
     const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-secondary');
 
     resetBtn.addEventListener('click', () => {
-      // eslint-disable-next-line no-debugger
-      // debugger
       this.clearSearchInput();
+      this.cards.properties.sortProperty = CardsSortBy.Initial;
       this.cards.removeCards();
       appRouter.navigate(RouterPath.Main);
-      // const cardsWrapper = document.querySelector('.cards-wrapper');
-      // if (cardsWrapper instanceof HTMLDivElement) {
-      //   this.cards.removeCards();
-      //   this.cards.generateCards(cardsWrapper);
-      //   this.cards.drawNewFilterRanges();
-      // }
       appRouter.handlePageContent(this.getPageContent());
     })
 
@@ -292,25 +284,3 @@ export class MainPage extends AbstractPage {
     }
   }
 }
-
-// private generateSortingSVGs(sortField: string) {   <------ union of two prev functions
-//   const svgWrapper = document.createElement('span');
-//   svgWrapper.classList.add(`svg-wrap-${sortField}`);
-
-//   const svgAsc = document.createElement('span');
-//   svgAsc.classList.add(`svg-asc-${sortField}`);
-//   svgAsc.classList.add('inline-b');
-//   svgAsc.innerHTML = `
-//     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 3H3V4H3.5V3ZM12.5 4C12.7761 4 13 3.77614 13 3.5C13 3.22386 12.7761 3 12.5 3V4ZM3.5 7H3V8H3.5V7ZM9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7V8ZM3.5 11H3V12H3.5V11ZM6.5 12C6.77614 12 7 11.7761 7 11.5C7 11.2239 6.77614 11 6.5 11V12ZM3.5 4H12.5V3H3.5V4ZM3.5 8H9.5V7H3.5V8ZM3.5 12H6.5V11H3.5V12Z" fill="#151528"></path></svg>
-//   `
-//   svgAsc.style.transform = 'rotate(0.5turn) translateY(-3px)';
-//   const svgDsc = document.createElement('span');
-//   svgDsc.classList.add(`svg-asc-${sortField}`);
-//   svgDsc.classList.add('inline-b');
-//   svgDsc.classList.add('d-none');
-//   svgDsc.innerHTML = `
-//   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 3H3V4H3.5V3ZM12.5 4C12.7761 4 13 3.77614 13 3.5C13 3.22386 12.7761 3 12.5 3V4ZM3.5 7H3V8H3.5V7ZM9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7V8ZM3.5 11H3V12H3.5V11ZM6.5 12C6.77614 12 7 11.7761 7 11.5C7 11.2239 6.77614 11 6.5 11V12ZM3.5 4H12.5V3H3.5V4ZM3.5 8H9.5V7H3.5V8ZM3.5 12H6.5V11H3.5V12Z" fill="#151528"></path></svg>
-//   `
-//   svgWrapper.append(svgAsc);
-//   svgWrapper.append(svgDsc);
-//   return svgWrapper; }
