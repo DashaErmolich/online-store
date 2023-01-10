@@ -43,7 +43,6 @@ export class Cards {
   private getProductsSortValue(key: UrlParamKey): CardsSortBy {
     const possibleValues: string[] = Object.values(CardsSortBy);
     const value = this.getValidStringValueFromUrl(key, possibleValues, CardsSortBy.Initial);
-    console.log(value);
     
     if (!possibleValues.includes(value)) {
       appRouter.updateUrlParams(key, value);
@@ -216,7 +215,6 @@ export class Cards {
         const cardsW = document.querySelector('.cards-wrapper') as HTMLDivElement;
         if (formInput.checked) {
 
-          console.log (element + ' checked');
 
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
             appRouter.updateUrlParams(UrlParamKey.Category, formInput.id, true);
@@ -236,7 +234,6 @@ export class Cards {
         }
 
         if (!formInput.checked) {
-          console.log (element + ' not checked now');
 
           if (formInput.parentElement?.parentElement?.classList.contains('filters__category')) {
 
@@ -280,20 +277,16 @@ export class Cards {
         return count;
       }
     });
-    console.log('filters gen');
+
     filterWrapper.append(filterUnit)
     wrapper.append(filterWrapper);
   }
 
   sortBy(cards: SimpleCard[], property: CardsSortBy) {
-    console.log('taken string');
-    console.log(property);
+
     const sortingField = property === CardsSortBy.Initial ? 'id' : property.split('-')[0];
     const sortingMethod = property === CardsSortBy.Initial ? 'asc' : property.split('-')[1];
-    console.log('field:');
-    console.log(sortingField);
-    console.log('method');
-    console.log(sortingMethod);
+
     if (sortingField === CardsSortPossibleFields.Initial ||
     sortingField === CardsSortPossibleFields.Price ||
     sortingField === CardsSortPossibleFields.Rating ||

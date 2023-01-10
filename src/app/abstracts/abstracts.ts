@@ -18,7 +18,7 @@ export class AbstractPage {
     const value: string | undefined = appRouter.getUrlParamsValue(urlParamsKey);
     let myValue: number = defaultValue;
     
-    if (value && Number(value)) {
+    if (value && Number(value) && Number(value) > 0) {
       myValue = Number(value);
     }
 
