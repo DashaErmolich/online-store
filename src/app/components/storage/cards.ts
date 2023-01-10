@@ -573,6 +573,7 @@ export class Cards {
 
   }
 
+
   public drawNewFilterRanges(): void {
     const filters = document.getElementById('main-products-filters');
     if (filters) {
