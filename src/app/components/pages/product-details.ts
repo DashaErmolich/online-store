@@ -60,6 +60,7 @@ export class ProductPage extends AbstractPage {
     const goHomeButton = appDrawer.getGoHomeButton();
     goHomeButton.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
+      document.getElementById('header-search-input')?.classList.remove('d-none');
     })
     notFoundContainer.append(notFoundMessage, goHomeButton)
     parentElement.append(notFoundContainer);
