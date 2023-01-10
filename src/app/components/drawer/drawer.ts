@@ -648,18 +648,21 @@ class Drawer {
     return cardTitle;
   }
 
-  getSortButton(id: string, text: string, inputClass: string): HTMLElement {
-    const label = document.createElement('label');
-    label.className = `btn btn-outline-primary ${inputClass}`;
-    label.htmlFor = id;
+  getSortButton(id: string): HTMLElement {
     const input = document.createElement('input');
     input.type = 'radio';
     input.className = 'btn-check';
     input.name = 'products-sort';
     input.id = id;
     input.setAttribute('autocomplete', 'off');
+    return input;
+  }
+
+  getSortLabel(id: string, text: string, inputClass: string): HTMLElement{
+    const label = document.createElement('label');
+    label.className = `btn btn-outline-primary ${inputClass}`;
+    label.htmlFor = id;
     label.innerHTML = text;
-    label.append(input);
     return label;
   }
 }
