@@ -50,7 +50,13 @@ export class ProductPage extends AbstractPage {
 
   private showNotFoundMessage(parentElement: HTMLElement): void {
     const notFoundContainer = appDrawer.getSimpleElement('div', 'text-center');
-    const notFoundMessage = appDrawer.getOopsErrorMessage(` Product number ${this.productPageSettings.productIndex} not found.`);
+    let messageText;
+    if (Number(this.productPageSettings.productIndex)) {
+      messageText = ` Product number ${this.productPageSettings.productIndex} not found.`;
+    } else {
+      messageText = ` Nothing was found`;
+    }
+    const notFoundMessage = appDrawer.getOopsErrorMessage(messageText);
     const goHomeButton = appDrawer.getGoHomeButton();
     goHomeButton.addEventListener('click', () => {
       appRouter.navigate(RouterPath.Main);
