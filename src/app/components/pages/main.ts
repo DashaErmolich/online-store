@@ -42,6 +42,7 @@ export class MainPage extends AbstractPage {
     this.mainPageSettings.cardsAppearance =  this.getCardsAppearance();
     this.cards.cardsAppearance =  this.getCardsAppearance();
     this.setSearchInputValue();
+    this.cards.properties.sortProperty = CardsSortBy.Initial;
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
