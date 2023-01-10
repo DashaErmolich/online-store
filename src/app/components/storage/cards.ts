@@ -260,7 +260,7 @@ export class Cards {
       formUnit.append(formInput);
 
       const formLabel = document.createElement('label');
-      formLabel.className = 'form-check-label flex-grow-1 ps-1';
+      formLabel.className = 'form-check-label flex-grow-1 ps-1 one-line-text';
       formLabel.setAttribute('for', `${element.replace(/ /g,'')}`);
       formLabel.innerText = element;
       formUnit.append(formLabel);
