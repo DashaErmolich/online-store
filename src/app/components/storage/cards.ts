@@ -361,7 +361,20 @@ export class Cards {
     
     if (this.filterRange.price === null) {
       this.filterRange.price = productsFilter.getFilterRange(UrlParamKey.Price, currentCards);
+    } else {
+      if (this.filterRange.price.min < 0 || !Number(this.filterRange.price.min)) {
+        this.filterRange.price.min = productsFilter.getFilterRange(UrlParamKey.Price, currentCards).min;
+      }
+  
+      if (this.filterRange.price.max < 0 || !Number(this.filterRange.price.max)) {
+        this.filterRange.price.max = productsFilter.getFilterRange(UrlParamKey.Price, currentCards).max;
+      }
+      appRouter.updateUrlParams(UrlParamKey.Price, this.filterRange.price);
     }
+
+
+
+
 
     if (this.filterRange.price) {
       currentCards.forEach((card: SimpleCard) => {
@@ -377,7 +390,20 @@ export class Cards {
 
     if (this.filterRange.stock === null) {
       this.filterRange.stock = productsFilter.getFilterRange(UrlParamKey.Stock, priceFilterCards);
+    } else {
+      if (this.filterRange.stock.min < 0 || !Number(this.filterRange.stock.min)) {
+        this.filterRange.stock.min = productsFilter.getFilterRange(UrlParamKey.Stock, priceFilterCards).min;
+      }
+  
+      if (this.filterRange.stock.max < 0 || !Number(this.filterRange.stock.max)) {
+        this.filterRange.stock.max = productsFilter.getFilterRange(UrlParamKey.Stock, priceFilterCards).max;
+      }
+      appRouter.updateUrlParams(UrlParamKey.Stock, this.filterRange.stock)
     }
+
+
+
+
 
     if (this.filterRange.stock) {
       priceFilterCards.forEach((card: SimpleCard) => {

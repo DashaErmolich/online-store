@@ -195,8 +195,6 @@ export class MainPage extends AbstractPage {
     const resetBtn = appDrawer.getSimpleButton('Reset filters', 'btn btn-outline-secondary');
 
     resetBtn.addEventListener('click', () => {
-      // eslint-disable-next-line no-debugger
-      // debugger
       this.clearSearchInput();
       this.cards.removeCards();
       appRouter.navigate(RouterPath.Main);
