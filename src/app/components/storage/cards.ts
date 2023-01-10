@@ -48,15 +48,6 @@ export class Cards {
       appRouter.updateUrlParams(key, value);
     }
 
-    // if (value === CardsSortBy.Price) {
-    //   return CardsSortBy.Price;
-    // } else if (value === CardsSortBy.Rating) {
-    //   return CardsSortBy.Rating;
-    // } else if (value === CardsSortBy.Title) {
-    //   return CardsSortBy.Title;
-    // } else {
-    //   return CardsSortBy.Initial;
-    // }
     switch (value) {
       case CardsSortBy.PriceAsc:
         return CardsSortBy.PriceAsc;
@@ -114,9 +105,6 @@ export class Cards {
   generateFiltersField(wrapper: HTMLElement) { // generate appearance + filters
     const appearanceWrapper = document.createElement('div');
     appearanceWrapper.className = 'filters__window mb-3 p-3';
-    //const appearanceTitle = document.createElement('h3');
-    //appearanceTitle.innerText = 'Appearance:';
-    //appearanceWrapper.append(appearanceTitle);
     const appearanceCheckers = document.createElement('div');
     appearanceCheckers.classList.add('filters__window-checkers');
     
@@ -146,7 +134,6 @@ export class Cards {
     this.drawFilterRanges(filtersWrapper);
 
     wrapper.append(appearanceWrapper);
-    //wrapper.append(productsOnPageQtyWrapper);
     wrapper.append(filtersWrapper);
 
   }
@@ -175,12 +162,6 @@ export class Cards {
     formLabel.classList.add('form-check-label');
     formLabel.setAttribute('for', `appearanceRadio${appearance}`);
     formLabel.id = `radio-label-${appearance}`;
-    //formLabel.innerText = appearance;
-    // if (formLabel.id === 'radio-label-table') {
-    //   formLabel.className = 'bi bi-grid fs-3'
-    // } else {
-    //   formLabel.className = 'bi bi-view-list fs-3'
-    // }
     formWrapper.append(formLabel);
     wrapper.append(formWrapper);
   }
