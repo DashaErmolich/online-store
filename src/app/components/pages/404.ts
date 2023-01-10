@@ -12,6 +12,7 @@ export class NotFoundPage extends AbstractPage {
 
   getPageContent(): PageComponents['content'] {
     cartPage.updateCartState();
+    document.getElementById('header-search-input')?.classList.add('d-none');
     const container = document.createElement('div');
     container.className = 'd-flex align-items-center justify-content-center';
     
