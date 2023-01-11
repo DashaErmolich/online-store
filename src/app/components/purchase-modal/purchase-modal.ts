@@ -80,9 +80,7 @@ export class PurchaseModal {
     
     creditCardNumberInput.addEventListener('input', () => {
       this.validateNumberInput(creditCardNumberInput);
-      if (creditCardNumberInput.value.length <= 1) {
-        this.setCreditCardIcon(creditCardNumberInput);
-      }
+      this.setCreditCardIcon(creditCardNumberInput);
       this.validateCardNumberInput(creditCardNumberInput);
     })
     
