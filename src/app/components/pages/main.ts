@@ -43,6 +43,7 @@ export class MainPage extends AbstractPage {
     this.cards.cardsAppearance =  this.getCardsAppearance();
     this.setSearchInputValue();
     this.cards.properties.sortProperty = CardsSortBy.Initial;
+    document.getElementById('header-search-input')?.classList.remove('d-none');
 
     this.setPageTitle('Online Shop');
     const content = document.createElement('div');
