@@ -424,7 +424,9 @@ export class Cards {
     && !productCard.card.category.toLowerCase().startsWith(searchProp.toLowerCase())
     && !productCard.card.price.toString().startsWith(searchProp.toLowerCase())
     && !productCard.card.stock.toString().startsWith(searchProp.toLowerCase())
-    && !productCard.card.rating.toString().startsWith(searchProp.toLowerCase())) {
+    && !productCard.card.rating.toString().startsWith(searchProp.toLowerCase())
+    && !productCard.card.discountPercentage.toString().startsWith(searchProp.toLowerCase())
+    && !productCard.card.description.toLowerCase().startsWith(searchProp.toLowerCase())) {
       card.classList.add('d-none');
     } else {
       card.classList.remove('d-none');
