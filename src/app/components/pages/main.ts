@@ -42,7 +42,7 @@ export class MainPage extends AbstractPage {
     this.mainPageSettings.cardsAppearance =  this.getCardsAppearance();
     this.cards.cardsAppearance =  this.getCardsAppearance();
     this.setSearchInputValue();
-    this.cards.properties.sortProperty = CardsSortBy.Initial;
+    //this.cards.properties.sortProperty = CardsSortBy.Initial;
     document.getElementById('header-search-input')?.classList.remove('d-none');
 
     this.setPageTitle('Online Shop');
@@ -100,6 +100,9 @@ export class MainPage extends AbstractPage {
 
     const nameSortWrapperLabel = appDrawer.getSortLabel('name-down', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-down');
     const nameSortWrapper = appDrawer.getSortButton('name-down');
+    if (this.cards.properties.sortProperty === CardsSortBy.TitleAsc) {
+      nameSortWrapper.checked = true;
+    }
     nameSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleAsc);
       this.cards.removeCards();
@@ -109,6 +112,9 @@ export class MainPage extends AbstractPage {
 
     const nameSortWrapperDescLabel = appDrawer.getSortLabel('name-up', 'Name', 'btn btn-outline-secondary bi bi-sort-alpha-up');
     const nameSortWrapperDesc = appDrawer.getSortButton('name-up');
+    if (this.cards.properties.sortProperty === CardsSortBy.TitleDesc) {
+      nameSortWrapperDesc.checked = true;
+    }
     nameSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.TitleDesc);
       this.cards.removeCards();
@@ -118,6 +124,9 @@ export class MainPage extends AbstractPage {
 
     const priceSortWrapperLabel = appDrawer.getSortLabel('price-up', 'Price', 'btn btn-outline-secondary bi bi-sort-up');
     const priceSortWrapper = appDrawer.getSortButton('price-up');
+    if (this.cards.properties.sortProperty === CardsSortBy.PriceAsc) {
+      priceSortWrapper.checked = true;
+    }
     priceSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceAsc);
       this.cards.removeCards();
@@ -127,6 +136,9 @@ export class MainPage extends AbstractPage {
 
     const priceSortWrapperDescLabel = appDrawer.getSortLabel('price-down', 'Price', 'btn btn-outline-secondary bi bi-sort-down');
     const priceSortWrapperDesc = appDrawer.getSortButton('price-down');
+    if (this.cards.properties.sortProperty === CardsSortBy.PriceDesc) {
+      priceSortWrapperDesc.checked = true;
+    }
     priceSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.PriceDesc);
       this.cards.removeCards();
@@ -136,6 +148,9 @@ export class MainPage extends AbstractPage {
 
     const ratingSortWrapperLabel = appDrawer.getSortLabel('rating-up', 'Rating', 'btn btn-outline-secondary bi bi-sort-up');
     const ratingSortWrapper = appDrawer.getSortButton('rating-up');
+    if (this.cards.properties.sortProperty === CardsSortBy.RatingAsc) {
+      ratingSortWrapper.checked = true;
+    }
     ratingSortWrapper.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingAsc);
       this.cards.removeCards();
@@ -145,6 +160,9 @@ export class MainPage extends AbstractPage {
 
     const ratingSortWrapperDescLabel = appDrawer.getSortLabel('rating-down', 'Rating', 'btn btn-outline-secondary bi bi-sort-down');
     const ratingSortWrapperDesc = appDrawer.getSortButton('rating-down');
+    if (this.cards.properties.sortProperty === CardsSortBy.RatingDesc) {
+      ratingSortWrapperDesc.checked = true;
+    }
     ratingSortWrapperDesc.addEventListener('click', () => {
       appRouter.updateUrlParams(UrlParamKey.Sort, CardsSortBy.RatingDesc);
       this.cards.removeCards();
