@@ -648,7 +648,7 @@ class Drawer {
     return cardTitle;
   }
 
-  getSortButton(id: string): HTMLElement {
+  getSortButton(id: string): HTMLInputElement {
     const input = document.createElement('input');
     input.type = 'radio';
     input.className = 'btn-check';
