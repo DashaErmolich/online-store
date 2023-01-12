@@ -52,13 +52,14 @@ export class PurchaseModal {
   private getFormInputUserTel(): HTMLInputElement {
     const userTelInput = appDrawer.getPurchaseModalInput(formUserTelModel);
     userTelInput.addEventListener('input', () => {
-
       if (userTelInput.value.length === 1) {
         this.validateUserTelInput(userTelInput)
       }
 
       if (userTelInput.value.length >= 2) {
+        userTelInput.value = userTelInput.value.split('+').join('');
         this.validateNumberInput(userTelInput)
+        this.validateNumberInputFinal(userTelInput);
       }
     })
 
@@ -79,6 +80,7 @@ export class PurchaseModal {
     const creditCardNumberInput = appDrawer.getPurchaseModalInput(formCardNumberModel);
     
     creditCardNumberInput.addEventListener('input', () => {
+      creditCardNumberInput.value = creditCardNumberInput.value.split(' ').join('');
       this.validateNumberInput(creditCardNumberInput);
       this.setCreditCardIcon(creditCardNumberInput);
       this.validateCardNumberInput(creditCardNumberInput);
@@ -91,6 +93,7 @@ export class PurchaseModal {
     const creditCardExpirationInput = appDrawer.getPurchaseModalInput(formCardExpirationModel);
     
     creditCardExpirationInput.addEventListener('input', () => {
+      creditCardExpirationInput.value = creditCardExpirationInput.value.split('/').join('');
       this.validateNumberInput(creditCardExpirationInput);
       this.validateCardExpirationInput(creditCardExpirationInput);
     })
@@ -114,6 +117,13 @@ export class PurchaseModal {
 
       if (!input.value[input.value.length - 1].match(numberPattern)) {
         input.value = input.value.slice(0, -1);
+      }
+
+      if (!input.value.match(numberPattern)) {
+        const valueArr = input.value.split('');
+        const itemIndex = valueArr.findIndex((item) => !item.match(numberPattern));
+        valueArr.splice(itemIndex, 1);
+        input.value = valueArr.join('');
       }
     }
   }
@@ -149,20 +159,53 @@ export class PurchaseModal {
   }
 
   private validateCardExpirationInput(input: HTMLInputElement): void {
-    if (input.value.length === 3) {
-      input.value = `${input.value[0]}${input.value[1]}/${input.value[2]}`;
+    if (input.value.length) {
+      const current = input.value.split('');
+      const myInput: string[] = [];
+      current.forEach((item, idx) => {
+        if (idx === 2) {
+          myInput.push('/');
+          myInput.push(item);
+        } else {
+          myInput.push(item);
+        }
+      })
+      input.value = myInput.join('');
     }
   }
 
   private validateCardNumberInput(input: HTMLInputElement): void {
-    const separateDigitGroupLength = 4;
 
-    if (input.value.length && input.value.length % (separateDigitGroupLength + 1) === 0) {
-      const separateDigitGroupLastDigitIndex = input.value.length - 1;
-      const newInputValue: string[] = input.value.split('');
-      newInputValue.splice(separateDigitGroupLastDigitIndex, 0, ' ');
-      input.value = newInputValue.join('');
+    if (input.value.length) {
+      const current = input.value.split('');
+      const myInput: string[] = [];
+      current.forEach((item, idx) => {
+        if (idx === 4 || idx === 8 || idx === 12) {
+          myInput.push(' ');
+          myInput.push(item);
+        } else {
+          myInput.push(item);
+        }
+      })
+      input.value = myInput.join('');
     }
+  }
+
+  private validateNumberInputFinal(input: HTMLInputElement): void {
+    if (input.value.length) {
+      const current = input.value.split('');
+      const myInput: string[] = [];
+      current.forEach((item, idx) => {
+        if (idx === 0) {
+          myInput.push('+');
+          myInput.push(item);
+        } else {
+          myInput.push(item);
+        }
+      })
+      input.value = myInput.join('');
+    }
+  
   }
 
   private validateForm(event: Event, form: HTMLFormElement, modal: HTMLElement): void {

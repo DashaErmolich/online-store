@@ -75,6 +75,7 @@ export const formCardNumberModel: FormInput = {
   placeholder: '1234 1234 1234 1234',
   inputType: 'text',
   validationParameters: {
+    pattern: '^[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}$',
     minLength: 19,
     maxLength: 19,
   },
@@ -101,6 +102,7 @@ export const formCardCVVModel: FormInput = {
   placeholder: '123',
   inputType: 'text',
   validationParameters: {
+    pattern: '^[0-9]{3}$',
     minLength: 3,
     maxLength: 3,
   },
