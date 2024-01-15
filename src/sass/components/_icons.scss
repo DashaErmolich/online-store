@@ -1,0 +1,73 @@
+.bi-cart {
+  font-size: 2rem;
+}
+
+.bi-github {
+  color: black;
+}
+
+.rs-logo {
+  width: 50px;
+}
+
+.filters__window-checkers {
+  .form-check {
+    position: relative;
+    width: $size-cards-appearance;
+    height: $size-cards-appearance;
+  }
+} 
+
+#appearanceRadiorow,
+#appearanceRadiotable {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
+  z-index: 2;
+  margin: 0;
+  cursor: pointer;
+}
+
+#radio-label-table {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
+  z-index: 1;
+  background: url(appIcons/grid.svg) no-repeat;
+  background-size: contain;
+  opacity: .5;
+}
+
+#radio-label-row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
+  z-index: 1;
+  background: url(appIcons/view-list.svg) no-repeat;
+  background-size: contain;
+  opacity: .5;
+}
+
+#appearanceRadiotable:checked + #radio-label-table,
+#appearanceRadiorow:checked + #radio-label-row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $size-cards-appearance;
+  height: $size-cards-appearance;
+  z-index: 1;
+  opacity: 1;
+}

@@ -1,0 +1,15 @@
+//Visit https://www.learnhowtoprogram.com/user-interfaces/building-layouts-preprocessors/7-1-sass-architecture
+
+@import './abstracts/variables';
+
+@import './base/typography';
+@import './base/base';
+
+@import './components/cards';
+@import './components/icons';
+@import './components/slider';
+@import './components/ranges';
+
+@import './layout/header';
+
+@import './pages/home'

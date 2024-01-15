@@ -1,0 +1,29 @@
+.card-image-wrapper_custom {
+  height: 200px;
+}
+
+.card-image-wrapper_custom_cart {
+  height: 250px;
+}
+
+.card-image_custom {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.two-line-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.one-line-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
