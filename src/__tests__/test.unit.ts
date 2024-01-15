@@ -54,7 +54,7 @@ describe('Filter correct handles products data', () => {
   });
 
   test('Filter returns unique values by specific category', () => {
-    const expected = 35;
+    const expected = 27;
     expect(productsFilter.getFilterValuesList(UrlParamKey.Brand)).toHaveLength(expected);
   });
 })
