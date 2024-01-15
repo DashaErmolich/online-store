@@ -10,13 +10,13 @@ export const possibleCards = {
       "stock": 94,
       "brand": "Apple",
       "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/1/1.jpg",
-        // "https://i.dummyjson.com/data/products/1/2.jpg",
-        "https://i.dummyjson.com/data/products/1/3.jpg",
-        "https://i.dummyjson.com/data/products/1/4.jpg",
-        // "https://i.dummyjson.com/data/products/1/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/1/1.jpg",
+        "https://cdn.dummyjson.com/product-images/1/2.jpg",
+        "https://cdn.dummyjson.com/product-images/1/3.jpg",
+        "https://cdn.dummyjson.com/product-images/1/4.jpg",
+        "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
       ]
     },
     {
@@ -29,12 +29,12 @@ export const possibleCards = {
       "stock": 34,
       "brand": "Apple",
       "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/2/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/2/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/2/1.jpg",
-        "https://i.dummyjson.com/data/products/2/2.jpg",
-        "https://i.dummyjson.com/data/products/2/3.jpg",
-        "https://i.dummyjson.com/data/products/2/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/2/1.jpg",
+        "https://cdn.dummyjson.com/product-images/2/2.jpg",
+        "https://cdn.dummyjson.com/product-images/2/3.jpg",
+        "https://cdn.dummyjson.com/product-images/2/thumbnail.jpg"
       ]
     },
     {
@@ -47,9 +47,9 @@ export const possibleCards = {
       "stock": 36,
       "brand": "Samsung",
       "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/3/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/3/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/3/1.jpg"
+        "https://cdn.dummyjson.com/product-images/3/1.jpg"
       ]
     },
     {
@@ -62,13 +62,13 @@ export const possibleCards = {
       "stock": 123,
       "brand": "OPPO",
       "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/4/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/4/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/4/1.jpg",
-        "https://i.dummyjson.com/data/products/4/2.jpg",
-        "https://i.dummyjson.com/data/products/4/3.jpg",
-        "https://i.dummyjson.com/data/products/4/4.jpg",
-        "https://i.dummyjson.com/data/products/4/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/4/1.jpg",
+        "https://cdn.dummyjson.com/product-images/4/2.jpg",
+        "https://cdn.dummyjson.com/product-images/4/3.jpg",
+        "https://cdn.dummyjson.com/product-images/4/4.jpg",
+        "https://cdn.dummyjson.com/product-images/4/thumbnail.jpg"
       ]
     },
     {
@@ -81,11 +81,11 @@ export const possibleCards = {
       "stock": 32,
       "brand": "Huawei",
       "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/5/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/5/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/5/1.jpg",
-        "https://i.dummyjson.com/data/products/5/2.jpg",
-        "https://i.dummyjson.com/data/products/5/3.jpg"
+        "https://cdn.dummyjson.com/product-images/5/1.jpg",
+        "https://cdn.dummyjson.com/product-images/5/2.jpg",
+        "https://cdn.dummyjson.com/product-images/5/3.jpg"
       ]
     },
     {
@@ -98,12 +98,12 @@ export const possibleCards = {
       "stock": 83,
       "brand": "Apple",
       "category": "laptops",
-      "thumbnail": "https://i.dummyjson.com/data/products/6/thumbnail.png",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/6/thumbnail.png",
       "images": [
-        "https://i.dummyjson.com/data/products/6/1.png",
-        "https://i.dummyjson.com/data/products/6/2.jpg",
-        "https://i.dummyjson.com/data/products/6/3.png",
-        "https://i.dummyjson.com/data/products/6/4.jpg"
+        "https://cdn.dummyjson.com/product-images/6/1.png",
+        "https://cdn.dummyjson.com/product-images/6/2.jpg",
+        "https://cdn.dummyjson.com/product-images/6/3.png",
+        "https://cdn.dummyjson.com/product-images/6/4.jpg"
       ]
     },
     {
@@ -116,12 +116,12 @@ export const possibleCards = {
       "stock": 50,
       "brand": "Samsung",
       "category": "laptops",
-      "thumbnail": "https://i.dummyjson.com/data/products/7/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/7/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/7/1.jpg",
-        "https://i.dummyjson.com/data/products/7/2.jpg",
-        "https://i.dummyjson.com/data/products/7/3.jpg",
-        "https://i.dummyjson.com/data/products/7/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/7/1.jpg",
+        "https://cdn.dummyjson.com/product-images/7/2.jpg",
+        "https://cdn.dummyjson.com/product-images/7/3.jpg",
+        "https://cdn.dummyjson.com/product-images/7/thumbnail.jpg"
       ]
     },
     {
@@ -134,13 +134,13 @@ export const possibleCards = {
       "stock": 68,
       "brand": "Microsoft Surface",
       "category": "laptops",
-      "thumbnail": "https://i.dummyjson.com/data/products/8/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/8/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/8/1.jpg",
-        "https://i.dummyjson.com/data/products/8/2.jpg",
-        "https://i.dummyjson.com/data/products/8/3.jpg",
-        "https://i.dummyjson.com/data/products/8/4.jpg",
-        "https://i.dummyjson.com/data/products/8/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/8/1.jpg",
+        "https://cdn.dummyjson.com/product-images/8/2.jpg",
+        "https://cdn.dummyjson.com/product-images/8/3.jpg",
+        "https://cdn.dummyjson.com/product-images/8/4.jpg",
+        "https://cdn.dummyjson.com/product-images/8/thumbnail.jpg"
       ]
     },
     {
@@ -153,13 +153,13 @@ export const possibleCards = {
       "stock": 96,
       "brand": "Infinix",
       "category": "laptops",
-      "thumbnail": "https://i.dummyjson.com/data/products/9/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/9/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/9/1.jpg",
-        "https://i.dummyjson.com/data/products/9/2.png",
-        "https://i.dummyjson.com/data/products/9/3.png",
-        "https://i.dummyjson.com/data/products/9/4.jpg",
-        "https://i.dummyjson.com/data/products/9/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/9/1.jpg",
+        "https://cdn.dummyjson.com/product-images/9/2.png",
+        "https://cdn.dummyjson.com/product-images/9/3.png",
+        "https://cdn.dummyjson.com/product-images/9/4.jpg",
+        "https://cdn.dummyjson.com/product-images/9/thumbnail.jpg"
       ]
     },
     {
@@ -172,12 +172,12 @@ export const possibleCards = {
       "stock": 89,
       "brand": "HP Pavilion",
       "category": "laptops",
-      "thumbnail": "https://i.dummyjson.com/data/products/10/thumbnail.jpeg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/10/thumbnail.jpeg",
       "images": [
-        "https://i.dummyjson.com/data/products/10/1.jpg",
-        // "https://i.dummyjson.com/data/products/10/2.jpg",
-        "https://i.dummyjson.com/data/products/10/3.jpg",
-        "https://i.dummyjson.com/data/products/10/thumbnail.jpeg"
+        "https://cdn.dummyjson.com/product-images/10/1.jpg",
+        "https://cdn.dummyjson.com/product-images/10/2.jpg",
+        "https://cdn.dummyjson.com/product-images/10/3.jpg",
+        "https://cdn.dummyjson.com/product-images/10/thumbnail.jpeg"
       ]
     },
     {
@@ -190,12 +190,12 @@ export const possibleCards = {
       "stock": 65,
       "brand": "Impression of Acqua Di Gio",
       "category": "fragrances",
-      "thumbnail": "https://i.dummyjson.com/data/products/11/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/11/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/11/1.jpg",
-        "https://i.dummyjson.com/data/products/11/2.jpg",
-        "https://i.dummyjson.com/data/products/11/3.jpg",
-        "https://i.dummyjson.com/data/products/11/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/11/1.jpg",
+        "https://cdn.dummyjson.com/product-images/11/2.jpg",
+        "https://cdn.dummyjson.com/product-images/11/3.jpg",
+        "https://cdn.dummyjson.com/product-images/11/thumbnail.jpg"
       ]
     },
     {
@@ -208,13 +208,13 @@ export const possibleCards = {
       "stock": 52,
       "brand": "Royal_Mirage",
       "category": "fragrances",
-      "thumbnail": "https://i.dummyjson.com/data/products/12/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/12/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/12/1.jpg",
-        "https://i.dummyjson.com/data/products/12/2.jpg",
-        "https://i.dummyjson.com/data/products/12/3.png",
-        "https://i.dummyjson.com/data/products/12/4.jpg",
-        "https://i.dummyjson.com/data/products/12/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/12/1.jpg",
+        "https://cdn.dummyjson.com/product-images/12/2.jpg",
+        "https://cdn.dummyjson.com/product-images/12/3.png",
+        "https://cdn.dummyjson.com/product-images/12/4.jpg",
+        "https://cdn.dummyjson.com/product-images/12/thumbnail.jpg"
       ]
     },
     {
@@ -227,13 +227,13 @@ export const possibleCards = {
       "stock": 61,
       "brand": "Fog Scent Xpressio",
       "category": "fragrances",
-      "thumbnail": "https://i.dummyjson.com/data/products/13/thumbnail.webp",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/13/thumbnail.webp",
       "images": [
-        "https://i.dummyjson.com/data/products/13/1.jpg",
-        "https://i.dummyjson.com/data/products/13/2.png",
-        "https://i.dummyjson.com/data/products/13/3.jpg",
-        "https://i.dummyjson.com/data/products/13/4.jpg",
-        "https://i.dummyjson.com/data/products/13/thumbnail.webp"
+        "https://cdn.dummyjson.com/product-images/13/1.jpg",
+        "https://cdn.dummyjson.com/product-images/13/2.png",
+        "https://cdn.dummyjson.com/product-images/13/3.jpg",
+        "https://cdn.dummyjson.com/product-images/13/4.jpg",
+        "https://cdn.dummyjson.com/product-images/13/thumbnail.webp"
       ]
     },
     {
@@ -246,12 +246,12 @@ export const possibleCards = {
       "stock": 114,
       "brand": "Al Munakh",
       "category": "fragrances",
-      "thumbnail": "https://i.dummyjson.com/data/products/14/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/14/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/14/1.jpg",
-        "https://i.dummyjson.com/data/products/14/2.jpg",
-        "https://i.dummyjson.com/data/products/14/3.jpg",
-        "https://i.dummyjson.com/data/products/14/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/14/1.jpg",
+        "https://cdn.dummyjson.com/product-images/14/2.jpg",
+        "https://cdn.dummyjson.com/product-images/14/3.jpg",
+        "https://cdn.dummyjson.com/product-images/14/thumbnail.jpg"
       ]
     },
     {
@@ -264,13 +264,13 @@ export const possibleCards = {
       "stock": 105,
       "brand": "Lord - Al-Rehab",
       "category": "fragrances",
-      "thumbnail": "https://i.dummyjson.com/data/products/15/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/15/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/15/1.jpg",
-        "https://i.dummyjson.com/data/products/15/2.jpg",
-        "https://i.dummyjson.com/data/products/15/3.jpg",
-        "https://i.dummyjson.com/data/products/15/4.jpg",
-        "https://i.dummyjson.com/data/products/15/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/15/1.jpg",
+        "https://cdn.dummyjson.com/product-images/15/2.jpg",
+        "https://cdn.dummyjson.com/product-images/15/3.jpg",
+        "https://cdn.dummyjson.com/product-images/15/4.jpg",
+        "https://cdn.dummyjson.com/product-images/15/thumbnail.jpg"
       ]
     },
     {
@@ -283,13 +283,13 @@ export const possibleCards = {
       "stock": 110,
       "brand": "L'Oreal Paris",
       "category": "skincare",
-      "thumbnail": "https://i.dummyjson.com/data/products/16/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/16/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/16/1.png",
-        "https://i.dummyjson.com/data/products/16/2.webp",
-        "https://i.dummyjson.com/data/products/16/3.jpg",
-        "https://i.dummyjson.com/data/products/16/4.jpg",
-        // "https://i.dummyjson.com/data/products/16/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/16/1.png",
+        "https://cdn.dummyjson.com/product-images/16/2.webp",
+        "https://cdn.dummyjson.com/product-images/16/3.jpg",
+        "https://cdn.dummyjson.com/product-images/16/4.jpg",
+        "https://cdn.dummyjson.com/product-images/16/thumbnail.jpg"
       ]
     },
     {
@@ -302,12 +302,12 @@ export const possibleCards = {
       "stock": 78,
       "brand": "Hemani Tea",
       "category": "skincare",
-      "thumbnail": "https://i.dummyjson.com/data/products/17/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/17/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/17/1.jpg",
-        "https://i.dummyjson.com/data/products/17/2.jpg",
-        "https://i.dummyjson.com/data/products/17/3.jpg",
-        "https://i.dummyjson.com/data/products/17/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/17/1.jpg",
+        "https://cdn.dummyjson.com/product-images/17/2.jpg",
+        "https://cdn.dummyjson.com/product-images/17/3.jpg",
+        "https://cdn.dummyjson.com/product-images/17/thumbnail.jpg"
       ]
     },
     {
@@ -320,13 +320,13 @@ export const possibleCards = {
       "stock": 88,
       "brand": "Dermive",
       "category": "skincare",
-      "thumbnail": "https://i.dummyjson.com/data/products/18/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/18/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/18/1.jpg",
-        "https://i.dummyjson.com/data/products/18/2.jpg",
-        "https://i.dummyjson.com/data/products/18/3.jpg",
-        "https://i.dummyjson.com/data/products/18/4.jpg",
-        "https://i.dummyjson.com/data/products/18/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/18/1.jpg",
+        "https://cdn.dummyjson.com/product-images/18/2.jpg",
+        "https://cdn.dummyjson.com/product-images/18/3.jpg",
+        "https://cdn.dummyjson.com/product-images/18/4.jpg",
+        "https://cdn.dummyjson.com/product-images/18/thumbnail.jpg"
       ]
     },
     {
@@ -339,12 +339,12 @@ export const possibleCards = {
       "stock": 54,
       "brand": "ROREC White Rice",
       "category": "skincare",
-      "thumbnail": "https://i.dummyjson.com/data/products/19/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/19/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/19/1.jpg",
-        "https://i.dummyjson.com/data/products/19/2.jpg",
-        "https://i.dummyjson.com/data/products/19/3.png",
-        "https://i.dummyjson.com/data/products/19/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/19/1.jpg",
+        "https://cdn.dummyjson.com/product-images/19/2.jpg",
+        "https://cdn.dummyjson.com/product-images/19/3.png",
+        "https://cdn.dummyjson.com/product-images/19/thumbnail.jpg"
       ]
     },
     {
@@ -357,13 +357,13 @@ export const possibleCards = {
       "stock": 140,
       "brand": "Fair & Clear",
       "category": "skincare",
-      "thumbnail": "https://i.dummyjson.com/data/products/20/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/20/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/20/1.jpg",
-        "https://i.dummyjson.com/data/products/20/2.jpg",
-        "https://i.dummyjson.com/data/products/20/3.jpg",
-        // "https://i.dummyjson.com/data/products/20/4.jpg",
-        // "https://i.dummyjson.com/data/products/20/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/20/1.jpg",
+        "https://cdn.dummyjson.com/product-images/20/2.jpg",
+        "https://cdn.dummyjson.com/product-images/20/3.jpg",
+        "https://cdn.dummyjson.com/product-images/20/4.jpg",
+        "https://cdn.dummyjson.com/product-images/20/thumbnail.jpg"
       ]
     },
     {
@@ -376,11 +376,11 @@ export const possibleCards = {
       "stock": 133,
       "brand": "Saaf & Khaas",
       "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/21/thumbnail.png",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/21/thumbnail.png",
       "images": [
-        "https://i.dummyjson.com/data/products/21/1.png",
-        "https://i.dummyjson.com/data/products/21/2.jpg",
-        "https://i.dummyjson.com/data/products/21/3.jpg"
+        "https://cdn.dummyjson.com/product-images/21/1.png",
+        "https://cdn.dummyjson.com/product-images/21/2.jpg",
+        "https://cdn.dummyjson.com/product-images/21/3.jpg"
       ]
     },
     {
@@ -393,11 +393,11 @@ export const possibleCards = {
       "stock": 146,
       "brand": "Bake Parlor Big",
       "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/22/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/22/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/22/1.jpg",
-        "https://i.dummyjson.com/data/products/22/2.jpg",
-        "https://i.dummyjson.com/data/products/22/3.jpg"
+        "https://cdn.dummyjson.com/product-images/22/1.jpg",
+        "https://cdn.dummyjson.com/product-images/22/2.jpg",
+        "https://cdn.dummyjson.com/product-images/22/3.jpg"
       ]
     },
     {
@@ -410,13 +410,13 @@ export const possibleCards = {
       "stock": 26,
       "brand": "Baking Food Items",
       "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/23/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/23/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/23/1.jpg",
-        "https://i.dummyjson.com/data/products/23/2.jpg",
-        "https://i.dummyjson.com/data/products/23/3.jpg",
-        "https://i.dummyjson.com/data/products/23/4.jpg",
-        // "https://i.dummyjson.com/data/products/23/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/23/1.jpg",
+        "https://cdn.dummyjson.com/product-images/23/2.jpg",
+        "https://cdn.dummyjson.com/product-images/23/3.jpg",
+        "https://cdn.dummyjson.com/product-images/23/4.jpg",
+        "https://cdn.dummyjson.com/product-images/23/thumbnail.jpg"
       ]
     },
     {
@@ -429,13 +429,13 @@ export const possibleCards = {
       "stock": 113,
       "brand": "fauji",
       "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/24/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/24/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/24/1.jpg",
-        // "https://i.dummyjson.com/data/products/24/2.jpg",
-        "https://i.dummyjson.com/data/products/24/3.jpg",
-        "https://i.dummyjson.com/data/products/24/4.jpg",
-        "https://i.dummyjson.com/data/products/24/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/24/1.jpg",
+        "https://cdn.dummyjson.com/product-images/24/2.jpg",
+        "https://cdn.dummyjson.com/product-images/24/3.jpg",
+        "https://cdn.dummyjson.com/product-images/24/4.jpg",
+        "https://cdn.dummyjson.com/product-images/24/thumbnail.jpg"
       ]
     },
     {
@@ -448,13 +448,13 @@ export const possibleCards = {
       "stock": 47,
       "brand": "Dry Rose",
       "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/25/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/25/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/25/1.png",
-        "https://i.dummyjson.com/data/products/25/2.jpg",
-        "https://i.dummyjson.com/data/products/25/3.png",
-        "https://i.dummyjson.com/data/products/25/4.jpg",
-        "https://i.dummyjson.com/data/products/25/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/25/1.png",
+        "https://cdn.dummyjson.com/product-images/25/2.jpg",
+        "https://cdn.dummyjson.com/product-images/25/3.png",
+        "https://cdn.dummyjson.com/product-images/25/4.jpg",
+        "https://cdn.dummyjson.com/product-images/25/thumbnail.jpg"
       ]
     },
     {
@@ -467,14 +467,14 @@ export const possibleCards = {
       "stock": 131,
       "brand": "Boho Decor",
       "category": "home-decoration",
-      "thumbnail": "https://i.dummyjson.com/data/products/26/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/26/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/26/1.jpg",
-        "https://i.dummyjson.com/data/products/26/2.jpg",
-        "https://i.dummyjson.com/data/products/26/3.jpg",
-        "https://i.dummyjson.com/data/products/26/4.jpg",
-        "https://i.dummyjson.com/data/products/26/5.jpg",
-        "https://i.dummyjson.com/data/products/26/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/26/1.jpg",
+        "https://cdn.dummyjson.com/product-images/26/2.jpg",
+        "https://cdn.dummyjson.com/product-images/26/3.jpg",
+        "https://cdn.dummyjson.com/product-images/26/4.jpg",
+        "https://cdn.dummyjson.com/product-images/26/5.jpg",
+        "https://cdn.dummyjson.com/product-images/26/thumbnail.jpg"
       ]
     },
     {
@@ -487,13 +487,13 @@ export const possibleCards = {
       "stock": 17,
       "brand": "Flying Wooden",
       "category": "home-decoration",
-      "thumbnail": "https://i.dummyjson.com/data/products/27/thumbnail.webp",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/27/thumbnail.webp",
       "images": [
-        "https://i.dummyjson.com/data/products/27/1.jpg",
-        "https://i.dummyjson.com/data/products/27/2.jpg",
-        "https://i.dummyjson.com/data/products/27/3.jpg",
-        "https://i.dummyjson.com/data/products/27/4.jpg",
-        "https://i.dummyjson.com/data/products/27/thumbnail.webp"
+        "https://cdn.dummyjson.com/product-images/27/1.jpg",
+        "https://cdn.dummyjson.com/product-images/27/2.jpg",
+        "https://cdn.dummyjson.com/product-images/27/3.jpg",
+        "https://cdn.dummyjson.com/product-images/27/4.jpg",
+        "https://cdn.dummyjson.com/product-images/27/thumbnail.webp"
       ]
     },
     {
@@ -506,13 +506,13 @@ export const possibleCards = {
       "stock": 54,
       "brand": "LED Lights",
       "category": "home-decoration",
-      "thumbnail": "https://i.dummyjson.com/data/products/28/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/28/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/28/1.jpg",
-        "https://i.dummyjson.com/data/products/28/2.jpg",
-        "https://i.dummyjson.com/data/products/28/3.png",
-        "https://i.dummyjson.com/data/products/28/4.jpg",
-        "https://i.dummyjson.com/data/products/28/thumbnail.jpg"
+        "https://cdn.dummyjson.com/product-images/28/1.jpg",
+        "https://cdn.dummyjson.com/product-images/28/2.jpg",
+        "https://cdn.dummyjson.com/product-images/28/3.png",
+        "https://cdn.dummyjson.com/product-images/28/4.jpg",
+        "https://cdn.dummyjson.com/product-images/28/thumbnail.jpg"
       ]
     },
     {
@@ -525,13 +525,13 @@ export const possibleCards = {
       "stock": 7,
       "brand": "luxury palace",
       "category": "home-decoration",
-      "thumbnail": "https://i.dummyjson.com/data/products/29/thumbnail.webp",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/29/thumbnail.webp",
       "images": [
-        "https://i.dummyjson.com/data/products/29/1.jpg",
-        "https://i.dummyjson.com/data/products/29/2.jpg",
-        "https://i.dummyjson.com/data/products/29/3.webp",
-        // "https://i.dummyjson.com/data/products/29/4.webp",
-        "https://i.dummyjson.com/data/products/29/thumbnail.webp"
+        "https://cdn.dummyjson.com/product-images/29/1.jpg",
+        "https://cdn.dummyjson.com/product-images/29/2.jpg",
+        "https://cdn.dummyjson.com/product-images/29/3.webp",
+        "https://cdn.dummyjson.com/product-images/29/4.webp",
+        "https://cdn.dummyjson.com/product-images/29/thumbnail.webp"
       ]
     },
     {
@@ -544,199 +544,16 @@ export const possibleCards = {
       "stock": 54,
       "brand": "Golden",
       "category": "home-decoration",
-      "thumbnail": "https://i.dummyjson.com/data/products/30/thumbnail.jpg",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/30/thumbnail.jpg",
       "images": [
-        "https://i.dummyjson.com/data/products/30/1.jpg",
-        "https://i.dummyjson.com/data/products/30/2.jpg",
-        "https://i.dummyjson.com/data/products/30/3.jpg",
-        "https://i.dummyjson.com/data/products/30/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 31,
-      "title": "Mornadi Velvet Bed",
-      "description": "Mornadi Velvet Bed Base with Headboard Slats Support Classic Style Bedroom Furniture Bed Set",
-      "price": 40,
-      "discountPercentage": 17,
-      "rating": 4.16,
-      "stock": 140,
-      "brand": "Furniture Bed Set",
-      "category": "furniture",
-      "thumbnail": "https://i.dummyjson.com/data/products/31/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/31/1.jpg",
-        "https://i.dummyjson.com/data/products/31/2.jpg",
-        "https://i.dummyjson.com/data/products/31/3.jpg",
-        "https://i.dummyjson.com/data/products/31/4.jpg",
-        "https://i.dummyjson.com/data/products/31/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 32,
-      "title": "Sofa for Coffe Cafe",
-      "description": "Ratttan Outdoor furniture Set Waterproof  Rattan Sofa for Coffe Cafe",
-      "price": 50,
-      "discountPercentage": 15.59,
-      "rating": 4.74,
-      "stock": 30,
-      "brand": "Ratttan Outdoor",
-      "category": "furniture",
-      "thumbnail": "https://i.dummyjson.com/data/products/32/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/32/1.jpg",
-        "https://i.dummyjson.com/data/products/32/2.jpg",
-        "https://i.dummyjson.com/data/products/32/3.jpg",
-        "https://i.dummyjson.com/data/products/32/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 33,
-      "title": "3 Tier Corner Shelves",
-      "description": "3 Tier Corner Shelves | 3 PCs Wall Mount Kitchen Shelf | Floating Bedroom Shelf",
-      "price": 700,
-      "discountPercentage": 17,
-      "rating": 4.31,
-      "stock": 106,
-      "brand": "Kitchen Shelf",
-      "category": "furniture",
-      "thumbnail": "https://i.dummyjson.com/data/products/33/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/33/1.jpg",
-        "https://i.dummyjson.com/data/products/33/2.jpg",
-        "https://i.dummyjson.com/data/products/33/3.jpg",
-        "https://i.dummyjson.com/data/products/33/4.jpg",
-        "https://i.dummyjson.com/data/products/33/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 34,
-      "title": "Plastic Table",
-      "description": "V﻿ery good quality plastic table for multi purpose now in reasonable price",
-      "price": 50,
-      "discountPercentage": 4,
-      "rating": 4.01,
-      "stock": 136,
-      "brand": "Multi Purpose",
-      "category": "furniture",
-      "thumbnail": "https://i.dummyjson.com/data/products/34/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/34/1.jpg",
-        "https://i.dummyjson.com/data/products/34/2.jpg",
-        "https://i.dummyjson.com/data/products/34/3.jpg",
-        "https://i.dummyjson.com/data/products/34/4.jpg",
-        "https://i.dummyjson.com/data/products/34/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 35,
-      "title": "3 DOOR PORTABLE",
-      "description": "Material: Stainless Steel and Fabric  Item Size: 110 cm x 45 cm x 175 cm Package Contents: 1 Storage Wardrobe",
-      "price": 41,
-      "discountPercentage": 7.98,
-      "rating": 4.06,
-      "stock": 68,
-      "brand": "AmnaMart",
-      "category": "furniture",
-      "thumbnail": "https://i.dummyjson.com/data/products/35/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/35/1.jpg",
-        "https://i.dummyjson.com/data/products/35/2.jpg",
-        "https://i.dummyjson.com/data/products/35/3.jpg",
-        "https://i.dummyjson.com/data/products/35/4.jpg",
-        "https://i.dummyjson.com/data/products/35/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 36,
-      "title": "Sleeve Shirt Womens",
-      "description": "Cotton Solid Color Professional Wear Sleeve Shirt Womens Work Blouses Wholesale Clothing Casual Plain Custom Top OEM Customized",
-      "price": 90,
-      "discountPercentage": 10.89,
-      "rating": 4.26,
-      "stock": 39,
-      "brand": "Professional Wear",
-      "category": "tops",
-      "thumbnail": "https://i.dummyjson.com/data/products/36/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/36/1.jpg",
-        "https://i.dummyjson.com/data/products/36/2.webp",
-        "https://i.dummyjson.com/data/products/36/3.webp",
-        "https://i.dummyjson.com/data/products/36/4.jpg",
-        "https://i.dummyjson.com/data/products/36/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 37,
-      "title": "ank Tops for Womens/Girls",
-      "description": "PACK OF 3 CAMISOLES ,VERY COMFORTABLE SOFT COTTON STUFF, COMFORTABLE IN ALL FOUR SEASONS",
-      "price": 50,
-      "discountPercentage": 12.05,
-      "rating": 4.52,
-      "stock": 107,
-      "brand": "Soft Cotton",
-      "category": "tops",
-      "thumbnail": "https://i.dummyjson.com/data/products/37/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/37/1.jpg",
-        "https://i.dummyjson.com/data/products/37/2.jpg",
-        "https://i.dummyjson.com/data/products/37/3.jpg",
-        "https://i.dummyjson.com/data/products/37/4.jpg",
-        "https://i.dummyjson.com/data/products/37/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 38,
-      "title": "sublimation plain kids tank",
-      "description": "sublimation plain kids tank tops wholesale",
-      "price": 100,
-      "discountPercentage": 11.12,
-      "rating": 4.8,
-      "stock": 20,
-      "brand": "Soft Cotton",
-      "category": "tops",
-      "thumbnail": "https://i.dummyjson.com/data/products/38/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/38/1.png",
-        "https://i.dummyjson.com/data/products/38/2.jpg",
-        "https://i.dummyjson.com/data/products/38/3.jpg",
-        "https://i.dummyjson.com/data/products/38/4.jpg"
-      ]
-    },
-    {
-      "id": 39,
-      "title": "Women Sweaters Wool",
-      "description": "2021 Custom Winter Fall Zebra Knit Crop Top Women Sweaters Wool Mohair Cos Customize Crew Neck Women' S Crop Top Sweater",
-      "price": 600,
-      "discountPercentage": 17.2,
-      "rating": 4.55,
-      "stock": 55,
-      "brand": "Top Sweater",
-      "category": "tops",
-      "thumbnail": "https://i.dummyjson.com/data/products/39/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/39/1.jpg",
-        "https://i.dummyjson.com/data/products/39/2.jpg",
-        "https://i.dummyjson.com/data/products/39/3.jpg",
-        "https://i.dummyjson.com/data/products/39/4.jpg",
-        "https://i.dummyjson.com/data/products/39/thumbnail.jpg"
-      ]
-    },
-    {
-      "id": 40,
-      "title": "women winter clothes",
-      "description": "women winter clothes thick fleece hoodie top with sweat pantjogger women sweatsuit set joggers pants two piece pants set",
-      "price": 57,
-      "discountPercentage": 13.39,
-      "rating": 4.91,
-      "stock": 84,
-      "brand": "Top Sweater",
-      "category": "tops",
-      "thumbnail": "https://i.dummyjson.com/data/products/40/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/40/thumbnail.jpg",
-        "https://i.dummyjson.com/data/products/40/1.jpg",
-        "https://i.dummyjson.com/data/products/40/2.jpg"
+        "https://cdn.dummyjson.com/product-images/30/1.jpg",
+        "https://cdn.dummyjson.com/product-images/30/2.jpg",
+        "https://cdn.dummyjson.com/product-images/30/3.jpg",
+        "https://cdn.dummyjson.com/product-images/30/thumbnail.jpg"
       ]
     }
-  ]
+  ],
+  "total": 100,
+  "skip": 0,
+  "limit": 30
 }
